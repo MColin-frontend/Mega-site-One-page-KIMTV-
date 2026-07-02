@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "schedule": "Lịch thi đấu",
+    "liveScore": "Tỉ số trực tuyến",
+    "results": "Kết quả",
+    "standings": "BXH",
+    "news": "Tin tức",
+    "video": "Video",
+    "data": "Dữ liệu"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký"
+  }
+}

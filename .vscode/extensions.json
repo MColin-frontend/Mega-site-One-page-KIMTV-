@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    // ─── Formatter ─────────────────────────────────────────
+    "esbenp.prettier-vscode",
+
+    // ─── Linter ────────────────────────────────────────────
+    "dbaeumer.vscode-eslint",
+
+    // ─── Tailwind CSS ──────────────────────────────────────
+    "bradlc.vscode-tailwindcss",
+
+    // ─── TypeScript / React ────────────────────────────────
+    "ms-vscode.vscode-typescript-next",
+
+    // ─── Git ───────────────────────────────────────────────
+    "eamodio.gitlens",
+    "vivaxy.vscode-conventional-commits"
+  ]
+}

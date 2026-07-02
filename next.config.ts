@@ -1,7 +1,22 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "kimtv-oss.99kimtvs.top",
+      },
+      {
+        protocol: "https",
+        hostname: "oss.fqhur.com",
+      },
+      {
+        protocol: "https",
+        hostname: "imga.fqhur.com",
+      },
+    ],
+  },
+}
 
-export default nextConfig;
+export default nextConfig

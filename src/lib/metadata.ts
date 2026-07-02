@@ -14,9 +14,7 @@ import { siteConfig } from "@/config/site"
  */
 export function createMetadata(override: Metadata = {}): Metadata {
   const title =
-    typeof override.title === "string"
-      ? override.title
-      : override.title ?? siteConfig.name
+    typeof override.title === "string" ? override.title : (override.title ?? siteConfig.name)
 
   const description = override.description ?? siteConfig.description
 
@@ -24,9 +22,9 @@ export function createMetadata(override: Metadata = {}): Metadata {
     ...override,
     metadataBase: new URL(siteConfig.url),
     description,
-    keywords:  override.keywords  ?? siteConfig.keywords,
-    authors:   override.authors   ?? siteConfig.authors,
-    creator:   override.creator   ?? siteConfig.name,
+    keywords: override.keywords ?? [...siteConfig.keywords],
+    authors: override.authors ?? [...siteConfig.authors],
+    creator: override.creator ?? siteConfig.name,
     publisher: override.publisher ?? siteConfig.name,
 
     alternates: {
@@ -35,42 +33,42 @@ export function createMetadata(override: Metadata = {}): Metadata {
     },
 
     openGraph: {
-      type:        "website",
-      locale:      siteConfig.locale,
-      url:         siteConfig.url,
-      siteName:    siteConfig.name,
-      title:       typeof title === "string" ? title : siteConfig.name,
+      type: "website",
+      locale: siteConfig.locale,
+      url: siteConfig.url,
+      siteName: siteConfig.name,
+      title: typeof title === "string" ? title : siteConfig.name,
       description,
       images: [
         {
-          url:    "/opengraph-image.png",
-          width:  siteConfig.og.width,
+          url: "/opengraph-image.png",
+          width: siteConfig.og.width,
           height: siteConfig.og.height,
-          alt:    typeof title === "string" ? title : siteConfig.name,
+          alt: typeof title === "string" ? title : siteConfig.name,
         },
       ],
       ...override.openGraph,
     },
 
     twitter: {
-      card:        "summary_large_image",
-      title:       typeof title === "string" ? title : siteConfig.name,
+      card: "summary_large_image",
+      title: typeof title === "string" ? title : siteConfig.name,
       description,
-      images:      ["/opengraph-image.png"],
+      images: ["/opengraph-image.png"],
       ...override.twitter,
     },
 
     robots: {
-      index:            true,
-      follow:           true,
+      index: true,
+      follow: true,
       googleBot: {
-        index:               true,
-        follow:              true,
+        index: true,
+        follow: true,
         "max-video-preview": -1,
         "max-image-preview": "large",
-        "max-snippet":       -1,
+        "max-snippet": -1,
       },
-      ...override.robots,
+      ...(typeof override.robots === "object" && override.robots !== null ? override.robots : {}),
     },
   }
 }

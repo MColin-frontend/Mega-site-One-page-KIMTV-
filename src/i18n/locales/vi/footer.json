@@ -1,0 +1,11 @@
+{
+  "desc": "Truy cập KIMTV để xem các trận đấu đang phát sóng hôm nay, cập nhật link xem chính thức nhanh chóng và đồng hành cùng hàng triệu người hâm mộ thể thao Việt Nam.",
+  "menu": {
+    "home": "Trang chủ",
+    "fixtures": "Lịch thi đấu",
+    "live-score": "Lịch live",
+    "news": "Tin tức",
+    "highlights": "Highlight"
+  },
+  "copyright": "© 2026 All rights reserved"
+}

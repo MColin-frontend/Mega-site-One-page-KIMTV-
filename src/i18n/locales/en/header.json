@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "home": "Home",
+    "schedule": "Schedule",
+    "liveScore": "Live Score",
+    "results": "Results",
+    "standings": "Standings",
+    "news": "News",
+    "video": "Video",
+    "data": "Data"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register"
+  }
+}
