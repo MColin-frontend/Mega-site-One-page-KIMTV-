@@ -5,7 +5,7 @@ CI/CD tự động: **push vào nhánh `staging`** → GitHub Actions build imag
 App container chỉ nghe `127.0.0.1:3000`; **nginx trên host** terminate TLS và proxy vào.
 
 ```
-[push staging] → GitHub Actions → ghcr.io/.../mega-site-one-page-kimtv-:staging
+[push staging] → GitHub Actions → ghcr.io/mcolin-frontend/mega-site-one-page-kimtv:staging
                                           │ (SSH)
                                           ▼
    nginx :443 (onepage-dev.kimtv.net) → 127.0.0.1:3000 (container)

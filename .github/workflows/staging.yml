@@ -16,7 +16,9 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }} # docker/metadata-action tự hạ chữ thường
+  # Không dùng ${{ github.repository }} vì tên repo kết thúc bằng "-" → image reference
+  # không hợp lệ (path phải kết thúc bằng ký tự alphanumeric). Pin tên hợp lệ, chữ thường.
+  IMAGE_NAME: mcolin-frontend/mega-site-one-page-kimtv
 
 jobs:
   # --------------------------------------------------------------------------
