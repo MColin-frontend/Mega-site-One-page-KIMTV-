@@ -10,10 +10,9 @@ const USE_AUTH_PORTAL = process.env.NEXT_PUBLIC_OIDC_USE_AUTH_PORTAL !== "false"
 const AUTH_PORTAL_URL = process.env.NEXT_PUBLIC_OIDC_AUTH_PORTAL_URL || DEFAULT_AUTH_PORTAL_URL
 
 function getAppOrigin(): string {
-  // NEXT_PUBLIC_APP_URL override — dùng khi dev trỏ vào domain đã đăng ký trên SSO
-  // VD: NEXT_PUBLIC_APP_URL=https://dev.kimtv.org
-  const override = process.env.NEXT_PUBLIC_APP_URL
-  if (override) return override.replace(/\/$/, "")
+  // Luôn dùng origin thực của trình duyệt (kimtv.net trên prod, localhost:3000 khi dev).
+  // KHÔNG dùng NEXT_PUBLIC_APP_URL vì biến đó được inline lúc build và sẽ sai
+  // khi deploy lên domain khác với domain đã build.
   if (typeof window !== "undefined") return window.location.origin
   return "http://localhost:3000"
 }
