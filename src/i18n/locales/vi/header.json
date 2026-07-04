@@ -13,6 +13,10 @@
   },
   "auth": {
     "login": "Đăng nhập",
-    "register": "Đăng ký"
+    "register": "Đăng ký",
+    "callback": {
+      "processing": "Đang xử lý đăng nhập…",
+      "error": "Đăng nhập thất bại"
+    }
   }
 }

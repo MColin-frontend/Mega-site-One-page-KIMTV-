@@ -13,6 +13,10 @@
   },
   "auth": {
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "callback": {
+      "processing": "Processing login…",
+      "error": "Login failed"
+    }
   }
 }

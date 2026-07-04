@@ -64,23 +64,24 @@ export function FixtureStatus({ match }: { match: MatchInterface }) {
 
   switch (match.status) {
     case MatchStatusEnum.FINISHED:
-      return (
-        <Typography as="span" variant="body-sm" weight="700" color="gold" className="leading-150">
-          {MatchStatusLabelEnum.FINISHED}
-        </Typography>
-      )
     case MatchStatusEnum.CANCELLED:
+    case MatchStatusEnum.POSTPONED: {
+      const STATUS_LABEL: Partial<Record<MatchStatusEnum, string>> = {
+        [MatchStatusEnum.FINISHED]: MatchStatusLabelEnum.FINISHED,
+        [MatchStatusEnum.CANCELLED]: MatchStatusLabelEnum.CANCELLED,
+        [MatchStatusEnum.POSTPONED]: MatchStatusLabelEnum.POSTPONED,
+      }
       return (
-        <Typography as="span" variant="body-sm" weight="700" color="gold" className="leading-150">
-          {MatchStatusLabelEnum.CANCELLED}
+        <Typography
+          as="span"
+          variant="caption"
+          weight="600"
+          className="text-gold drop-shadow-[0_0_6px_rgba(245,197,24,0.7)] [text-shadow:0_0_8px_rgba(245,197,24,0.6),0_0_20px_rgba(245,197,24,0.25)]"
+        >
+          {STATUS_LABEL[match.status]}
         </Typography>
       )
-    case MatchStatusEnum.POSTPONED:
-      return (
-        <Typography as="span" variant="body-sm" weight="700" color="gold" className="leading-150">
-          {MatchStatusLabelEnum.POSTPONED}
-        </Typography>
-      )
+    }
     default:
       return <span />
   }
