@@ -35,7 +35,7 @@ interface AvatarImageProps {
 }
 
 function AvatarImage({ src, alt, className }: AvatarImageProps) {
-  return <Img src={src} alt={alt ?? ""} fill className={className} />
+  return <Img src={src} alt={alt || ""} fill wrapperClassName="size-full" className={className} />
 }
 
 /* ── AvatarFallback ──────────────────────────────────────── */
@@ -127,7 +127,7 @@ function AvatarWithTooltip({
   src,
   alt,
   name,
-  size = 28,
+  size = 38,
   overlap = 8,
   index = 0,
   className,

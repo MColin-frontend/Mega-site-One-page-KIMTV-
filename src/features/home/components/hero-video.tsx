@@ -151,6 +151,8 @@ export function HeroVideo({
 
   if (!activeMatch) return null
 
+  console.log("activeMatch", activeMatch)
+
   return (
     <div
       className={cn(
@@ -181,9 +183,9 @@ export function HeroVideo({
           }}
         >
           {/* Row 1: league + period badge + live dot */}
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center max-lg:flex max-lg:justify-between">
             {/* League */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex min-w-0 items-center gap-1.5">
               {activeMatch.leagueLogo && (
                 <Img
                   src={activeMatch.leagueLogo}
@@ -196,7 +198,7 @@ export function HeroVideo({
               )}
               {activeMatch.leagueName && (
                 <Tooltip>
-                  <TooltipTrigger className="min-w-0 overflow-hidden">
+                  <TooltipTrigger className="max-w-full min-w-0 overflow-hidden">
                     <Typography
                       variant="body"
                       color="foreground/55"
@@ -210,8 +212,8 @@ export function HeroVideo({
               )}
             </div>
 
-            {/* Period badge — centered */}
-            <div className="flex justify-center">
+            {/* Period badge — desktop only */}
+            <div className="flex justify-center max-lg:hidden">
               {activeMatch.period != null && (
                 <MatchLiveBadge
                   halfLabel={
@@ -293,34 +295,27 @@ export function HeroVideo({
                 {activeMatch.awayTeam.name}
               </Typography>
             </div>
-
-            {/* Commentators */}
-            {activeMatch.anchors && activeMatch.anchors.length > 0 && (
-              <div className="flex shrink-0 items-center">
-                {activeMatch.anchors.slice(0, 3).map((anchor, i) => (
-                  <AvatarWithTooltip
-                    key={i}
-                    src={anchor.userAvatar}
-                    name={anchor.userName}
-                    size={28}
-                    index={i}
-                    overlap={6}
-                  />
-                ))}
-              </div>
-            )}
           </div>
+
+          {/* Period badge — mobile only, centered below teams */}
+          {activeMatch.period != null && (
+            <div className="flex justify-center lg:hidden">
+              <MatchLiveBadge
+                halfLabel={
+                  activeMatch.state != null ? (activeMatch.state <= 1 ? "H1" : "H2") : "LIVE"
+                }
+                displayMinute={String(activeMatch.period)}
+              />
+            </div>
+          )}
 
           {/* Row 3: stats + commentators */}
           <div
             className={cn(
               "flex items-center",
-              activeMatch.anchors && activeMatch.anchors.length > 0
-                ? "justify-between"
-                : "justify-center"
+              activeMatch.anchors?.length ? "justify-between" : "justify-center"
             )}
           >
-            {/* Stats */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Img src={icCornerKick} alt="corner" width={14} height={14} objectFit="contain" />
@@ -390,15 +385,14 @@ export function HeroVideo({
               </div>
             </div>
 
-            {/* Commentators */}
             {activeMatch.anchors && activeMatch.anchors.length > 0 && (
               <div className="flex items-center">
                 {activeMatch.anchors.slice(0, 3).map((anchor, i) => (
                   <AvatarWithTooltip
                     key={i}
-                    src={anchor.userAvatar}
-                    name={anchor.userName}
-                    size={26}
+                    src={anchor?.userAvatar || ""}
+                    name={anchor?.userName || ""}
+                    size={38}
                     index={i}
                     overlap={6}
                   />
