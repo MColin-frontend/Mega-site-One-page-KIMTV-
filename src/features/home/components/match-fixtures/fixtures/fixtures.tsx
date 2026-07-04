@@ -131,29 +131,20 @@ function FixtureRow({ match }: { match: MatchInterface }) {
 
         {/* Col 3: Time + Status stacked */}
         <div className="flex flex-col items-center gap-1">
-          {match.status !== MatchStatusEnum.FINISHED && (
-            <Typography
-              as="span"
-              variant="label"
-              weight="600"
-              color="foreground/80"
-              className="tabular-nums"
-            >
-              {match.startTime ? formatKickOff(match.startTime) : "—"}
-            </Typography>
-          )}
-          {match.status === MatchStatusEnum.FINISHED ? (
-            <Typography
-              as="span"
-              variant="caption"
-              weight="600"
-              className="text-gold drop-shadow-[0_0_6px_rgba(245,197,24,0.7)] [text-shadow:0_0_8px_rgba(245,197,24,0.6),0_0_20px_rgba(245,197,24,0.25)]"
-            >
-              FT
-            </Typography>
-          ) : (
-            <FixtureStatus match={match} />
-          )}
+          {match.status !== MatchStatusEnum.FINISHED &&
+            match.status !== MatchStatusEnum.POSTPONED &&
+            match.status !== MatchStatusEnum.CANCELLED && (
+              <Typography
+                as="span"
+                variant="label"
+                weight="600"
+                color="foreground/80"
+                className="tabular-nums"
+              >
+                {match.startTime ? formatKickOff(match.startTime) : "—"}
+              </Typography>
+            )}
+          <FixtureStatus match={match} />
         </div>
 
         {/* Col 4: Score */}

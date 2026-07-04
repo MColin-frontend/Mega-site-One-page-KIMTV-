@@ -38,6 +38,10 @@ export interface Dictionary {
     auth: {
       login: string
       register: string
+      callback: {
+        processing: string
+        error: string
+      }
     }
   }
   footer: {

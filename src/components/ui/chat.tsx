@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { RefreshCw, Send, X } from "lucide-react"
+import { LogIn, RefreshCw, Send, X } from "lucide-react"
 
 import { fetchChatMessagesAction, fetchPinnedMessagesAction } from "@/server/actions/chat.action"
 import { cn } from "@/lib/utils"
@@ -967,18 +967,16 @@ export function Chat({
         ) : (
           <button
             onClick={onLogin}
-            className="group flex flex-1 items-center gap-3 rounded-full bg-white/6 px-4 py-2 transition-all duration-200 hover:bg-white/10"
+            className="group rounded-8 hover:border-gold/30 hover:bg-gold/10 flex flex-1 items-center justify-center gap-2 border border-white/10 bg-white/5 px-4 py-2 transition-all duration-200"
           >
+            <LogIn className="group-hover:text-gold/80 size-3.5 shrink-0 text-white/40 transition-colors" />
             <Typography
               as="span"
               variant="body-sm"
-              className="flex-1 text-left text-white/40 group-hover:text-white/60"
+              className="group-hover:text-gold/80 text-white/40 transition-colors"
             >
               {t("chat.loginToChat")}
             </Typography>
-            <div className="flex size-6 items-center justify-center rounded-full bg-white/15 text-white/60 transition-all duration-200 group-hover:bg-white/25 group-hover:text-white">
-              <Send className="size-3" />
-            </div>
           </button>
         )}
       </div>

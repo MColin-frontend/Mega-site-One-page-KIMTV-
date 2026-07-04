@@ -77,7 +77,7 @@
   --padding-table-row: 18px 24px;
 
   /* ─── Header ─── */
-  --header-bg: #0c1526;
+  --header-bg: rgba(10, 17, 34, 0.82);
   --header-border: rgba(74, 140, 255, 0.55);
   --border-blue: rgba(74, 140, 255, 0.25);
   --border-white-soft: rgba(255, 255, 255, 0.08);
@@ -250,7 +250,9 @@
 /* ─── Header ─────────────────────────────────────────────────── */
 @utility bg-header {
   background: var(--header-bg);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* ─── Footer ─────────────────────────────────────────────────── */
@@ -627,6 +629,15 @@
 
 .xgplayer-controls {
   z-index: 12 !important;
+}
+
+@keyframes shine {
+  from {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  to {
+    transform: translateX(250%) skewX(-15deg);
+  }
 }
 
 @keyframes sparkle-fall {
