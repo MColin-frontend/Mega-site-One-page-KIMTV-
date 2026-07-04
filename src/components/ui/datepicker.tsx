@@ -222,7 +222,8 @@ function CalendarGrid({
           const handleClick = () => {
             if (isDisabled) return
             if (isOtherMonth) {
-              date < new Date(year, month, 1) ? onPrev() : onNext()
+              if (date < new Date(year, month, 1)) onPrev()
+              else onNext()
             }
             onDay(date)
           }
@@ -271,8 +272,8 @@ function PickerPopup({ children, className }: { children: ReactNode; className?:
     <Popover.Popup
       className={cn(
         "rounded-10 z-[999] overflow-hidden",
-        "border border-white/10 bg-[#1e2530]",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.5)]",
+        "popup-bg border border-white/10",
+        "shadow-[0_16px_48px_rgba(0,0,0,0.55)]",
         "origin-(--transform-origin)",
         "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.97]",
         "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.97]",

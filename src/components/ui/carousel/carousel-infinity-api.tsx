@@ -76,7 +76,7 @@ export default function CarouselInfinityApi<T>({
 
   const skeletonItems = Array.from(
     { length: skeletonCount },
-    (_, i) => SKELETON_SENTINEL as unknown as T
+    () => SKELETON_SENTINEL as unknown as T
   )
 
   const isEmpty = !isInitialLoading && items.length === 0

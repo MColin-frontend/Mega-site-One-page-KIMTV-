@@ -1,6 +1,13 @@
 {
   "yesterday": "Hôm qua",
-  "today": "Hôm nay (đang diễn ra)",
-  "tomorrow": "Ngày mai",
-  "empty": "Không có dữ liệu"
+  "today": "Hôm nay",
+  "tomorrow": "Sắp diễn ra",
+  "empty": "Không có dữ liệu",
+  "match-card": {
+    "hours": "Giờ",
+    "minutes": "Phút",
+    "seconds": "Giây",
+    "finished": "FT",
+    "watch-preview": "Xem trước"
+  }
 }

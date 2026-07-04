@@ -1,37 +1,44 @@
-import { getLocale } from "@/i18n/get-locale"
+import { Suspense } from "react"
 
-import { fetchFeaturedNewsAction, fetchLatestNewsListAction } from "@/features/home/home.api"
+import { fetchFeaturedNewsAction, fetchPopularNewsAction } from "@/features/home/home.api"
 
 import Fixtures from "./fixtures"
 import News from "./news"
-import NewsMobileCarousel from "./news/news-carousel"
+import { HighlightsSkeleton, NewsSectionSkeleton } from "./news/skeleton"
+
+function NewsSidebarSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <HighlightsSkeleton />
+      <NewsSectionSkeleton />
+    </div>
+  )
+}
+
+async function hasNewsContent(): Promise<boolean> {
+  const [popular, featured] = await Promise.all([
+    fetchPopularNewsAction(),
+    fetchFeaturedNewsAction(),
+  ])
+  return popular.length > 0 || featured.length > 0
+}
 
 export default async function MatchFixtures() {
-  const [featured, latest, locale] = await Promise.all([
-    fetchFeaturedNewsAction(),
-    fetchLatestNewsListAction(),
-    getLocale(),
-  ])
-  const hasNews = featured.length > 0 || latest.length > 0
+  const showSidebar = await hasNewsContent()
 
   return (
-    <section className="mt-6 mb-20 grid grid-cols-10 gap-4 max-lg:flex max-lg:flex-col">
-      {/* Mobile: news carousel trên cùng */}
-      {hasNews && (
-        <div className="hidden max-lg:block">
-          <NewsMobileCarousel featured={featured} latest={latest} locale={locale} />
-        </div>
-      )}
-
+    <section className="grid grid-cols-10 gap-4 max-lg:flex max-lg:flex-col">
       {/* Fixtures */}
-      <div className={hasNews ? "col-span-7" : "col-span-10"}>
+      <div className={showSidebar ? "col-span-7 max-lg:order-2" : "col-span-10"}>
         <Fixtures />
       </div>
 
-      {/* Desktop: news sidebar */}
-      {hasNews && (
-        <div className="sticky top-[60px] col-span-3 self-start max-lg:hidden">
-          <News />
+      {/* News sidebar — mobile: lên trên full width, desktop: sticky sidebar */}
+      {showSidebar && (
+        <div className="col-span-3 self-start max-lg:order-1 max-lg:w-full lg:sticky lg:top-[60px]">
+          <Suspense fallback={<NewsSidebarSkeleton />}>
+            <News />
+          </Suspense>
         </div>
       )}
     </section>

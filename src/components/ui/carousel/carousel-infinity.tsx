@@ -23,6 +23,7 @@ interface CarouselInfinityProps<T> {
   reachEndThreshold?: number
   showNavAlways?: boolean
   className?: string
+  viewportClassName?: string
 }
 
 /**
@@ -49,6 +50,7 @@ export default function CarouselInfinity<T>({
   reachEndThreshold = 2,
   showNavAlways = false,
   className,
+  viewportClassName,
 }: CarouselInfinityProps<T>) {
   const latestOnReachEndRef = useRef(onReachEnd)
   const lastReachedIndexRef = useRef<number | null>(null)
@@ -181,7 +183,10 @@ export default function CarouselInfinity<T>({
 
   return (
     <div className={`group/carousel relative w-full ${className ?? ""}`}>
-      <div className="overflow-x-hidden overflow-y-visible" ref={emblaRef}>
+      <div
+        className={`overflow-x-hidden overflow-y-visible${viewportClassName ? ` ${viewportClassName}` : ""}`}
+        ref={emblaRef}
+      >
         <div className="-ml-4 flex">
           {(Array.isArray(items) ? items : []).map((item, index) => (
             <div

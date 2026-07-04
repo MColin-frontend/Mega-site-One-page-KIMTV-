@@ -56,7 +56,18 @@ function Fixtures() {
   }, [date])
 
   return (
-    <section className="flex flex-col gap-4">
+    <section
+      className="rounded-12 card-glow flex flex-col gap-4 p-5"
+      style={{
+        background: [
+          "radial-gradient(ellipse at 20% 0%, rgba(74,140,255,0.14) 0%, transparent 55%)",
+          "radial-gradient(ellipse at 80% 100%, rgba(30,80,180,0.12) 0%, transparent 50%)",
+          "radial-gradient(ellipse at 50% 50%, rgba(20,50,120,0.10) 0%, transparent 70%)",
+          "#080f1e",
+        ].join(", "),
+        backdropFilter: "blur(40px)",
+      }}
+    >
       <HeroFixtures
         groups={groups}
         hotLeagues={hotLeagues}

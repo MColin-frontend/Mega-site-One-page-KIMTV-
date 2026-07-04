@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 const triggerVariants = cva(
   [
     "group/trigger inline-flex min-w-36 items-center justify-between",
-    "rounded-8 border font-500 leading-100",
+    "rounded-8 font-500 leading-100",
     "cursor-pointer select-none outline-none transition-all duration-150",
     "focus-visible:ring-2 focus-visible:ring-primary/30",
     "disabled:pointer-events-none disabled:opacity-40",
@@ -21,16 +21,17 @@ const triggerVariants = cva(
     variants: {
       variant: {
         default:
-          "border-primary/20 bg-primary text-white hover:bg-primary/85 data-[popup-open]:bg-primary/85",
+          "border border-primary/20 bg-primary text-white hover:bg-primary/85 data-[popup-open]:bg-primary/85",
         outline:
-          "border-foreground/30 bg-transparent text-foreground hover:border-foreground/55 data-[popup-open]:border-foreground/55",
+          "border border-foreground/30 bg-transparent text-foreground hover:border-foreground/55 data-[popup-open]:border-foreground/55",
         "outline-dark":
-          "border-white/25 bg-transparent text-white hover:border-white/50 data-[popup-open]:border-white/50",
-        ghost:
-          "border-transparent text-foreground hover:bg-foreground/6 data-[popup-open]:bg-foreground/6",
-        navy: "border-white/10 bg-navy text-white hover:bg-navy/80 data-[popup-open]:bg-navy/80",
-        gold: "border-transparent bg-gradient-to-r from-[#FFF200] to-[#AB7200] text-black hover:opacity-90",
-        dark: "border-white/20 bg-white/8 text-white backdrop-blur-sm hover:border-white/35 hover:bg-white/12 data-[popup-open]:ring-2 data-[popup-open]:ring-white/15",
+          "border border-white/25 bg-transparent text-white hover:border-white/50 data-[popup-open]:border-white/50",
+        ghost: "border-0 text-foreground hover:bg-foreground/6 data-[popup-open]:bg-foreground/6",
+        navy: "border border-white/10 bg-navy text-white hover:bg-navy/80 data-[popup-open]:bg-navy/80",
+        gold: "border-0 bg-gradient-to-r from-[#FFF200] to-[#AB7200] text-black hover:opacity-90",
+        dark: "border border-white/20 bg-white/8 text-white backdrop-blur-sm hover:border-white/35 hover:bg-white/12 data-[popup-open]:ring-2 data-[popup-open]:ring-white/15",
+        glass:
+          "border-0 bg-white/6 text-white/85 backdrop-blur-3xl hover:bg-white/10 hover:text-white data-[popup-open]:bg-white/10",
       },
       size: {
         sm: "h-9  gap-2.5 px-3.5 text-13",
@@ -180,9 +181,7 @@ export const Select = forwardRef<SelectHandle, SelectProps>(function Select(
             <SelectPrimitive.Popup
               className={cn(
                 "z-[999] w-(--anchor-width) overflow-hidden",
-                variant === "dark"
-                  ? "rounded-8 border border-white/10 bg-[#1e2530] shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
-                  : "rounded-10 border border-black/10 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.12)]",
+                "rounded-8 popup-bg border border-white/10 shadow-[0_16px_48px_rgba(0,0,0,0.55)]",
                 "origin-(--transform-origin)",
                 "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.97] data-open:slide-in-from-top-0.5",
                 "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.97]",
@@ -204,10 +203,8 @@ export const Select = forwardRef<SelectHandle, SelectProps>(function Select(
                       opt.accent === "live"
                         ? "data-selected:font-600 text-red-400 data-highlighted:bg-red-500/10 data-selected:bg-red-500/15"
                         : opt.accent === "neutral"
-                          ? "data-selected:font-600 text-white/85 data-highlighted:bg-white/8 data-highlighted:text-white data-selected:bg-white/15 data-selected:text-white"
-                          : variant === "dark"
-                            ? "data-highlighted:bg-gold/10 data-highlighted:text-gold data-selected:bg-gold/15 data-selected:text-gold data-selected:font-600 text-white/85"
-                            : "text-foreground/75 data-highlighted:bg-foreground/6 data-highlighted:text-foreground data-selected:bg-primary/8 data-selected:text-primary data-selected:font-600",
+                          ? "data-selected:bg-gold/15 data-selected:text-gold data-selected:font-600 text-white/75 data-highlighted:bg-white/8 data-highlighted:text-white"
+                          : "data-selected:bg-gold/15 data-selected:text-gold data-selected:font-600 text-white/75 data-highlighted:bg-white/8 data-highlighted:text-white",
                       "data-disabled:pointer-events-none data-disabled:opacity-30"
                     )}
                   >

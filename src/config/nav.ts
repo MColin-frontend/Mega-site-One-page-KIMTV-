@@ -35,7 +35,7 @@ export function getMainNav(locale: LocaleType): NavItemInterface[] {
     { label: t("results", locale), href: routes.results },
     { label: t("standings", locale), href: routes.standings },
     { label: t("news", locale), href: routes.news.index },
-    { label: t("video", locale), href: routes.video },
+    { label: t("video", locale), href: routes.video.index },
     { label: t("data", locale), href: routes.data },
   ]
 }

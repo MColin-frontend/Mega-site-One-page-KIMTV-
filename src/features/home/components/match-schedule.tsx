@@ -30,17 +30,17 @@ export function MatchSchedule() {
   }))
 
   return (
-    <section className="rounded-12 mt-9 flex flex-col gap-4 border border-white bg-white/50">
+    <section className="rounded-12 card-glow flex flex-col gap-4 p-5">
       <div className="flex items-center justify-between gap-3">
         <Typography variant="h2">{t("home.match-schedule.title")}</Typography>
 
         <Select
           options={dateOptions}
           value={date ?? DEFAULT_FILTER_MATCH}
-          variant="outline"
+          variant="glass"
           size="sm"
           triggerClassName="w-40 min-w-0"
-          onValueChange={(val) => setParams({ date: val }, { replace: true })}
+          onValueChange={(val) => setParams({ date: val }, { scroll: false })}
         />
       </div>
 
@@ -58,7 +58,7 @@ export function MatchSchedule() {
             </Typography>
           </div>
         )}
-        slideClassName="basis-[350px]"
+        slideClassName="basis-[350px] max-sm:basis-full"
       />
     </section>
   )

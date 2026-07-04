@@ -129,8 +129,8 @@ export function LeagueSelect({
           <Popover.Positioner side="bottom" align="end" sideOffset={8}>
             <Popover.Popup
               className={cn(
-                "z-[999] w-[600px] overflow-hidden",
-                "rounded-8 border border-white/10 bg-[#1e2530]",
+                "z-[999] w-[min(600px,95vw)] overflow-hidden",
+                "rounded-8 popup-bg border border-white/10",
                 "shadow-[0_20px_60px_rgba(0,0,0,0.6)]",
                 "origin-(--transform-origin)",
                 "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.97] data-open:slide-in-from-top-2",

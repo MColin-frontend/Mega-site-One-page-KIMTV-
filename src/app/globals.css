@@ -6,37 +6,162 @@
 
 /* ─── Color variables ───────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #1d1d1f;
+  --background: #091320;
+  --foreground: #d6d6d6;
+  --primary: #ffffff;
+
+  /* ─── Text ─── */
+  --text-heading: #ffffff;
+  --text-body: #d6d6d6;
+  --text-secondary: #909090;
+  --text-disabled: #666666;
+
+  /* ─── Backgrounds ─── */
+  --bg-main: #091320;
+  --bg-sub: #0d1a2e;
+  --bg-card: rgba(13, 24, 48, 0.72);
+  --bg-card-alt: rgba(10, 18, 38, 0.82);
+  --bg-glass: rgba(255, 255, 255, 0.04);
+  --bg-gradient: linear-gradient(180deg, #0b1628 0%, #091320 45%, #070f1c 100%);
+
+  /* ─── Borders & dividers ─── */
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(246, 195, 67, 0.35);
+  --border-navbar: rgba(255, 255, 255, 0.05);
+  --divider: rgba(255, 255, 255, 0.06);
+
+  /* ─── Shadows ─── */
+  --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 25px 80px rgba(0, 0, 0, 0.55);
+  --shadow-hero: 0 40px 120px rgba(0, 0, 0, 0.45);
+  --shadow-banner-glow: 0 0 100px rgba(246, 195, 67, 0.18);
 
   /* ─── Brand ─── */
-  --navy: #0d1b5c;
+  --navy: #06152e;
   --blue: #4361fd;
-  --gold: #f5c518;
+  --gold: #f6c343;
+  --gold-hover: #ffd75a;
+  --gold-dark: #d39f16;
   --purple: #6d28d9;
   --orange: #f97316;
   --line: #2e2e2e;
-  --live: #0ead61;
-  --gradient-gold: linear-gradient(180deg, #fff200 0%, #ab7200 100%);
+  --live: #ff4040;
+  --success: #35d07f;
+  --danger: #ff6666;
+  --gradient-gold: linear-gradient(135deg, #ffd75a, #f6c343);
+  --gradient-button: linear-gradient(135deg, #ffd75a, #f5be33);
+
+  /* ─── Buttons ─── */
+  --btn-primary-text: #111111;
+  --btn-secondary: rgba(255, 255, 255, 0.06);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.12);
+
+  /* ─── Search ─── */
+  --search-bg: rgba(255, 255, 255, 0.05);
+  --search-border: rgba(255, 255, 255, 0.06);
+
+  /* ─── Hero & banner ─── */
+  --hero-overlay: linear-gradient(90deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.2));
+  --banner-bg: linear-gradient(90deg, #171203, #2b2109, #161203);
+
+  /* ─── Match list ─── */
+  --match-list-bg: rgba(255, 255, 255, 0.02);
+  --match-list-hover: rgba(255, 255, 255, 0.06);
+  --match-list-active-bg: rgba(246, 195, 67, 0.12);
+  --match-list-active-border: rgba(246, 195, 67, 0.35);
+
+  /* ─── Card padding ─── */
+  --padding-hero: 32px;
+  --padding-card: 24px;
+  --padding-card-sm: 18px;
+  --padding-table-row: 18px 24px;
+
+  /* ─── Header ─── */
+  --header-bg: #0c1526;
+  --header-border: rgba(74, 140, 255, 0.55);
+  --border-blue: rgba(74, 140, 255, 0.25);
+  --border-white-soft: rgba(255, 255, 255, 0.08);
+  --shadow-inset-soft: inset 0 0 60px rgba(255, 255, 255, 0.06);
+
+  /* ─── Blur ─── */
+  --blur-navbar: 20px;
+  --blur-card: 24px;
+  --blur-popup: 30px;
+
+  /* ─── Hover animation ─── */
+  --transition-hover: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  --hover-transform: translateY(-6px) scale(1.01);
+
+  /* ─── Chat ─── */
+  --chat-bg: #18191f;
+  --chat-surface: #1e2030;
+  --chat-text: #f9fbfd;
+  --chat-status: #ffaf14;
+  --chat-pin: #f5a623;
+  --chat-username: #54aaff;
+  --chat-muted: #b3bbc3;
+  --chat-vip-user: #5fa5ff;
+  --chat-vip-welcome: #ffaa44;
+  --chat-anchor: #ff5a5a;
+  --chat-link: #00aafb;
+  --chat-gift: #ff1ffa;
+  --chat-admin-from: #ff20da;
+  --chat-admin-to: #d911a0;
 }
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #091320;
+  --foreground: #d6d6d6;
 }
 
 @theme inline {
-  --font-sans: var(--font-oswald), var(--font-inter), Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  /* Text */
+  --color-heading: var(--text-heading);
+  --color-body: var(--text-body);
+  --color-secondary: var(--text-secondary);
+  --color-disabled: var(--text-disabled);
+  /* Backgrounds */
+  --color-bg-main: var(--bg-main);
+  --color-bg-sub: var(--bg-sub);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-alt: var(--bg-card-alt);
+  --color-bg-glass: var(--bg-glass);
+  /* Borders */
+  --color-border-card: var(--border-card);
+  --color-border-hover: var(--border-hover);
+  --color-border-navbar: var(--border-navbar);
+  /* Shadows */
+  --shadow-card: var(--shadow-card);
+  --shadow-hover: var(--shadow-hover);
+  --shadow-hero: var(--shadow-hero);
+  /* Brand */
   --color-navy: var(--navy);
   --color-blue: var(--blue);
   --color-gold: var(--gold);
+  --color-gold-hover: var(--gold-hover);
+  --color-gold-dark: var(--gold-dark);
   --color-purple: var(--purple);
   --color-orange: var(--orange);
   --color-line: var(--line);
   --color-live: var(--live);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-divider: var(--divider);
+  --color-chat-bg: var(--chat-bg);
+  --color-chat-surface: var(--chat-surface);
+  --color-chat-text: var(--chat-text);
+  --color-chat-status: var(--chat-status);
+  --color-chat-pin: var(--chat-pin);
+  --color-chat-username: var(--chat-username);
+  --color-chat-muted: var(--chat-muted);
+  --color-chat-vip-user: var(--chat-vip-user);
+  --color-chat-vip-welcome: var(--chat-vip-welcome);
+  --color-chat-anchor: var(--chat-anchor);
+  --color-chat-link: var(--chat-link);
+  --color-chat-gift: var(--chat-gift);
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 }
@@ -104,7 +229,9 @@
     @apply font-sans;
   }
   body {
-    @apply bg-background text-foreground;
+    background: linear-gradient(180deg, #091320 0%, #0b1628 35%, #0d1830 70%, #091320 100%);
+    background-attachment: fixed;
+    @apply text-foreground;
   }
 
   /* Base UI portals — đảm bảo luôn trên sticky header (z-40) */
@@ -118,6 +245,12 @@
   body:has([role="dialog"][data-open]) {
     overflow: hidden;
   }
+}
+
+/* ─── Header ─────────────────────────────────────────────────── */
+@utility bg-header {
+  background: var(--header-bg);
+  backdrop-filter: blur(18px);
 }
 
 /* ─── Footer ─────────────────────────────────────────────────── */
@@ -171,6 +304,31 @@
   }
   50% {
     transform: scale(1.3);
+  }
+}
+
+@utility nav-link {
+  position: relative;
+  display: inline-block;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    right: 50%;
+    height: 2px;
+    background: var(--gold);
+    transition:
+      left 0.3s ease,
+      right 0.3s ease;
+  }
+  &:hover::after {
+    left: 0;
+    right: 0;
+  }
+  &[data-active="true"]::after {
+    left: 0;
+    right: 0;
   }
 }
 
@@ -238,8 +396,155 @@
 }
 
 /* ─── Gradient utilities ─────────────────────────────────────── */
+@utility fixture-row-bg {
+  background:
+    radial-gradient(ellipse at 0% 50%, rgba(74, 140, 255, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 50%, rgba(30, 80, 180, 0.06) 0%, transparent 55%),
+    rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+@utility popup-bg {
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(74, 140, 255, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(30, 80, 180, 0.06) 0%, transparent 50%),
+    rgba(12, 18, 32, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 @utility bg-gradient-gold {
   background: var(--gradient-gold);
+}
+
+@utility bg-gradient-button {
+  background: var(--gradient-button);
+}
+
+@utility bg-gradient-main {
+  background: var(--bg-gradient);
+}
+
+@utility bg-hero-overlay {
+  background: var(--hero-overlay);
+}
+
+@utility bg-banner {
+  background: var(--banner-bg);
+}
+
+/* ─── Button utilities ───────────────────────────────────────── */
+@utility btn-secondary {
+  background: var(--btn-secondary);
+  &:hover {
+    background: var(--btn-secondary-hover);
+  }
+}
+
+/* ─── Live badge ─────────────────────────────────────────────── */
+@utility badge-live {
+  background: var(--live);
+  color: #ffffff;
+  border-radius: 999px;
+}
+
+/* ─── Search input ───────────────────────────────────────────── */
+@utility search-input {
+  background: var(--search-bg);
+  border: 1px solid var(--search-border);
+}
+
+/* ─── Match list ─────────────────────────────────────────────── */
+@utility match-list-item {
+  background: var(--match-list-bg);
+  &:hover {
+    background: var(--match-list-hover);
+  }
+}
+
+@utility match-list-item-active {
+  background: var(--match-list-active-bg);
+  border: 1px solid var(--match-list-active-border);
+}
+
+/* ─── Card padding ───────────────────────────────────────────── */
+@utility p-hero {
+  padding: var(--padding-hero);
+}
+@utility p-card {
+  padding: var(--padding-card);
+}
+@utility p-card-sm {
+  padding: var(--padding-card-sm);
+}
+@utility p-table-row {
+  padding: var(--padding-table-row);
+}
+
+/* ─── Banner glow ────────────────────────────────────────────── */
+@utility shadow-banner-glow {
+  box-shadow: var(--shadow-banner-glow);
+}
+
+/* ─── Blur ───────────────────────────────────────────────────── */
+@utility blur-navbar {
+  backdrop-filter: blur(var(--blur-navbar));
+  -webkit-backdrop-filter: blur(var(--blur-navbar));
+}
+
+@utility blur-card {
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+@utility blur-popup {
+  backdrop-filter: blur(var(--blur-popup));
+  -webkit-backdrop-filter: blur(var(--blur-popup));
+}
+
+/* ─── Hover animation ────────────────────────────────────────── */
+@utility hover-lift {
+  transition: var(--transition-hover);
+  &:hover {
+    transform: var(--hover-transform);
+  }
+}
+
+/* ─── Glass effect ───────────────────────────────────────────── */
+@utility glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  border: 1px solid var(--border-card);
+}
+
+/* ─── Border utilities ───────────────────────────────────────── */
+@utility border-card {
+  border: 1px solid var(--border-card);
+}
+
+@utility border-blue-glow {
+  border: 1px solid rgba(74, 140, 255, 0.55);
+}
+
+@utility card-glow {
+  border: 1px solid var(--border-white-soft);
+  box-shadow:
+    var(--shadow-inset-soft),
+    0 0 40px rgba(255, 255, 255, 0.04);
+}
+
+@utility border-blue {
+  border: 1px solid var(--border-blue);
+}
+
+@utility border-card-hover {
+  border: 1px solid var(--border-hover);
+}
+
+@utility border-navbar {
+  border-bottom: 1px solid var(--border-navbar);
 }
 
 /* ─── Page wrappers — max-w + mx-auto + px ───────────────────── */
@@ -272,6 +577,52 @@
   max-width: 1660px;
   margin-inline: auto;
   padding-inline: 15px;
+}
+
+/* ─── xgplayer overrides ────────────────────────────────────── */
+.xgplayer .xgplayer-controls,
+.xgplayer .xg-inner-controls,
+.xgplayer .xg-right-grid,
+.xgplayer .xg-options-icon {
+  overflow: visible !important;
+}
+
+.xgplayer .xg-options-list {
+  position: absolute !important;
+  bottom: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  min-width: 130px !important;
+  max-height: 240px !important;
+  overflow-y: auto !important;
+  z-index: 999 !important;
+  background: #1e2133 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 6px !important;
+  padding: 4px 4px 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  /* Bridge gap: padding-bottom tạo vùng hover xuống đến controls */
+  margin-bottom: 0 !important;
+}
+
+.xgplayer .xg-options-list .option-item {
+  display: flex !important;
+  align-items: center !important;
+  height: 36px !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 13px !important;
+  border-radius: 4px !important;
+  transition: background 0.15s !important;
+}
+
+.xgplayer .xg-options-list .option-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
 }
 
 @keyframes sparkle-fall {

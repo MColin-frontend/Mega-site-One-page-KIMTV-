@@ -3,10 +3,12 @@
     "home": "Home",
     "schedule": "Schedule",
     "liveScore": "Live Score",
+    "liveSchedule": "Live Schedule",
     "results": "Results",
     "standings": "Standings",
     "news": "News",
     "video": "Video",
+    "highlight": "Highlight",
     "data": "Data"
   },
   "auth": {
