@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils"
 
 import { DEFAULT_PAGE_SIZE } from "@/constants/common.constants"
 
+import { Typography } from "@/components/ui/typography"
+
 /* ── Types ─────────────────────────────────────────────────── */
 export interface PaginationProps {
   page: number
@@ -96,12 +98,15 @@ export function Pagination({
         <div className="rounded-8 bg-foreground/5 flex items-center gap-0.5 px-1 py-1">
           {pages.map((p, i) =>
             p === "…" ? (
-              <span
+              <Typography
+                as="span"
                 key={`ellipsis-${i}`}
-                className="text-13 text-foreground/30 flex size-8 items-center justify-center select-none"
+                variant="body-sm"
+                color="foreground/30"
+                className="flex size-8 items-center justify-center select-none"
               >
                 …
-              </span>
+              </Typography>
             ) : (
               <PageBtn
                 key={p}

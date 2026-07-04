@@ -625,6 +625,10 @@
   color: #fff !important;
 }
 
+.xgplayer-controls {
+  z-index: 12 !important;
+}
+
 @keyframes sparkle-fall {
   0% {
     opacity: 1;

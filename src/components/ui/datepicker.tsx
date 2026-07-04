@@ -8,6 +8,8 @@ import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+import { Typography } from "@/components/ui/typography"
+
 /* ─── Types ──────────────────────────────────────────────────── */
 export interface DateRange {
   from: Date | null
@@ -172,9 +174,9 @@ function CalendarGrid({
         >
           <ChevronLeft className="size-4" />
         </button>
-        <span className="text-13 font-600 text-white">
+        <Typography as="span" variant="label" weight="600" className="text-white">
           {VI_MONTHS[month]} {year}
-        </span>
+        </Typography>
         <button
           type="button"
           onClick={onNext}
@@ -290,7 +292,9 @@ function PickerPopup({ children, className }: { children: ReactNode; className?:
 function PickerFooter({ label, onClear }: { label: string; onClear: () => void }) {
   return (
     <div className="flex items-center justify-between border-t border-white/8 px-4 py-2.5">
-      <span className="text-12 font-600 text-white">{label}</span>
+      <Typography as="span" variant="caption" weight="600" className="text-white">
+        {label}
+      </Typography>
       <button
         type="button"
         onClick={onClear}

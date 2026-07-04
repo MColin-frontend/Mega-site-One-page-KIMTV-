@@ -96,7 +96,13 @@ function FixtureRow({ match }: { match: MatchInterface }) {
                 className="shrink-0"
               />
             )}
-            <Typography as="span" size="14" weight="600" color="foreground" className="truncate">
+            <Typography
+              as="span"
+              variant="label"
+              weight="600"
+              color="foreground"
+              className="truncate"
+            >
               {match.homeName}
             </Typography>
           </div>
@@ -111,7 +117,13 @@ function FixtureRow({ match }: { match: MatchInterface }) {
                 className="shrink-0"
               />
             )}
-            <Typography as="span" size="14" weight="600" color="foreground" className="truncate">
+            <Typography
+              as="span"
+              variant="label"
+              weight="600"
+              color="foreground"
+              className="truncate"
+            >
               {match.awayName}
             </Typography>
           </div>
@@ -122,7 +134,7 @@ function FixtureRow({ match }: { match: MatchInterface }) {
           {match.status !== MatchStatusEnum.FINISHED && (
             <Typography
               as="span"
-              size="13"
+              variant="label"
               weight="600"
               color="foreground/80"
               className="tabular-nums"
@@ -133,7 +145,7 @@ function FixtureRow({ match }: { match: MatchInterface }) {
           {match.status === MatchStatusEnum.FINISHED ? (
             <Typography
               as="span"
-              size="12"
+              variant="caption"
               weight="600"
               className="text-gold drop-shadow-[0_0_6px_rgba(245,197,24,0.7)] [text-shadow:0_0_8px_rgba(245,197,24,0.6),0_0_20px_rgba(245,197,24,0.25)]"
             >
@@ -194,7 +206,7 @@ function FixtureRow({ match }: { match: MatchInterface }) {
           <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
             <Typography
               as="span"
-              size="14"
+              variant="label"
               weight="600"
               color="foreground"
               className="truncate text-right"
@@ -226,7 +238,13 @@ function FixtureRow({ match }: { match: MatchInterface }) {
                 className="shrink-0"
               />
             )}
-            <Typography as="span" size="14" weight="600" color="foreground" className="truncate">
+            <Typography
+              as="span"
+              variant="label"
+              weight="600"
+              color="foreground"
+              className="truncate"
+            >
               {match.awayName}
             </Typography>
           </div>
@@ -236,19 +254,34 @@ function FixtureRow({ match }: { match: MatchInterface }) {
           <div className="flex items-center justify-center gap-3">
             <div className="flex items-center gap-1">
               <Img src={icCornerKick} alt="" width={12} height={12} objectFit="contain" />
-              <Typography as="span" size="12" color="foreground/50" className="tabular-nums">
+              <Typography
+                as="span"
+                variant="caption"
+                color="foreground/50"
+                className="tabular-nums"
+              >
                 {match.homeCornerKick ?? 0}-{match.awayCornerKick ?? 0}
               </Typography>
             </div>
             <div className="flex items-center gap-1">
               <Img src={icYellowCard} alt="" width={12} height={12} objectFit="contain" />
-              <Typography as="span" size="12" color="foreground/50" className="tabular-nums">
+              <Typography
+                as="span"
+                variant="caption"
+                color="foreground/50"
+                className="tabular-nums"
+              >
                 {match.homeYellowCard ?? 0}-{match.awayYellowCard ?? 0}
               </Typography>
             </div>
             <div className="flex items-center gap-1">
               <Img src={icRedCard} alt="" width={12} height={12} objectFit="contain" />
-              <Typography as="span" size="12" color="foreground/50" className="tabular-nums">
+              <Typography
+                as="span"
+                variant="caption"
+                color="foreground/50"
+                className="tabular-nums"
+              >
                 {match.homeRedCard ?? 0}-{match.awayRedCard ?? 0}
               </Typography>
             </div>

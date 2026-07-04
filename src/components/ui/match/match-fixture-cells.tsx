@@ -26,7 +26,13 @@ export function ScoreBadge({ match }: { match: MatchInterface }) {
 
   return (
     <div className="flex h-9 w-full items-center justify-center">
-      <Typography as="span" size="14" weight="600" color="foreground" className="tabular-nums">
+      <Typography
+        as="span"
+        variant="label"
+        weight="600"
+        color="foreground"
+        className="tabular-nums"
+      >
         {match.homeScore ?? 0}&nbsp;-&nbsp;{match.awayScore ?? 0}
       </Typography>
     </div>
@@ -47,11 +53,11 @@ export function FixtureStatus({ match }: { match: MatchInterface }) {
           <span className="absolute size-2.5 rounded-full bg-red-500/30 blur-[2px]" />
           <span className="relative size-2 rounded-full bg-linear-to-br from-red-400 to-rose-600 shadow-[0_0_10px_4px_rgba(239,68,68,0.9),inset_0_1px_1px_rgba(255,255,255,0.3)]" />
         </span>
-        <span className="font-600 text-14 text-gold leading-[1.2]">
+        <Typography as="span" variant="label" weight="600" color="gold">
           {halfLabel && `${halfLabel}: `}
           {displayMinute}
           <span className="animate-blink">&apos;</span>
-        </span>
+        </Typography>
       </div>
     )
   }
