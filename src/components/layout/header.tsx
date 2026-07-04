@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, Search, UserRound, X } from "lucide-react"
+import { CircleUser, LogOut, Menu, Radio, Search, Settings2, UserRound, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
@@ -15,9 +15,177 @@ import type { NavItemInterface } from "@/models/layout.models"
 
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
+import { ConfirmModal } from "@/components/ui/modal/confirm"
 import { Typography } from "@/components/ui/typography"
 
 import kimtvLogo from "@assets/icons/layout/ic-kimtv.svg"
+
+/* ── Avatar Dropdown ─────────────────────────────────────── */
+const DROPDOWN_ITEMS = [
+  {
+    key: "broadcast",
+    label: "Phát trực tiếp",
+    icon: Radio,
+    iconColor: "text-amber-400",
+    href: "#",
+  },
+  {
+    key: "profile",
+    label: "Hồ sơ cá nhân",
+    icon: CircleUser,
+    iconColor: "text-blue-400",
+    href: "#",
+  },
+  {
+    key: "settings",
+    label: "Cài đặt",
+    icon: Settings2,
+    iconColor: "text-white/50",
+    href: "#",
+  },
+] as const
+
+interface AvatarDropdownProps {
+  user: { name?: string | null; avatar?: string | null }
+  onLogout: () => void
+}
+
+function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
+  const [open, setOpen] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function openMenu() {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setOpen(true)
+  }
+
+  function closeMenu() {
+    closeTimer.current = setTimeout(() => setOpen(false), 120)
+  }
+
+  return (
+    <div className="relative" onMouseEnter={openMenu} onMouseLeave={closeMenu}>
+      {/* Avatar trigger */}
+      <button
+        className="hover:ring-gold/50 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/15 transition-all"
+        aria-label="Tài khoản"
+      >
+        {user.avatar ? (
+          <Img
+            src={user.avatar}
+            alt={user.name ?? "Avatar"}
+            width={36}
+            height={36}
+            objectFit="cover"
+            rounded="full"
+          />
+        ) : (
+          <div className="from-blue/80 to-blue flex h-full w-full items-center justify-center bg-gradient-to-br">
+            <Typography as="span" size="12" weight="700" className="text-white">
+              {String(user.name ?? "U")
+                .slice(0, 1)
+                .toUpperCase()}
+            </Typography>
+          </div>
+        )}
+      </button>
+
+      {/* Dropdown */}
+      <div
+        className={cn(
+          "absolute top-full right-0 z-50 mt-2 w-52",
+          "rounded-xl border border-white/10 bg-[#0d1829] shadow-[0_8px_32px_rgba(0,0,0,0.6)]",
+          "origin-top-right transition-all duration-150",
+          open
+            ? "pointer-events-auto scale-100 opacity-100"
+            : "pointer-events-none scale-95 opacity-0"
+        )}
+      >
+        {/* User info */}
+        <div className="flex items-center gap-2.5 border-b border-white/8 px-3.5 py-3">
+          <div className="from-blue/80 to-blue flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br">
+            {user.avatar ? (
+              <Img
+                src={user.avatar}
+                alt={user.name ?? "Avatar"}
+                width={32}
+                height={32}
+                objectFit="cover"
+                rounded="full"
+              />
+            ) : (
+              <Typography as="span" size="11" weight="700" className="text-white">
+                {String(user.name ?? "U")
+                  .slice(0, 1)
+                  .toUpperCase()}
+              </Typography>
+            )}
+          </div>
+          <div className="min-w-0">
+            <Typography size="13" weight="600" className="truncate text-white">
+              {user.name ?? "Người dùng"}
+            </Typography>
+            <Typography size="11" className="text-white/40">
+              Tài khoản của tôi
+            </Typography>
+          </div>
+        </div>
+
+        {/* Menu items */}
+        <div className="py-1">
+          {DROPDOWN_ITEMS.map((item) => (
+            <Link
+              key={item.key}
+              href={item.href}
+              className="group flex items-center gap-2.5 px-3.5 py-2.5 transition-colors hover:bg-white/5"
+            >
+              <item.icon className={cn("size-4 shrink-0 transition-colors", item.iconColor)} />
+              <Typography
+                size="13"
+                className="whitespace-nowrap text-white/75 transition-colors group-hover:text-white"
+              >
+                {item.label}
+              </Typography>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mx-3.5 border-t border-white/8" />
+
+        {/* Logout */}
+        <div className="py-1">
+          <button
+            onClick={() => {
+              setOpen(false)
+              setConfirmOpen(true)
+            }}
+            className="group flex w-full items-center gap-2.5 px-3.5 py-2.5 transition-colors hover:bg-red-500/8"
+          >
+            <LogOut className="size-4 shrink-0 text-red-400" />
+            <Typography
+              size="13"
+              className="whitespace-nowrap text-red-400/80 transition-colors group-hover:text-red-400"
+            >
+              Đăng xuất
+            </Typography>
+          </button>
+        </div>
+      </div>
+
+      <ConfirmModal
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Đăng xuất"
+        content="Bạn có chắc chắn muốn đăng xuất không?"
+        confirmLabel="Xác nhận"
+        cancelLabel="Hủy"
+        type="destructive"
+        onConfirm={onLogout}
+      />
+    </div>
+  )
+}
 
 /* ── Search ──────────────────────────────────────────────── */
 function SearchInput() {
@@ -142,29 +310,7 @@ export function Header() {
             <SearchInput />
 
             {isLoggedIn && user ? (
-              <button
-                onClick={logout}
-                className="hover:ring-gold/50 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/15 transition-all"
-              >
-                {user.avatar ? (
-                  <Img
-                    src={user.avatar as string}
-                    alt={user.name as string}
-                    width={36}
-                    height={36}
-                    objectFit="cover"
-                    rounded="full"
-                  />
-                ) : (
-                  <div className="from-blue/80 to-blue flex h-full w-full items-center justify-center bg-gradient-to-br">
-                    <Typography as="span" size="12" weight="700" className="text-white">
-                      {String(user.name ?? "U")
-                        .slice(0, 1)
-                        .toUpperCase()}
-                    </Typography>
-                  </div>
-                )}
-              </button>
+              <AvatarDropdown user={user ?? {}} onLogout={logout} />
             ) : (
               <Button variant="gradient" size="sm" onClick={login} className="max-lg:hidden">
                 <UserRound className="h-3.5 w-3.5" />
