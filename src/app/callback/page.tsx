@@ -7,12 +7,14 @@ import { exchangeIdTokenAction } from "@/server/actions/auth.action"
 import { saveAuthCookies } from "@/lib/auth-cookie"
 import { signinRedirectCallback } from "@/lib/oidc"
 
-import { useTranslation } from "@/i18n"
+import { DEFAULT_LOCALE, useTranslation } from "@/i18n"
+
+const RETURN_TO_KEY = "auth_return_to"
 
 export default function CallbackPage() {
   const router = useRouter()
   const { t } = useTranslation()
-  const [failed, setFailed] = useState(false)
+  const [status, setStatus] = useState<"processing" | "error" | "exchange_error">("processing")
   const hasRun = useRef(false)
 
   useEffect(() => {
@@ -20,6 +22,10 @@ export default function CallbackPage() {
     hasRun.current = true
 
     async function handle() {
+      // Đọc returnTo trước khi bất kỳ redirect nào
+      const returnTo = sessionStorage.getItem(RETURN_TO_KEY) || `/${DEFAULT_LOCALE}`
+      sessionStorage.removeItem(RETURN_TO_KEY)
+
       try {
         const user = await signinRedirectCallback()
         const idToken = user?.id_token
@@ -31,17 +37,26 @@ export default function CallbackPage() {
         if (res.status === "success") {
           saveAuthCookies(res.result.token, res.result.user)
           if (res.result.newUser) sessionStorage.setItem("kim99_new_user", "1")
+          router.replace(returnTo)
+        } else {
+          // Backend trả lỗi (token hết hạn, không hợp lệ, v.v.)
+          console.error("[callback] exchange failed:", res.errorCode, res.errorMsg)
+          setStatus("exchange_error")
+          setTimeout(() => router.replace(returnTo), 2500)
         }
-
-        router.replace("/")
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
-        if (msg.includes("No matching state found in storage")) {
-          router.replace("/")
+        // State không còn trong storage (refresh giữa chừng, replay…) → về nhà
+        if (
+          msg.includes("No matching state found in storage") ||
+          msg.includes("No state in response")
+        ) {
+          router.replace(returnTo)
           return
         }
-        setFailed(true)
-        setTimeout(() => router.replace("/"), 2000)
+        console.error("[callback] OIDC error:", msg)
+        setStatus("error")
+        setTimeout(() => router.replace(returnTo), 2500)
       }
     }
 
@@ -49,10 +64,16 @@ export default function CallbackPage() {
   }, [router])
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center text-white">
-      <p className="text-14 text-white/60">
-        {failed ? t("header.auth.callback.error") : t("header.auth.callback.processing")}
-      </p>
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-2 text-white">
+      {status === "processing" && (
+        <>
+          <div className="border-blue h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+          <p className="text-14 text-white/60">{t("header.auth.callback.processing")}</p>
+        </>
+      )}
+      {(status === "error" || status === "exchange_error") && (
+        <p className="text-14 text-red-400">{t("header.auth.callback.error")}</p>
+      )}
     </div>
   )
 }

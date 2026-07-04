@@ -10,6 +10,8 @@ import {
 } from "@/lib/auth-cookie"
 import { loginWith99kim, logoutFrom99kim } from "@/lib/oidc"
 
+const RETURN_TO_KEY = "auth_return_to"
+
 interface AuthState {
   user: KimtvUser | null
   isLoggedIn: boolean
@@ -26,7 +28,13 @@ export function useAuth(): AuthState & { login: () => void; logout: () => void }
     setState({ user, isLoggedIn: !!token, isLoading: false })
   }, [])
 
-  const login = () => loginWith99kim().catch(console.error)
+  const login = () => {
+    // Lưu URL hiện tại để redirect về sau khi login xong
+    try {
+      sessionStorage.setItem(RETURN_TO_KEY, window.location.pathname + window.location.search)
+    } catch {}
+    loginWith99kim().catch(console.error)
+  }
 
   const logout = () => {
     clearAuthCookies()
