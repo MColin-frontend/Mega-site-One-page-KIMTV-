@@ -1,6 +1,6 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from "axios"
 
-import { env } from "@/config/env"
+import { assertServerEnv, env } from "@/config/env"
 import type {
   ApiEnvelopeInterface,
   NormalizedErrorInterface,
@@ -74,6 +74,9 @@ async function request<T>(
   const { successMessage, errorMessage, showSuccess = false, showError = true } = options
 
   try {
+    // Đảm bảo env bắt buộc đã được nạp (báo lỗi rõ nếu quên set trên server).
+    assertServerEnv()
+
     const res = await httpClient.request<ApiEnvelopeInterface<T>>(config)
     const envelope = res.data
 
