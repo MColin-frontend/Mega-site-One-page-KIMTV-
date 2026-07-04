@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { isEmpty } from "lodash"
 
 import { formatFootballGameTime } from "@/lib/date"
@@ -16,6 +16,7 @@ import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
 import imgVs from "@assets/images/common/img-vs.png"
 
 import { AvatarWithTooltip } from "../avatar"
+import { GlowCard } from "../glow-card"
 import { Img } from "../image"
 import { Skeleton } from "../skeleton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
@@ -139,46 +140,9 @@ function formatMatchTime(ts: number) {
   return new Date(ts * 1000).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
 }
 
-const SPARKLE_COLORS = ["#f5c518", "#ffffff", "#ffd700", "#fffacd", "#e0b0ff"]
-
 export function MatchCard({ match, isLoading, matchType = "live", className }: MatchCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null)
-  const sparkleContainerRef = useRef<HTMLDivElement>(null)
-  const lastSparkleTime = useRef(0)
   const { t } = useTranslation()
   const countdown = useCountdown(match?.startTime)
-
-  const spawnSparkles = (x: number, y: number) => {
-    const container = sparkleContainerRef.current
-    if (!container) return
-    for (let i = 0; i < 2; i++) {
-      const el = document.createElement("span")
-      const size = Math.random() * 4 + 2
-      const angle = Math.random() * 360
-      const dist = Math.random() * 28 + 8
-      const color = SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)]
-      el.style.cssText = `
-        position:absolute;left:${x}px;top:${y}px;
-        width:${size}px;height:${size}px;background:${color};border-radius:50%;
-        pointer-events:none;z-index:20;
-        --dx:${Math.cos((angle * Math.PI) / 180) * dist}px;
-        --dy:${Math.sin((angle * Math.PI) / 180) * dist + 12}px;
-        opacity:0.45;animation:sparkle-fall 0.65s ease-out forwards;
-        box-shadow:0 0 ${size + 2}px ${color};
-      `
-      container.appendChild(el)
-      setTimeout(() => el.remove(), 650)
-    }
-  }
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = cardRef.current?.getBoundingClientRect()
-    if (!rect) return
-    const now = Date.now()
-    if (now - lastSparkleTime.current < 40) return
-    lastSparkleTime.current = now
-    spawnSparkles(e.clientX - rect.left, e.clientY - rect.top)
-  }
 
   if (isLoading || !match) return <MatchCardSkeleton className={className} matchType={matchType} />
 
@@ -200,11 +164,9 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
   ]
 
   return (
-    <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
+    <GlowCard
       className={cn(
-        "card-glow rounded-12 relative h-[280px] w-full cursor-pointer overflow-hidden transition-all",
+        "card-glow rounded-12 h-[280px] w-full cursor-pointer transition-all",
         className
       )}
       style={{
@@ -251,11 +213,6 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
         style={{
           background: "linear-gradient(180deg, rgba(12,21,38,0.1) 0%, rgba(12,21,38,0.65) 100%)",
         }}
-      />
-
-      <div
-        ref={sparkleContainerRef}
-        className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
       />
 
       <div className="relative z-10 flex h-full flex-col justify-between p-4">
@@ -305,13 +262,13 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
               <Img src={imgVs} alt="VS" width={60} height={60} objectFit="contain" />
             ) : (
               <div className="flex items-center gap-1">
-                <Typography variant="h4" className="font-700 text-white tabular-nums">
+                <Typography variant="h4" weight="700" className="text-white tabular-nums">
                   {match.homeScore ?? 0}
                 </Typography>
                 <Typography variant="h5" className="text-white/40">
                   :
                 </Typography>
-                <Typography variant="h4" className="font-700 text-white tabular-nums">
+                <Typography variant="h4" weight="700" className="text-white tabular-nums">
                   {match.awayScore ?? 0}
                 </Typography>
               </div>
@@ -382,14 +339,17 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                   <div className="flex flex-col items-center">
                     <Typography
                       variant="h5"
-                      className="font-700 leading-100 text-white tabular-nums"
+                      weight="700"
+                      className="leading-100 text-white tabular-nums"
                     >
                       {String(value).padStart(2, "0")}
                     </Typography>
-                    <span className="text-10 mt-0.5 text-white/35">{label}</span>
+                    <Typography as="span" size="10" className="mt-0.5 text-white/35">
+                      {label}
+                    </Typography>
                   </div>
                   {i < 2 && (
-                    <Typography variant="h5" className="font-700 leading-100 text-white/30">
+                    <Typography variant="h5" weight="700" className="leading-100 text-white/30">
                       :
                     </Typography>
                   )}
@@ -437,11 +397,10 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                   />
                 ))}
                 {anchors.length > 3 && (
-                  <div
-                    className="relative flex size-[26px] items-center justify-center rounded-full bg-white/10 ring-2 ring-[#0c1526]"
-                    style={{ marginLeft: "-6px" }}
-                  >
-                    <span className="text-10 font-600 text-white/70">+{anchors.length - 3}</span>
+                  <div className="relative -ml-1.5 flex size-[26px] items-center justify-center rounded-full bg-white/10 ring-2 ring-[#0c1526]">
+                    <Typography as="span" size="10" weight="600" className="text-white/70">
+                      +{anchors.length - 3}
+                    </Typography>
                   </div>
                 )}
               </div>
@@ -449,6 +408,6 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
           </div>
         )}
       </div>
-    </div>
+    </GlowCard>
   )
 }

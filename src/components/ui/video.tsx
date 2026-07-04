@@ -1,11 +1,19 @@
 "use client"
 
 import { useEffect, useId, useRef } from "react"
+import dynamic from "next/dynamic"
 import type { SimplePlayer } from "xgplayer"
 
 import { cn } from "@/lib/utils"
+import { useAdPlacements } from "@/hooks/use-ad-placements"
 
 import "xgplayer/dist/index.min.css"
+
+import icLiveSmall from "@/assets/images/common/ic-live-small.gif"
+
+const AdBanner = dynamic(() => import("@/components/ui/ad-banner").then((m) => m.AdBanner), {
+  ssr: false,
+})
 
 export interface VideoSource {
   url: string
@@ -62,6 +70,9 @@ export function VideoPlayer({
   const generatedId = useId()
   const mountId = id ?? `xgp-${generatedId.replace(/[^a-z0-9]/gi, "")}`
   const playerRef = useRef<SimplePlayer | null>(null)
+
+  const { data: ads } = useAdPlacements()
+  const playerOverlay = ads?.playerOverlay || []
 
   useEffect(() => {
     let destroyed = false
@@ -172,6 +183,23 @@ export function VideoPlayer({
   return (
     <div className={cn("relative h-full w-full rounded-lg bg-black", className)}>
       <div id={mountId} className="h-full w-full overflow-hidden rounded-[inherit]" />
+
+      {/* Vị trí 0: full overlay phủ toàn video */}
+      <AdBanner
+        src={playerOverlay?.[0]?.mediaPc || null}
+        href={playerOverlay?.[0]?.jumpUrl || null}
+        fallback="/videos/video-banner.mp4"
+        className="absolute bottom-0 left-0 z-10 w-full"
+        skeletonClassName="aspect-[1200/58]"
+      />
+      {/* Vị trí 1: banner góc trái trên */}
+      <AdBanner
+        src={playerOverlay?.[1]?.mediaPc || null}
+        href={playerOverlay?.[1]?.jumpUrl || null}
+        fallback={icLiveSmall}
+        className="absolute top-1 left-1 z-10 w-32"
+        skeletonClassName="aspect-[128/54]"
+      />
     </div>
   )
 }

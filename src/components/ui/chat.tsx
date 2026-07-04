@@ -246,9 +246,9 @@ function MessageItem({
             rounded="full"
           />
         ) : (
-          <span className="text-10 font-600 text-white/60">
+          <Typography as="span" size="10" weight="600" className="text-white/60">
             {message.userName?.slice(0, 1).toUpperCase()}
-          </span>
+          </Typography>
         )}
       </div>
 
@@ -275,8 +275,10 @@ function MessageItem({
           )}
         </div>
         {/* Bottom: message */}
-        <span
-          className={cn("text-13 break-words text-white/85", `[&_a]:${CHAT_CLASSES.link}`)}
+        <Typography
+          as="span"
+          variant="body-sm"
+          className={cn("break-words text-white/85", `[&_a]:${CHAT_CLASSES.link}`)}
           dangerouslySetInnerHTML={{ __html: message.content }}
         />
       </div>
@@ -967,9 +969,13 @@ export function Chat({
             onClick={onLogin}
             className="group flex flex-1 items-center gap-3 rounded-full bg-white/6 px-4 py-2 transition-all duration-200 hover:bg-white/10"
           >
-            <span className="text-13 flex-1 text-left text-white/40 group-hover:text-white/60">
+            <Typography
+              as="span"
+              variant="body-sm"
+              className="flex-1 text-left text-white/40 group-hover:text-white/60"
+            >
               {t("chat.loginToChat")}
-            </span>
+            </Typography>
             <div className="flex size-6 items-center justify-center rounded-full bg-white/15 text-white/60 transition-all duration-200 group-hover:bg-white/25 group-hover:text-white">
               <Send className="size-3" />
             </div>

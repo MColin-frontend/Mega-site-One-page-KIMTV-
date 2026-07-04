@@ -141,12 +141,12 @@ export function LeagueSelect({
               {/* Header */}
               <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <Typography as="span" variant="label" className="font-600 text-white">
+                  <Typography as="span" variant="label" weight="600" className="text-white">
                     {t("home.league-select.title")}
                   </Typography>
                   {hasSelection && (
                     <span className="rounded-4 bg-gold/20 ring-gold/30 inline-flex items-center px-2 py-0.5 ring-1">
-                      <Typography as="span" variant="caption" className="font-700 text-gold">
+                      <Typography as="span" variant="caption" weight="700" className="text-gold">
                         {value.length} {t("home.league-select.selected")}
                       </Typography>
                     </span>
@@ -165,7 +165,7 @@ export function LeagueSelect({
                   ) : (
                     <span className="bg-gold size-1.5 rounded-full" />
                   )}
-                  <Typography as="span" variant="caption" className="font-500 text-inherit">
+                  <Typography as="span" variant="caption" weight="500" className="text-inherit">
                     {t("home.league-select.all")}
                   </Typography>
                 </button>

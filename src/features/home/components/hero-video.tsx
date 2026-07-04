@@ -151,8 +151,6 @@ export function HeroVideo({
 
   if (!activeMatch) return null
 
-  console.log("activeMatch", activeMatch)
-
   return (
     <div
       className={cn(
@@ -234,7 +232,7 @@ export function HeroVideo({
           <div className="flex items-center justify-between gap-2 lg:gap-8">
             {/* Home */}
             <div className="flex min-w-0 flex-1 flex-col-reverse items-center gap-2 lg:flex-row lg:justify-end lg:gap-2.5">
-              <Typography as="span" size="16" weight="600" className="truncate text-white">
+              <Typography as="span" variant="body" weight="600" className="truncate text-white">
                 {activeMatch.homeTeam.name}
               </Typography>
               {activeMatch.homeTeam.logo && (
@@ -252,28 +250,13 @@ export function HeroVideo({
 
             {/* Score */}
             <div className="flex shrink-0 items-center gap-1">
-              <Typography
-                as="h4"
-                variant="h4"
-                weight="700"
-                className="text-[18px] text-white tabular-nums lg:text-[24px]"
-              >
+              <Typography variant="h4" weight="700" className="text-white tabular-nums">
                 {activeMatch.homeScore ?? 0}
               </Typography>
-              <Typography
-                as="h5"
-                variant="h5"
-                weight="500"
-                className="text-[14px] text-white/40 lg:text-[20px]"
-              >
+              <Typography variant="h5" className="text-white/40">
                 :
               </Typography>
-              <Typography
-                as="h4"
-                variant="h4"
-                weight="700"
-                className="text-[18px] text-white tabular-nums lg:text-[24px]"
-              >
+              <Typography variant="h4" weight="700" className="text-white tabular-nums">
                 {activeMatch.awayScore ?? 0}
               </Typography>
             </div>
@@ -321,20 +304,20 @@ export function HeroVideo({
                 <Img src={icCornerKick} alt="corner" width={14} height={14} objectFit="contain" />
                 <Typography
                   as="span"
-                  variant="body"
+                  variant="caption"
                   weight="500"
-                  className="text-12 lg:text-16 text-white/80 tabular-nums"
+                  className="text-white/80 tabular-nums"
                 >
                   {activeMatch.homeCornerKick ?? 0}
                 </Typography>
-                <Typography as="span" variant="body" className="text-white/50">
+                <Typography as="span" variant="caption" className="text-white/50">
                   -
                 </Typography>
                 <Typography
                   as="span"
-                  variant="body"
+                  variant="caption"
                   weight="500"
-                  className="text-12 lg:text-16 text-white/80 tabular-nums"
+                  className="text-white/80 tabular-nums"
                 >
                   {activeMatch.awayCornerKick ?? 0}
                 </Typography>
@@ -343,20 +326,20 @@ export function HeroVideo({
                 <Img src={icYellowCard} alt="yellow" width={14} height={14} objectFit="contain" />
                 <Typography
                   as="span"
-                  variant="body"
+                  variant="caption"
                   weight="500"
-                  className="text-12 lg:text-16 text-white/80 tabular-nums"
+                  className="text-white/80 tabular-nums"
                 >
                   {activeMatch.homeYellowCard ?? 0}
                 </Typography>
-                <Typography as="span" variant="body" className="text-white/50">
+                <Typography as="span" variant="caption" className="text-white/50">
                   -
                 </Typography>
                 <Typography
                   as="span"
-                  variant="body"
+                  variant="caption"
                   weight="500"
-                  className="text-12 lg:text-16 text-white/80 tabular-nums"
+                  className="text-white/80 tabular-nums"
                 >
                   {activeMatch.awayYellowCard ?? 0}
                 </Typography>
@@ -365,20 +348,20 @@ export function HeroVideo({
                 <Img src={icRedCard} alt="red" width={14} height={14} objectFit="contain" />
                 <Typography
                   as="span"
-                  variant="body"
+                  variant="caption"
                   weight="500"
-                  className="text-12 lg:text-16 text-white/80 tabular-nums"
+                  className="text-white/80 tabular-nums"
                 >
                   {activeMatch.homeRedCard ?? 0}
                 </Typography>
-                <Typography as="span" variant="body" className="text-white/50">
+                <Typography as="span" variant="caption" className="text-white/50">
                   -
                 </Typography>
                 <Typography
                   as="span"
-                  variant="body"
+                  variant="caption"
                   weight="500"
-                  className="text-12 lg:text-16 text-white/80 tabular-nums"
+                  className="text-white/80 tabular-nums"
                 >
                   {activeMatch.awayRedCard ?? 0}
                 </Typography>
@@ -398,12 +381,14 @@ export function HeroVideo({
                   />
                 ))}
                 {activeMatch.anchors.length > 3 && (
-                  <div
-                    className="text-10 font-600 relative flex size-[26px] items-center justify-center rounded-full bg-white/10 text-white/70 ring-2 ring-[#0c1526]"
-                    style={{ marginLeft: "-6px" }}
+                  <Typography
+                    as="div"
+                    size="10"
+                    weight="600"
+                    className="relative -ml-1.5 flex size-[26px] items-center justify-center rounded-full bg-white/10 text-white/70 ring-2 ring-[#0c1526]"
                   >
                     +{activeMatch.anchors.length - 3}
-                  </div>
+                  </Typography>
                 )}
               </div>
             )}
