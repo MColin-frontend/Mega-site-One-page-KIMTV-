@@ -3,10 +3,12 @@
     "home": "Trang chủ",
     "schedule": "Lịch thi đấu",
     "liveScore": "Tỉ số trực tuyến",
+    "liveSchedule": "Lịch live",
     "results": "Kết quả",
     "standings": "BXH",
     "news": "Tin tức",
     "video": "Video",
+    "highlight": "Highlight",
     "data": "Dữ liệu"
   },
   "auth": {

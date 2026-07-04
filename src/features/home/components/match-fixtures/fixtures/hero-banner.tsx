@@ -1,7 +1,5 @@
 "use client"
 
-import { formatDisplayDate, formatFullDate } from "@/lib/date"
-
 import { useTranslation } from "@/i18n/use-translation"
 import {
   MATCH_STATUS_TAB,
@@ -16,9 +14,6 @@ import {
   type LeagueItem,
 } from "@/components/ui/select/league-select"
 import { Select } from "@/components/ui/select/select"
-import { Typography } from "@/components/ui/typography"
-
-import imgBg from "@assets/images/home/img-match-fixtures.jpg"
 
 interface HeroFixturesProps {
   groups: LeagueGroup[]
@@ -62,45 +57,28 @@ function HeroFixtures({
   }))
 
   return (
-    <section className="sticky top-[60px] z-40">
-      <div
-        className="rounded-12 relative flex h-[120px] w-full items-center justify-between overflow-hidden p-5"
-        style={{
-          background: `linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),url(${imgBg.src}) center/cover`,
-        }}
-      >
-        <div className="flex flex-col gap-0.5">
-          <Typography variant="h2" className="text-white">
-            {formatDisplayDate(pickedDate)}
-          </Typography>
-          <Typography variant="caption" className="text-white">
-            {formatFullDate(pickedDate)}
-          </Typography>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select
-            options={statusOptions}
-            value={statusFilter}
-            onValueChange={(val) => onStatusChange(val ?? MATCH_STATUS_TAB.ALL)}
-            variant="dark"
-            size="sm"
-            isActive={statusFilter !== MATCH_STATUS_TAB.ALL}
-          />
-          <LeagueSelect
-            groups={groups}
-            favorites={hotLeagues}
-            value={selectedLeagues}
-            onValueChange={onLeagueChange}
-          />
-          <DatePicker
-            value={pickedDate}
-            onChange={onPickedDateChange}
-            size="sm"
-            disabled={statusFilter === MATCH_STATUS_TAB.LIVE}
-            maxDate={statusFilter === MATCH_STATUS_TAB.FINISHED ? new Date() : null}
-          />
-        </div>
-      </div>
+    <section className="flex items-center justify-end gap-2 max-lg:w-full max-lg:flex-wrap [&_button]:max-lg:w-full [&>*]:max-lg:w-full [&>*]:max-lg:flex-1">
+      <Select
+        options={statusOptions}
+        value={statusFilter}
+        onValueChange={(val) => onStatusChange(val ?? MATCH_STATUS_TAB.ALL)}
+        variant="glass"
+        size="sm"
+        isActive={statusFilter !== MATCH_STATUS_TAB.ALL}
+      />
+      <LeagueSelect
+        groups={groups}
+        favorites={hotLeagues}
+        value={selectedLeagues}
+        onValueChange={onLeagueChange}
+      />
+      <DatePicker
+        value={pickedDate}
+        onChange={onPickedDateChange}
+        size="sm"
+        disabled={statusFilter === MATCH_STATUS_TAB.LIVE}
+        maxDate={statusFilter === MATCH_STATUS_TAB.FINISHED ? new Date() : null}
+      />
     </section>
   )
 }

@@ -2,5 +2,12 @@
   "yesterday": "Yesterday",
   "today": "Today",
   "tomorrow": "Tomorrow",
-  "empty": "No data available"
+  "empty": "No data available",
+  "match-card": {
+    "hours": "Hours",
+    "minutes": "Mins",
+    "seconds": "Secs",
+    "finished": "Finished",
+    "watch-preview": "Preview"
+  }
 }

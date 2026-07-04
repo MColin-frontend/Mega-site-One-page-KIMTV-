@@ -1,23 +1,41 @@
-import { Img } from "@/components/ui/image"
+import { Suspense } from "react"
 
-import bgBanner1 from "@assets/images/components/img-bg-banner-1.png"
-import bgBanner from "@assets/images/components/img-bg-banner.png"
+import { fetchLiveMatchesAction } from "@/features/home/home.api"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 import { HeroBanner } from "./hero-banner"
+import { HeroVideo } from "./hero-video"
 import MatchFixtures from "./match-fixtures/index"
 import { MatchSchedule } from "./match-schedule"
 
-export function HomePage() {
-  return (
-    <div className="relative">
-      <Img src={bgBanner} alt="" fill priority wrapperClassName="absolute inset-0 -z-20" />
-      <Img src={bgBanner1} alt="" fill wrapperClassName="absolute inset-0 -z-10" />
+export async function HomePage() {
+  const liveMatches = await fetchLiveMatchesAction()
 
-      <div className="relative container">
+  return (
+    <div className="relative container flex flex-col gap-10 py-10 max-lg:gap-6 max-lg:py-6 max-md:gap-4 max-md:py-4">
+      {liveMatches.length > 0 && (
+        <ScrollReveal variant="scale" duration={700} threshold={0.04}>
+          <Suspense>
+            <HeroVideo matches={liveMatches} />
+          </Suspense>
+        </ScrollReveal>
+      )}
+
+      <ScrollReveal variant="fade-up" duration={600} distance={32} threshold={0.06}>
+        <Suspense>
+          <MatchSchedule />
+        </Suspense>
+      </ScrollReveal>
+
+      <ScrollReveal variant="blur" duration={700} distance={16} threshold={0.1}>
         <HeroBanner />
-        <MatchSchedule />
-        <MatchFixtures />
-      </div>
+      </ScrollReveal>
+
+      <ScrollReveal variant="fade-up" duration={600} distance={28} threshold={0.04}>
+        <Suspense>
+          <MatchFixtures />
+        </Suspense>
+      </ScrollReveal>
     </div>
   )
 }

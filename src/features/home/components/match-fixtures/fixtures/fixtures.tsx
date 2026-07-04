@@ -1,9 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { isEmpty } from "lodash"
-import { ChevronUp } from "lucide-react"
 
 import { fetchAllAction, fetchPageAction } from "@/server/actions/slide.action"
 import { formatKickOff, parseDateParam } from "@/lib/date"
@@ -22,15 +20,10 @@ import { MatchStatusEnum } from "@/enums/match.enum"
 import type { MatchInterface } from "@/models/match.models"
 
 import { getApiConfig } from "@/features/home/home.api"
-import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion"
 import { Img } from "@/components/ui/image"
-import {
-  FixtureStatus,
-  HTCell,
-  ScoreBadge,
-  StatCell,
-} from "@/components/ui/match/match-fixture-cells"
+import { FixtureStatus, ScoreBadge, StatCell } from "@/components/ui/match/match-fixture-cells"
 import { Pagination } from "@/components/ui/pagination"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
 import icCornerKick from "@assets/icons/match/ic-goc.svg"
@@ -44,29 +37,23 @@ interface MatchGroup {
   key: string
   leagueName: string | null
   leagueLogo: string | null
-  stageName: string | null
   matches: MatchInterface[]
 }
 
-/* ── Helpers ────────────────────────────────────────────────── */
 function groupMatches(matches: MatchInterface[]): MatchGroup[] {
   if (!Array.isArray(matches)) return []
   const map = new Map<string, MatchGroup>()
   for (const match of matches) {
     const key = match.seriesId && match.seriesId > 0 ? `s:${match.seriesId}` : `l:${match.leagueId}`
     if (!map.has(key)) {
-      map.set(key, {
-        key,
-        leagueName: match.leagueName,
-        leagueLogo: match.leagueLogo,
-        stageName: null,
-        matches: [],
-      })
+      map.set(key, { key, leagueName: match.leagueName, leagueLogo: match.leagueLogo, matches: [] })
     }
     map.get(key)!.matches.push(match)
   }
   return Array.from(map.values())
 }
+
+type TFn = (key: TranslationKey) => string
 
 /* ── Single match row ───────────────────────────────────────── */
 function FixtureRow({ match }: { match: MatchInterface }) {
@@ -74,193 +61,260 @@ function FixtureRow({ match }: { match: MatchInterface }) {
     match.status === MatchStatusEnum.LIVE || match.status === MatchStatusEnum.FINISHED
 
   return (
-    <div
-      className={cn(
-        ROW_CLASS,
-        "border-foreground/6 border-b py-2! last:border-0",
-        "odd:bg-foreground/[0.018] hover:bg-blue/[0.05] cursor-pointer transition-colors"
-      )}
-    >
-      {/* Time */}
-      <Typography as="span" size="14" color="foreground/50" className="tabular-nums">
-        {match.startTime ? formatKickOff(match.startTime) : "—"}
-      </Typography>
-
-      {/* Status */}
-      <FixtureStatus match={match} />
-
-      {/* Home team */}
-      <div className="flex min-w-0 items-center justify-end gap-2.5">
-        <Typography as="span" size="16" weight="600" color="foreground" className="truncate">
-          {match.homeName}
-        </Typography>
-        {match.homeLogo && (
-          <Img
-            src={match.homeLogo}
-            alt=""
-            width={26}
-            height={26}
-            objectFit="contain"
-            className="shrink-0"
-          />
+    <>
+      <div
+        className={cn(
+          ROW_CLASS,
+          "rounded-10 fixture-row-bg mb-1.5 border border-white/8 py-3 last:mb-0",
+          "cursor-pointer transition-colors hover:bg-white/[0.06]",
+          "max-sm:hidden"
         )}
+      >
+        {/* Col 1: League */}
+        <Tooltip>
+          <TooltipTrigger className="flex min-w-0 items-center gap-2 text-left">
+            {match.leagueLogo && (
+              <Img src={match.leagueLogo} alt="" width={36} height={36} objectFit="contain" />
+            )}
+            <Typography variant="body-sm" color="foreground/55" className="line-clamp-2">
+              {match.leagueName}
+            </Typography>
+          </TooltipTrigger>
+          <TooltipContent>{match.leagueName}</TooltipContent>
+        </Tooltip>
+
+        {/* Col 2: Teams stacked */}
+        <div className="flex min-w-0 flex-col gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            {match.homeLogo && (
+              <Img
+                src={match.homeLogo}
+                alt=""
+                width={30}
+                height={30}
+                objectFit="contain"
+                className="shrink-0"
+              />
+            )}
+            <Typography as="span" size="14" weight="600" color="foreground" className="truncate">
+              {match.homeName}
+            </Typography>
+          </div>
+          <div className="flex min-w-0 items-center gap-2">
+            {match.awayLogo && (
+              <Img
+                src={match.awayLogo}
+                alt=""
+                width={30}
+                height={30}
+                objectFit="contain"
+                className="shrink-0"
+              />
+            )}
+            <Typography as="span" size="14" weight="600" color="foreground" className="truncate">
+              {match.awayName}
+            </Typography>
+          </div>
+        </div>
+
+        {/* Col 3: Time + Status stacked */}
+        <div className="flex flex-col items-center gap-1">
+          {match.status !== MatchStatusEnum.FINISHED && (
+            <Typography
+              as="span"
+              size="13"
+              weight="600"
+              color="foreground/80"
+              className="tabular-nums"
+            >
+              {match.startTime ? formatKickOff(match.startTime) : "—"}
+            </Typography>
+          )}
+          {match.status === MatchStatusEnum.FINISHED ? (
+            <Typography
+              as="span"
+              size="12"
+              weight="600"
+              className="text-gold drop-shadow-[0_0_6px_rgba(245,197,24,0.7)] [text-shadow:0_0_8px_rgba(245,197,24,0.6),0_0_20px_rgba(245,197,24,0.25)]"
+            >
+              FT
+            </Typography>
+          ) : (
+            <FixtureStatus match={match} />
+          )}
+        </div>
+
+        {/* Col 4: Score */}
+        <ScoreBadge match={match} />
+
+        {/* Col 5-7: Stats */}
+        <StatCell
+          home={isStarted ? match.homeCornerKick : null}
+          away={isStarted ? match.awayCornerKick : null}
+        />
+        <StatCell
+          home={isStarted ? match.homeYellowCard : null}
+          away={isStarted ? match.awayYellowCard : null}
+        />
+        <StatCell
+          home={isStarted ? match.homeRedCard : null}
+          away={isStarted ? match.awayRedCard : null}
+        />
       </div>
 
-      {/* Score / VS badge */}
-      <ScoreBadge match={match} />
-
-      {/* Away team */}
-      <div className="flex min-w-0 items-center gap-2.5">
-        {match.awayLogo && (
-          <Img
-            src={match.awayLogo}
-            alt=""
-            width={26}
-            height={26}
-            objectFit="contain"
-            className="shrink-0"
-          />
+      {/* Mobile */}
+      <div
+        className={cn(
+          "rounded-10 fixture-row-bg mb-1.5 border border-white/8 px-3 py-2.5",
+          "cursor-pointer transition-colors hover:bg-white/[0.06]",
+          "flex flex-col gap-1.5 sm:hidden"
         )}
-        <Typography as="span" size="16" weight="600" color="foreground" className="truncate">
-          {match.awayName}
-        </Typography>
+      >
+        <div className="flex items-center gap-2">
+          {match.leagueLogo && (
+            <Img
+              src={match.leagueLogo}
+              alt=""
+              width={14}
+              height={14}
+              objectFit="contain"
+              className="shrink-0"
+            />
+          )}
+          <Typography variant="caption" color="foreground/45" className="flex-1 truncate">
+            {match.leagueName}
+          </Typography>
+          <Typography variant="caption" color="foreground/50" className="tabular-nums">
+            {match.startTime ? formatKickOff(match.startTime) : "—"}
+          </Typography>
+          <FixtureStatus match={match} />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
+            <Typography
+              as="span"
+              size="14"
+              weight="600"
+              color="foreground"
+              className="truncate text-right"
+            >
+              {match.homeName}
+            </Typography>
+            {match.homeLogo && (
+              <Img
+                src={match.homeLogo}
+                alt=""
+                width={20}
+                height={20}
+                objectFit="contain"
+                className="shrink-0"
+              />
+            )}
+          </div>
+          <div className="w-20 shrink-0">
+            <ScoreBadge match={match} />
+          </div>
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
+            {match.awayLogo && (
+              <Img
+                src={match.awayLogo}
+                alt=""
+                width={20}
+                height={20}
+                objectFit="contain"
+                className="shrink-0"
+              />
+            )}
+            <Typography as="span" size="14" weight="600" color="foreground" className="truncate">
+              {match.awayName}
+            </Typography>
+          </div>
+        </div>
+
+        {isStarted && (
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center gap-1">
+              <Img src={icCornerKick} alt="" width={12} height={12} objectFit="contain" />
+              <Typography as="span" size="12" color="foreground/50" className="tabular-nums">
+                {match.homeCornerKick ?? 0}-{match.awayCornerKick ?? 0}
+              </Typography>
+            </div>
+            <div className="flex items-center gap-1">
+              <Img src={icYellowCard} alt="" width={12} height={12} objectFit="contain" />
+              <Typography as="span" size="12" color="foreground/50" className="tabular-nums">
+                {match.homeYellowCard ?? 0}-{match.awayYellowCard ?? 0}
+              </Typography>
+            </div>
+            <div className="flex items-center gap-1">
+              <Img src={icRedCard} alt="" width={12} height={12} objectFit="contain" />
+              <Typography as="span" size="12" color="foreground/50" className="tabular-nums">
+                {match.homeRedCard ?? 0}-{match.awayRedCard ?? 0}
+              </Typography>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Corner kicks */}
-      <StatCell
-        home={isStarted ? match.homeCornerKick : null}
-        away={isStarted ? match.awayCornerKick : null}
-      />
-
-      {/* Yellow cards */}
-      <StatCell
-        home={isStarted ? match.homeYellowCard : null}
-        away={isStarted ? match.awayYellowCard : null}
-      />
-
-      {/* Red cards */}
-      <StatCell
-        home={isStarted ? match.homeRedCard : null}
-        away={isStarted ? match.awayRedCard : null}
-      />
-
-      {/* HT score */}
-      <HTCell match={match} />
-    </div>
+    </>
   )
 }
 
-type TFn = (key: TranslationKey) => string
-
-/* ── League group ───────────────────────────────────────────── */
-function FixtureGroup({ group, t }: { group: MatchGroup; t: TFn }) {
+/* ── Column headers ─────────────────────────────────────────── */
+function TableHeader({ t }: { t: TFn }) {
   return (
-    <Accordion
-      defaultValue={["open"]}
-      className="rounded-12 border-foreground/10 overflow-hidden border bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08),inset_4px_0_0_var(--color-blue)]"
-    >
-      <AccordionItem value="open" className="border-none">
-        {/* League header */}
-        <AccordionPrimitive.Header className="flex">
-          <AccordionPrimitive.Trigger className="group/fixture border-foreground/8 hover:bg-blue/[0.05] from-blue/[0.07] flex w-full items-center justify-between gap-3 border-b bg-gradient-to-r to-transparent px-5 py-3.5 transition-colors outline-none">
-            <div className="flex min-w-0 items-center gap-3">
-              {group.leagueLogo && (
-                <Img
-                  src={group.leagueLogo}
-                  alt={group.leagueName ?? ""}
-                  width={28}
-                  height={28}
-                  objectFit="contain"
-                  className="shrink-0"
-                />
-              )}
-              <div className="flex min-w-0 flex-col text-left">
-                <Typography as="span" size="16" weight="700" color="foreground">
-                  {group.leagueName}
-                </Typography>
-              </div>
-            </div>
-            <ChevronUp className="text-foreground/35 size-4.5 shrink-0 rotate-180 transition-transform duration-200 group-aria-expanded/fixture:rotate-0" />
-          </AccordionPrimitive.Trigger>
-        </AccordionPrimitive.Header>
-
-        <AccordionContent className="[&>div]:pt-0 [&>div]:pb-0">
-          <div className="overflow-x-auto">
-            {/* Column headers — 11 cols matching ROW_CLASS */}
-            <div
-              className={cn(ROW_CLASS, "bg-foreground/[0.025] border-foreground/6 border-b py-2!")}
-            >
-              <Typography as="span" variant="body-sm" weight="500" color="foreground/60">
-                {t("home.fixtures.time")}
-              </Typography>
-              <span />
-              <Typography
-                as="span"
-                variant="body-sm"
-                weight="500"
-                color="foreground/60"
-                className="text-right"
-              >
-                {t("home.fixtures.homeTeam")}
-              </Typography>
-              <Typography
-                as="span"
-                variant="body-sm"
-                weight="500"
-                color="foreground/60"
-                className="text-center"
-              >
-                {t("home.fixtures.score")}
-              </Typography>
-              <Typography as="span" variant="body-sm" weight="500" color="foreground/60">
-                {t("home.fixtures.awayTeam")}
-              </Typography>
-              <span className="flex justify-center">
-                <Img
-                  src={icCornerKick}
-                  alt={t("home.fixtures.cornerKick")}
-                  width={14}
-                  height={14}
-                  objectFit="contain"
-                />
-              </span>
-              <span className="flex justify-center">
-                <Img
-                  src={icYellowCard}
-                  alt={t("home.fixtures.yellowCard")}
-                  width={14}
-                  height={14}
-                  objectFit="contain"
-                />
-              </span>
-              <span className="flex justify-center">
-                <Img
-                  src={icRedCard}
-                  alt={t("home.fixtures.redCard")}
-                  width={14}
-                  height={14}
-                  objectFit="contain"
-                />
-              </span>
-              <Typography
-                as="span"
-                variant="body-sm"
-                weight="500"
-                color="foreground/60"
-                className="text-center"
-              >
-                {t("home.fixtures.ht")}
-              </Typography>
-            </div>
-
-            {/* Rows */}
-            {group.matches.map((match) => (
-              <FixtureRow key={match.matchId} match={match} />
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <div className={cn(ROW_CLASS, "py-3 max-sm:hidden")}>
+      <Typography as="span" variant="body-sm" weight="500" color="foreground/60">
+        {t("home.fixtures.league")}
+      </Typography>
+      <Typography as="span" variant="body-sm" weight="500" color="foreground/60">
+        {t("home.fixtures.match")}
+      </Typography>
+      <Typography
+        as="span"
+        variant="body-sm"
+        weight="500"
+        color="foreground/60"
+        className="text-center"
+      >
+        {t("home.fixtures.time")}
+      </Typography>
+      <Typography
+        as="span"
+        variant="body-sm"
+        weight="500"
+        color="foreground/60"
+        className="text-center"
+      >
+        {t("home.fixtures.score")}
+      </Typography>
+      <span className="flex justify-center">
+        <Img
+          src={icCornerKick}
+          alt={t("home.fixtures.cornerKick")}
+          width={14}
+          height={14}
+          objectFit="contain"
+        />
+      </span>
+      <span className="flex justify-center">
+        <Img
+          src={icYellowCard}
+          alt={t("home.fixtures.yellowCard")}
+          width={14}
+          height={14}
+          objectFit="contain"
+        />
+      </span>
+      <span className="flex justify-center">
+        <Img
+          src={icRedCard}
+          alt={t("home.fixtures.redCard")}
+          width={14}
+          height={14}
+          objectFit="contain"
+        />
+      </span>
+    </div>
   )
 }
 
@@ -281,10 +335,8 @@ function FixturesList() {
     .filter(Boolean)
     .map(Number)
 
-  const page: number = Number(getParam(MATCH_FIXTURES_PARAMS.PAGE) ?? String(DEFAULT_PAGE))
-  const pageSize: number = Number(
-    getParam(MATCH_FIXTURES_PARAMS.PAGE_SIZE) ?? String(DEFAULT_PAGE_SIZE)
-  )
+  const page = Number(getParam(MATCH_FIXTURES_PARAMS.PAGE) ?? String(DEFAULT_PAGE))
+  const pageSize = Number(getParam(MATCH_FIXTURES_PARAMS.PAGE_SIZE) ?? String(DEFAULT_PAGE_SIZE))
 
   const handleChangePage = (p: number) => {
     setLoading(true)
@@ -335,11 +387,13 @@ function FixturesList() {
     return result
   }, [allMatches, statusFilter])
 
+  const groups = groupMatches(filteredMatches)
+
   return (
     <div className="flex flex-col gap-3">
       {!loading ? (
         <>
-          {isEmpty(groupMatches(filteredMatches)) ? (
+          {isEmpty(groups) ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16">
               <Img
                 src={imgEmpty.src}
@@ -353,9 +407,16 @@ function FixturesList() {
               </Typography>
             </div>
           ) : (
-            (groupMatches(filteredMatches) || [])?.map((group) => (
-              <FixtureGroup key={group.key} group={group} t={t} />
-            ))
+            <div className="rounded-12 overflow-hidden">
+              <TableHeader t={t} />
+              {groups.map((group) => (
+                <div key={group.key}>
+                  {group.matches.map((match) => (
+                    <FixtureRow key={match.matchId} match={match} />
+                  ))}
+                </div>
+              ))}
+            </div>
           )}
         </>
       ) : (

@@ -44,7 +44,21 @@ const defaultTag: Record<string, ElementType> = {
 
 type Variant = NonNullable<VariantProps<typeof typographyVariants>["variant"]>
 type FontSize =
-  "10" | "12" | "14" | "16" | "17" | "18" | "20" | "22" | "24" | "30" | "36" | "48" | "60" | "72"
+  | "10"
+  | "12"
+  | "13"
+  | "14"
+  | "16"
+  | "17"
+  | "18"
+  | "20"
+  | "22"
+  | "24"
+  | "30"
+  | "36"
+  | "48"
+  | "60"
+  | "72"
 type FontWeight = "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900"
 
 interface TypographyProps extends HTMLAttributes<HTMLElement> {

@@ -4,6 +4,7 @@ import { LOCALES, type LocaleType } from "@/i18n"
 
 import { Footer } from "@/components/layout/footer"
 import { Header } from "@/components/layout/header"
+import { BackToTop } from "@/components/ui/back-to-top"
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }))
@@ -25,6 +26,7 @@ export default async function LangLayout({
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
+      <BackToTop />
     </>
   )
 }

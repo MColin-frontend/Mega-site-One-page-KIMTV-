@@ -22,6 +22,11 @@ const MATCH_STATUS_TABS: {
   { value: MATCH_STATUS_TAB.FINISHED, labelKey: "home.status.finished", icon: icWhistle },
 ]
 
+const HERO_VIDEO_PARAMS = {
+  MATCH_ID: "match_id",
+  GAME_ID: "game_id",
+} as const
+
 const MATCH_FIXTURES_PARAMS = {
   DATE: "date",
   PICKED_DATE: "picked_date",
@@ -45,6 +50,7 @@ export {
   DATE_RANGE_OPTIONS,
   DEFAULT_FILTER_MATCH,
   FOOTBALL_GAME_ID,
+  HERO_VIDEO_PARAMS,
   MATCH_FIXTURES_PARAMS,
   MATCH_STATUS_TAB,
   MATCH_STATUS_TABS,
