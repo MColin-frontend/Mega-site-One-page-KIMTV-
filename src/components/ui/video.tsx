@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useId, useRef } from "react"
 import type { SimplePlayer } from "xgplayer"
 
 import { cn } from "@/lib/utils"
@@ -41,11 +41,6 @@ function detectFormat(url: string) {
   return "native"
 }
 
-let _uid = 0
-function nextId() {
-  return `xgp-${++_uid}`
-}
-
 export function VideoPlayer({
   url,
   sources,
@@ -64,8 +59,8 @@ export function VideoPlayer({
   onError,
   onEnded,
 }: VideoPlayerProps) {
-  // eslint-disable-next-line react-hooks/refs
-  const mountId = useRef(id ?? nextId()).current
+  const generatedId = useId()
+  const mountId = id ?? `xgp-${generatedId.replace(/[^a-z0-9]/gi, "")}`
   const playerRef = useRef<SimplePlayer | null>(null)
 
   useEffect(() => {
@@ -175,8 +170,8 @@ export function VideoPlayer({
   }, [url, sources?.map((s) => s.url).join(",")])
 
   return (
-    <div className={cn("relative h-full w-full overflow-hidden rounded-lg bg-black", className)}>
-      <div id={mountId} className="h-full w-full" />
+    <div className={cn("relative h-full w-full rounded-lg bg-black", className)}>
+      <div id={mountId} className="h-full w-full overflow-hidden rounded-[inherit]" />
     </div>
   )
 }

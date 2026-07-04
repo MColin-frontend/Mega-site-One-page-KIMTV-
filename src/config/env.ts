@@ -13,7 +13,7 @@ export const env = {
   // Timeout request (ms). Hủy request nếu backend không phản hồi kịp.
   apiTimeoutMs: Number(process.env.API_TIMEOUT_MS) || 15_000,
 
-  // Add required vars here, e.g.:
-  // databaseUrl: required("DATABASE_URL"),
-  // nextAuthSecret: required("NEXTAUTH_SECRET"),
+  // WebSocket chat — java ws (bỏ /panda theo convention PC cũ).
+  // prod: wss://ws.kimtv.org | dev: wss://ws-dev.kimtv.org
+  wsBaseUrl: process.env.NEXT_PUBLIC_WS_BASE_URL ?? "wss://ws.kimtv.org",
 } as const

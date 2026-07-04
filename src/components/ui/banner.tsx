@@ -32,40 +32,43 @@ function BannerSlide({
       src={item.imageUrl}
       alt={alt}
       priority
-      width={item.width ?? 1920}
+      width={item.width ?? 1660}
       height={item.height ?? 480}
-      className={className ?? "h-auto w-full"}
+      className="h-auto w-full"
     />
   )
 
-  if (!item.url) return img
+  const wrapperClass = className ?? "block overflow-hidden rounded-8"
+
+  if (!item.url) return <div className={wrapperClass}>{img}</div>
 
   if (isInternal(item.url)) {
     return (
-      <Link href={item.url} className="block">
+      <Link href={item.url} className={wrapperClass}>
         {img}
       </Link>
     )
   }
 
   return (
-    <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+    <a href={item.url} target="_blank" rel="noopener noreferrer" className={wrapperClass}>
       {img}
     </a>
   )
 }
 
-export function Banner({ alt, data, autoPlayDelay = 4000, className }: BannerProps) {
+export function Banner({ alt, data, autoPlayDelay = 3000, className }: BannerProps) {
   if (!data || data?.length === 0) return null
 
   if (data?.length > 1) {
     return (
       <CarouselInfinity
         items={data}
-        renderItem={(item) => <BannerSlide item={item} alt={alt} className={className} />}
+        renderItem={(item) => <BannerSlide item={item} alt={alt} className="block" />}
         keyExtractor={(_, i) => i}
         autoPlayDelay={autoPlayDelay}
         slideClassName="basis-full !pl-0"
+        viewportClassName="rounded-12"
       />
     )
   }

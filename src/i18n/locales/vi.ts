@@ -1,9 +1,10 @@
+import chat from "./vi/chat.json"
 import common from "./vi/common.json"
 import footer from "./vi/footer.json"
 import header from "./vi/header.json"
 import home from "./vi/home.json"
 
-const vi = { common, header, footer, home }
+const vi = { common, header, footer, home, chat }
 
 export default vi
 
@@ -13,16 +14,25 @@ export interface Dictionary {
     today: string
     tomorrow: string
     empty: string
+    "match-card": {
+      hours: string
+      minutes: string
+      seconds: string
+      finished: string
+      "watch-preview": string
+    }
   }
   header: {
     nav: {
       home: string
       schedule: string
       liveScore: string
+      liveSchedule: string
       results: string
       standings: string
       news: string
       video: string
+      highlight: string
       data: string
     }
     auth: {
@@ -48,6 +58,8 @@ export interface Dictionary {
       finished: string
     }
     fixtures: {
+      league: string
+      match: string
       time: string
       homeTeam: string
       score: string
@@ -81,5 +93,40 @@ export interface Dictionary {
       empty: string
       favorites: string
     }
+  }
+  chat: {
+    connecting: string
+    connected: string
+    disconnected: string
+    reconnecting: string
+    reconnect: string
+    newMessages: string
+    placeholder: string
+    login: string
+    loginPrompt: string
+    welcome: string
+    pinLabel: string
+    role: { streamer: string; admin: string }
+    report: {
+      title: string
+      submit: string
+      types: {
+        speech: string
+        attack: string
+        nickname: string
+        ad: string
+        avatar: string
+        spam: string
+      }
+    }
+    actions: {
+      banAll: string
+      banRoom: string
+      delete: string
+      pin: string
+      unpin: string
+      setManager: string
+    }
+    loginToChat: string
   }
 }

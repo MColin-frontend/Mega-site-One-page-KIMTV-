@@ -5,12 +5,12 @@ import type { BannerItem } from "@/models/home.models"
 
 import { Banner } from "@/components/ui/banner"
 
-import heroBanner from "@assets/images/home/img-hero-banner.png"
+import heroBanner1 from "@assets/images/home/img-mockup-banner-1.png"
 
 const MOCK_BANNERS: BannerItem[] = [
-  { imageUrl: heroBanner.src, url: "/", width: heroBanner.width, height: heroBanner.height },
-  { imageUrl: heroBanner.src, url: "/", width: heroBanner.width, height: heroBanner.height },
-  { imageUrl: heroBanner.src, url: "/", width: heroBanner.width, height: heroBanner.height },
+  { imageUrl: heroBanner1.src, url: "/", width: heroBanner1.width, height: heroBanner1.height },
+  { imageUrl: heroBanner1.src, url: "/", width: heroBanner1.width, height: heroBanner1.height },
+  { imageUrl: heroBanner1.src, url: "/", width: heroBanner1.width, height: heroBanner1.height },
 ]
 
 interface HeroBannerProps {

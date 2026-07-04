@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "imga.fqhur.com",
       },
+      {
+        protocol: "https",
+        hostname: "news.esportsdata.cc",
+      },
     ],
   },
 }

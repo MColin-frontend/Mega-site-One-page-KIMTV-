@@ -9,12 +9,9 @@ import youtubeIcon from "@assets/icons/layout/ic-youtube.svg"
 export const MAIN_NAV_ITEMS: NavItemInterface[] = [
   { labelKey: "header.nav.home", getHref: (r) => r.home },
   { labelKey: "header.nav.schedule", getHref: (r) => r.schedule },
-  { labelKey: "header.nav.liveScore", getHref: (r) => r.liveScore },
-  { labelKey: "header.nav.results", getHref: (r) => r.results },
-  { labelKey: "header.nav.standings", getHref: (r) => r.standings },
+  { labelKey: "header.nav.liveSchedule", getHref: (r) => r.liveSchedule },
   { labelKey: "header.nav.news", getHref: (r) => r.news.index },
-  { labelKey: "header.nav.video", getHref: (r) => r.video },
-  { labelKey: "header.nav.data", getHref: (r) => r.data },
+  { labelKey: "header.nav.highlight", getHref: (r) => r.video.index },
 ]
 
 export const FOOTER_SOCIAL_LINKS = {
@@ -36,5 +33,5 @@ export const FOOTER_MENUS: FooterMenuInterface[] = [
   { key: "fixtures", getHref: (r) => r.schedule },
   { key: "live-score", getHref: (r) => r.liveScore },
   { key: "news", getHref: (r) => r.news.index },
-  { key: "highlights", getHref: (r) => r.video },
+  { key: "highlights", getHref: (r) => r.video.index },
 ]

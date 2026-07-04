@@ -1,6 +1,5 @@
 "use client"
 
-import { cn } from "@/lib/utils"
 import { useFakeGameMinute } from "@/hooks/useFakeGameMinute"
 
 import { MATCH_HALF_LABEL } from "@/constants/common.constants"
@@ -26,13 +25,8 @@ export function ScoreBadge({ match }: { match: MatchInterface }) {
   }
 
   return (
-    <div
-      className={cn(
-        "rounded-8 flex h-9 w-full items-center justify-center",
-        "bg-live shadow-[0_2px_10px_rgba(14,173,97,0.4)]"
-      )}
-    >
-      <Typography as="span" size="16" weight="800" color="white" className="tabular-nums">
+    <div className="flex h-9 w-full items-center justify-center">
+      <Typography as="span" size="14" weight="600" color="foreground" className="tabular-nums">
         {match.homeScore ?? 0}&nbsp;-&nbsp;{match.awayScore ?? 0}
       </Typography>
     </div>

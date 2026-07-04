@@ -5,7 +5,9 @@
     "finished": "Kết thúc"
   },
   "fixtures": {
-    "time": "Giờ",
+    "league": "Giải đấu",
+    "match": "Trận đấu",
+    "time": "Thời gian",
     "homeTeam": "Đội nhà",
     "score": "Tỷ số",
     "awayTeam": "Đội khách",
@@ -19,7 +21,7 @@
     "alt": "Tặng 100.000 VNĐ khi tham gia trải nghiệm"
   },
   "match-schedule": {
-    "title": "Lịch thi đấu"
+    "title": "Các trận đấu"
   },
   "news": {
     "title": "Tin tức xu hướng",

@@ -15,8 +15,11 @@ export interface ApiConfig {
 
 export interface NewsItem {
   newsId: string | number
+  nid?: number
   newsType?: number
   coverUrl: string
+  videoUrl?: string | null
+  durationMillis?: number | null
   title: string
   summary?: string
   userName?: string
@@ -24,11 +27,16 @@ export interface NewsItem {
   likeCount?: number
   commentCount?: number
   gameId?: number
-  publishTime?: string
+  publishTime?: string | number
 }
 
 export interface FeaturedNewsResult {
   news: NewsItem[]
+}
+
+export interface PopularNewsResult {
+  news: NewsItem[]
+  videos: NewsItem[]
 }
 
 export interface LatestNewsResult {

@@ -5,6 +5,8 @@
     "finished": "Finished"
   },
   "fixtures": {
+    "league": "League",
+    "match": "Match",
     "time": "Time",
     "homeTeam": "Home",
     "score": "Score",
@@ -19,7 +21,7 @@
     "alt": "Get 100,000 VND when you join the experience"
   },
   "match-schedule": {
-    "title": "Match Schedule"
+    "title": "Matches"
   },
   "news": {
     "title": "Trending News",
