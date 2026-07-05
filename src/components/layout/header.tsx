@@ -24,21 +24,21 @@ import kimtvLogo from "@assets/icons/layout/ic-kimtv.svg"
 const DROPDOWN_ITEMS = [
   {
     key: "broadcast",
-    label: "Phát trực tiếp",
+    labelKey: "header.user.menu.broadcast",
     icon: Radio,
     iconColor: "text-amber-400",
     href: "#",
   },
   {
     key: "profile",
-    label: "Hồ sơ cá nhân",
+    labelKey: "header.user.menu.profile",
     icon: CircleUser,
     iconColor: "text-blue-400",
     href: "#",
   },
   {
     key: "settings",
-    label: "Cài đặt",
+    labelKey: "header.user.menu.settings",
     icon: Settings2,
     iconColor: "text-white/50",
     href: "#",
@@ -51,6 +51,7 @@ interface AvatarDropdownProps {
 }
 
 function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -72,7 +73,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
       <button
         onClick={() => setOpen((v) => !v)}
         className="hover:ring-gold/50 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/15 transition-all"
-        aria-label="Tài khoản"
+        aria-label={t("header.user.aria-label")}
       >
         {user.avatar ? (
           <Img
@@ -85,7 +86,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
           />
         ) : (
           <div className="from-blue/80 to-blue flex h-full w-full items-center justify-center bg-gradient-to-br">
-            <Typography as="span" size="12" weight="700" className="text-white">
+            <Typography as="span" variant="caption" weight="700" className="text-white">
               {String(user.name ?? "U")
                 .slice(0, 1)
                 .toUpperCase()}
@@ -127,10 +128,10 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
           </div>
           <div className="min-w-0">
             <Typography variant="body-sm" weight="600" className="truncate text-white">
-              {user.name ?? "Người dùng"}
+              {user.name ?? t("header.user.fallback-name")}
             </Typography>
             <Typography variant="caption" className="text-white/40">
-              Tài khoản của tôi
+              {t("header.user.account")}
             </Typography>
           </div>
         </div>
@@ -148,7 +149,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
                 variant="body-sm"
                 className="whitespace-nowrap text-white/75 transition-colors group-hover:text-white"
               >
-                {item.label}
+                {t(item.labelKey)}
               </Typography>
             </Link>
           ))}
@@ -170,7 +171,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
               variant="body-sm"
               className="whitespace-nowrap text-red-400/80 transition-colors group-hover:text-red-400"
             >
-              Đăng xuất
+              {t("header.user.logout.label")}
             </Typography>
           </button>
         </div>
@@ -179,10 +180,10 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
       <ConfirmModal
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Đăng xuất"
-        content="Bạn có chắc chắn muốn đăng xuất không?"
-        confirmLabel="Xác nhận"
-        cancelLabel="Hủy"
+        title={t("header.user.logout.title")}
+        content={t("header.user.logout.content")}
+        confirmLabel={t("header.user.logout.confirm")}
+        cancelLabel={t("header.user.logout.cancel")}
         type="destructive"
         onConfirm={onLogout}
       />
@@ -192,6 +193,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
 
 /* ── Search ──────────────────────────────────────────────── */
 function SearchInput() {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
@@ -217,7 +219,7 @@ function SearchInput() {
     <div ref={wrapRef} className="relative hidden md:block" onBlur={handleBlur}>
       <button
         onClick={expand}
-        aria-label="Tìm kiếm"
+        aria-label={t("header.search.aria-label")}
         className={cn(
           "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
           "border shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
@@ -248,7 +250,7 @@ function SearchInput() {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Escape" && collapse()}
-          placeholder="Tìm kiếm..."
+          placeholder={t("header.search.placeholder")}
           className="text-13 flex-1 bg-transparent text-white outline-none placeholder:text-white/30"
         />
         {value && (
@@ -315,14 +317,14 @@ export function Header() {
             {isLoggedIn && user ? (
               <AvatarDropdown user={user ?? {}} onLogout={logout} />
             ) : (
-              <Button variant="gradient" size="sm" onClick={login} className="max-lg:hidden">
+              <Button variant="gradient" onClick={login} className="max-lg:hidden">
                 <UserRound className="h-3.5 w-3.5" />
                 {t("header.auth.login")}
               </Button>
             )}
 
             <button
-              aria-label={menuOpen ? "Đóng menu" : "Mở menu"}
+              aria-label={menuOpen ? t("header.mobileMenu.close") : t("header.mobileMenu.open")}
               onClick={() => setMenuOpen((v) => !v)}
               className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/45 shadow-[0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white lg:hidden"
             >

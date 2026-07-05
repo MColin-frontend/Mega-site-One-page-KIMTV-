@@ -43,6 +43,31 @@ export interface Dictionary {
         error: string
       }
     }
+    search: {
+      "aria-label": string
+      placeholder: string
+    }
+    user: {
+      "aria-label": string
+      account: string
+      "fallback-name": string
+      menu: {
+        broadcast: string
+        profile: string
+        settings: string
+      }
+      logout: {
+        label: string
+        title: string
+        content: string
+        confirm: string
+        cancel: string
+      }
+    }
+    mobileMenu: {
+      open: string
+      close: string
+    }
   }
   footer: {
     desc: string

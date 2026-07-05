@@ -18,5 +18,30 @@
       "processing": "Processing login…",
       "error": "Login failed"
     }
+  },
+  "search": {
+    "aria-label": "Search",
+    "placeholder": "Search..."
+  },
+  "user": {
+    "aria-label": "Account",
+    "account": "My account",
+    "fallback-name": "User",
+    "menu": {
+      "broadcast": "Go live",
+      "profile": "Profile",
+      "settings": "Settings"
+    },
+    "logout": {
+      "label": "Log out",
+      "title": "Log out",
+      "content": "Are you sure you want to log out?",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    }
+  },
+  "mobileMenu": {
+    "open": "Open menu",
+    "close": "Close menu"
   }
 }

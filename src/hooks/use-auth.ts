@@ -38,6 +38,7 @@ export function useAuth(): AuthState & { login: () => void; logout: () => void }
 
   const logout = () => {
     clearAuthCookies()
+    localStorage.clear()
     setState({ user: null, isLoggedIn: false, isLoading: false })
     logoutFrom99kim().catch(() => {
       window.location.href = "/"
