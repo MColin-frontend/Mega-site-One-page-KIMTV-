@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { CircleUser, LogOut, Menu, Radio, Search, Settings2, UserRound, X } from "lucide-react"
@@ -53,21 +53,24 @@ interface AvatarDropdownProps {
 function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapRef = useRef<HTMLDivElement>(null)
 
-  function openMenu() {
-    if (closeTimer.current) clearTimeout(closeTimer.current)
-    setOpen(true)
-  }
-
-  function closeMenu() {
-    closeTimer.current = setTimeout(() => setOpen(false), 120)
-  }
+  useEffect(() => {
+    if (!open) return
+    function handleClickOutside(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [open])
 
   return (
-    <div className="relative" onMouseEnter={openMenu} onMouseLeave={closeMenu}>
+    <div ref={wrapRef} className="relative">
       {/* Avatar trigger */}
       <button
+        onClick={() => setOpen((v) => !v)}
         className="hover:ring-gold/50 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/15 transition-all"
         aria-label="Tài khoản"
       >
@@ -115,7 +118,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
                 rounded="full"
               />
             ) : (
-              <Typography as="span" size="11" weight="700" className="text-white">
+              <Typography variant="caption" weight="700" className="text-white">
                 {String(user.name ?? "U")
                   .slice(0, 1)
                   .toUpperCase()}
@@ -123,10 +126,10 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
             )}
           </div>
           <div className="min-w-0">
-            <Typography size="13" weight="600" className="truncate text-white">
+            <Typography variant="body-sm" weight="600" className="truncate text-white">
               {user.name ?? "Người dùng"}
             </Typography>
-            <Typography size="11" className="text-white/40">
+            <Typography variant="caption" className="text-white/40">
               Tài khoản của tôi
             </Typography>
           </div>
@@ -142,7 +145,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
             >
               <item.icon className={cn("size-4 shrink-0 transition-colors", item.iconColor)} />
               <Typography
-                size="13"
+                variant="body-sm"
                 className="whitespace-nowrap text-white/75 transition-colors group-hover:text-white"
               >
                 {item.label}
@@ -164,7 +167,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
           >
             <LogOut className="size-4 shrink-0 text-red-400" />
             <Typography
-              size="13"
+              variant="body-sm"
               className="whitespace-nowrap text-red-400/80 transition-colors group-hover:text-red-400"
             >
               Đăng xuất
