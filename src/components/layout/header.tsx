@@ -3,15 +3,15 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { CircleUser, LogOut, Menu, Radio, Search, Settings2, UserRound, X } from "lucide-react"
+import { LogOut, Menu, Search, UserRound, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
+import { useModal } from "@/hooks/useModal"
 
 import { SLUG_MAP, useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
-import { MAIN_NAV_ITEMS } from "@/constants/component/layout.constants"
-import type { NavItemInterface } from "@/models/layout.models"
+import { HEADER_DROPDOWN_ITEMS, MAIN_NAV_ITEMS } from "@/constants/component/layout.constants"
 
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
@@ -21,30 +21,6 @@ import { Typography } from "@/components/ui/typography"
 import kimtvLogo from "@assets/icons/layout/ic-kimtv.svg"
 
 /* ── Avatar Dropdown ─────────────────────────────────────── */
-const DROPDOWN_ITEMS = [
-  {
-    key: "broadcast",
-    labelKey: "header.user.menu.broadcast",
-    icon: Radio,
-    iconColor: "text-amber-400",
-    href: "#",
-  },
-  {
-    key: "profile",
-    labelKey: "header.user.menu.profile",
-    icon: CircleUser,
-    iconColor: "text-blue-400",
-    href: "#",
-  },
-  {
-    key: "settings",
-    labelKey: "header.user.menu.settings",
-    icon: Settings2,
-    iconColor: "text-white/50",
-    href: "#",
-  },
-] as const
-
 interface AvatarDropdownProps {
   user: { name?: string | null; avatar?: string | null }
   onLogout: () => void
@@ -52,56 +28,62 @@ interface AvatarDropdownProps {
 
 function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
+  const { state, open, close, toggle, setOpen } = useModal("dropdown", "confirm")
   const wrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!open) return
+    if (!state.dropdown) return
     function handleClickOutside(e: MouseEvent) {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setOpen(false)
+        close("dropdown")
       }
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [open])
+  }, [state.dropdown, close])
+
+  const initial = String(user.name ?? "U")
+    .slice(0, 1)
+    .toUpperCase()
+
+  function renderAvatar(size: number) {
+    if (user.avatar) {
+      return (
+        <Img
+          src={user.avatar}
+          alt={user.name ?? "Avatar"}
+          width={size}
+          height={size}
+          objectFit="cover"
+          rounded="full"
+        />
+      )
+    }
+    return (
+      <div className="from-blue/80 to-blue flex h-full w-full items-center justify-center bg-gradient-to-br">
+        <Typography as="span" variant="caption" weight="700" className="text-white">
+          {initial}
+        </Typography>
+      </div>
+    )
+  }
 
   return (
     <div ref={wrapRef} className="relative">
-      {/* Avatar trigger */}
       <button
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => toggle("dropdown")}
         className="hover:ring-gold/50 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/15 transition-all"
         aria-label={t("header.user.aria-label")}
       >
-        {user.avatar ? (
-          <Img
-            src={user.avatar}
-            alt={user.name ?? "Avatar"}
-            width={36}
-            height={36}
-            objectFit="cover"
-            rounded="full"
-          />
-        ) : (
-          <div className="from-blue/80 to-blue flex h-full w-full items-center justify-center bg-gradient-to-br">
-            <Typography as="span" variant="caption" weight="700" className="text-white">
-              {String(user.name ?? "U")
-                .slice(0, 1)
-                .toUpperCase()}
-            </Typography>
-          </div>
-        )}
+        {renderAvatar(36)}
       </button>
 
-      {/* Dropdown */}
       <div
         className={cn(
           "absolute top-full right-0 z-50 mt-2 w-52",
           "rounded-xl border border-white/10 bg-[#0d1829] shadow-[0_8px_32px_rgba(0,0,0,0.6)]",
           "origin-top-right transition-all duration-150",
-          open
+          state.dropdown
             ? "pointer-events-auto scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0"
         )}
@@ -109,22 +91,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
         {/* User info */}
         <div className="flex items-center gap-2.5 border-b border-white/8 px-3.5 py-3">
           <div className="from-blue/80 to-blue flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br">
-            {user.avatar ? (
-              <Img
-                src={user.avatar}
-                alt={user.name ?? "Avatar"}
-                width={32}
-                height={32}
-                objectFit="cover"
-                rounded="full"
-              />
-            ) : (
-              <Typography variant="caption" weight="700" className="text-white">
-                {String(user.name ?? "U")
-                  .slice(0, 1)
-                  .toUpperCase()}
-              </Typography>
-            )}
+            {renderAvatar(32)}
           </div>
           <div className="min-w-0">
             <Typography variant="body-sm" weight="600" className="truncate text-white">
@@ -138,7 +105,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
 
         {/* Menu items */}
         <div className="py-1">
-          {DROPDOWN_ITEMS.map((item) => (
+          {HEADER_DROPDOWN_ITEMS.map((item) => (
             <Link
               key={item.key}
               href={item.href}
@@ -161,8 +128,8 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
         <div className="py-1">
           <button
             onClick={() => {
-              setOpen(false)
-              setConfirmOpen(true)
+              close("dropdown")
+              open("confirm")
             }}
             className="group flex w-full items-center gap-2.5 px-3.5 py-2.5 transition-colors hover:bg-red-500/8"
           >
@@ -178,8 +145,8 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
       </div>
 
       <ConfirmModal
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
+        open={state.confirm}
+        onOpenChange={(v) => setOpen("confirm", v)}
         title={t("header.user.logout.title")}
         content={t("header.user.logout.content")}
         confirmLabel={t("header.user.logout.confirm")}
@@ -194,18 +161,18 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
 /* ── Search ──────────────────────────────────────────────── */
 function SearchInput() {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
+  const { state, open, close } = useModal("search")
   const [value, setValue] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
 
   const expand = () => {
-    setOpen(true)
+    open("search")
     setTimeout(() => inputRef.current?.focus(), 50)
   }
 
   const collapse = () => {
-    setOpen(false)
+    close("search")
     setValue("")
   }
 
@@ -223,7 +190,7 @@ function SearchInput() {
         className={cn(
           "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
           "border shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
-          open
+          state.search
             ? "border-white/25 bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             : "border-white/10 bg-white/[0.05] text-white/45 hover:border-white/20 hover:bg-white/10 hover:text-white"
         )}
@@ -238,7 +205,7 @@ function SearchInput() {
           "h-9 rounded-full border border-white/15 bg-[#0d1829]",
           "pr-2.5 pl-3 shadow-[0_4px_24px_rgba(0,0,0,0.4)]",
           "origin-right transition-all duration-200 ease-out",
-          open
+          state.search
             ? "pointer-events-auto w-56 scale-x-100 opacity-100"
             : "pointer-events-none w-8 scale-x-0 opacity-0"
         )}
@@ -274,7 +241,7 @@ export function Header() {
   const { t, locale } = useTranslation()
   const pathname = usePathname()
   const routes = getRoutes(locale)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const { state, toggle, close } = useModal("mobileMenu")
   const { user, isLoggedIn, login, logout } = useAuth()
 
   function isActive(href: string): boolean {
@@ -288,20 +255,21 @@ export function Header() {
     <>
       <header className="bg-header sticky top-0 z-50 w-full">
         <div className="container flex h-fit items-center gap-3 py-3">
-          <Link href={routes.home} className="shrink-0" onClick={() => setMenuOpen(false)}>
+          <Link href={routes.home} className="shrink-0" onClick={() => close("mobileMenu")}>
             <Img src={kimtvLogo} alt="KimTV" width={130} height={48} priority objectFit="contain" />
           </Link>
 
           <nav className="flex flex-1 items-center justify-center gap-8 px-8 max-lg:hidden">
-            {MAIN_NAV_ITEMS.map((item: NavItemInterface) => {
+            {MAIN_NAV_ITEMS.map((item) => {
               const href = item.getHref(routes)
+              const active = isActive(href)
               return (
-                <Link key={href} href={href} className="nav-link" data-active={isActive(href)}>
+                <Link key={href} href={href} className="nav-link" data-active={active}>
                   <Typography
                     variant="h6"
                     className={cn(
                       "whitespace-nowrap transition-colors",
-                      isActive(href) ? "text-gold" : "hover:text-gold text-white/85"
+                      active ? "text-gold" : "hover:text-gold text-white/85"
                     )}
                   >
                     {t(item.labelKey)}
@@ -315,7 +283,7 @@ export function Header() {
             <SearchInput />
 
             {isLoggedIn && user ? (
-              <AvatarDropdown user={user ?? {}} onLogout={logout} />
+              <AvatarDropdown user={user} onLogout={logout} />
             ) : (
               <Button variant="gradient" onClick={login} className="max-lg:hidden">
                 <UserRound className="h-3.5 w-3.5" />
@@ -324,20 +292,26 @@ export function Header() {
             )}
 
             <button
-              aria-label={menuOpen ? t("header.mobileMenu.close") : t("header.mobileMenu.open")}
-              onClick={() => setMenuOpen((v) => !v)}
+              aria-label={
+                state.mobileMenu ? t("header.mobileMenu.close") : t("header.mobileMenu.open")
+              }
+              onClick={() => toggle("mobileMenu")}
               className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/45 shadow-[0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white lg:hidden"
             >
               <Menu
                 className={cn(
                   "absolute h-[18px] w-[18px] transition-all duration-200",
-                  menuOpen ? "scale-50 rotate-90 opacity-0" : "scale-100 rotate-0 opacity-100"
+                  state.mobileMenu
+                    ? "scale-50 rotate-90 opacity-0"
+                    : "scale-100 rotate-0 opacity-100"
                 )}
               />
               <X
                 className={cn(
                   "absolute h-[18px] w-[18px] transition-all duration-200",
-                  menuOpen ? "scale-100 rotate-0 opacity-100" : "scale-50 -rotate-90 opacity-0"
+                  state.mobileMenu
+                    ? "scale-100 rotate-0 opacity-100"
+                    : "scale-50 -rotate-90 opacity-0"
                 )}
               />
             </button>
@@ -346,11 +320,11 @@ export function Header() {
       </header>
 
       <div
-        onClick={() => setMenuOpen(false)}
+        onClick={() => close("mobileMenu")}
         className={cn(
           "fixed inset-0 top-[60px] z-40 bg-black/60 backdrop-blur-sm lg:hidden",
           "transition-opacity duration-300",
-          menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          state.mobileMenu ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         )}
       />
 
@@ -359,20 +333,20 @@ export function Header() {
           "bg-navy fixed inset-x-0 top-[60px] z-50 lg:hidden",
           "border-b border-white/8",
           "transition-all duration-300 ease-out",
-          menuOpen
+          state.mobileMenu
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none -translate-y-3 opacity-0"
         )}
       >
         <nav className="container divide-y divide-white/6 py-2">
-          {MAIN_NAV_ITEMS.map((item: NavItemInterface) => {
+          {MAIN_NAV_ITEMS.map((item) => {
             const href = item.getHref(routes)
             const active = isActive(href)
             return (
               <Link
                 key={href}
                 href={href}
-                onClick={() => setMenuOpen(false)}
+                onClick={() => close("mobileMenu")}
                 className={cn(
                   "flex h-[52px] items-center gap-3 transition-colors",
                   active ? "text-gold" : "text-white/70 hover:text-white"
@@ -392,19 +366,21 @@ export function Header() {
           })}
         </nav>
 
-        <div className="container pt-3 pb-5">
-          <Button
-            variant="gradient"
-            className="w-full"
-            onClick={() => {
-              login()
-              setMenuOpen(false)
-            }}
-          >
-            <UserRound className="h-4 w-4" />
-            {t("header.auth.login")}
-          </Button>
-        </div>
+        {!isLoggedIn && (
+          <div className="container pt-3 pb-5">
+            <Button
+              variant="gradient"
+              className="w-full"
+              onClick={() => {
+                login()
+                close("mobileMenu")
+              }}
+            >
+              <UserRound className="h-4 w-4" />
+              {t("header.auth.login")}
+            </Button>
+          </div>
+        )}
       </div>
     </>
   )
