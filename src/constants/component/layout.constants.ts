@@ -1,3 +1,5 @@
+import { CircleUser, Radio, Settings2 } from "lucide-react"
+
 import type { FooterMenuInterface, FooterSocialInterface } from "@/models/footer.models"
 import type { NavItemInterface } from "@/models/layout.models"
 
@@ -5,6 +7,30 @@ import facebookIcon from "@assets/icons/layout/ic-facebook.svg"
 import telegramIcon from "@assets/icons/layout/ic-tele.svg"
 import tiktokIcon from "@assets/icons/layout/ic-tiktok.svg"
 import youtubeIcon from "@assets/icons/layout/ic-youtube.svg"
+
+export const HEADER_DROPDOWN_ITEMS = [
+  {
+    key: "broadcast",
+    labelKey: "header.user.menu.broadcast",
+    icon: Radio,
+    iconColor: "text-amber-400",
+    href: "#",
+  },
+  {
+    key: "profile",
+    labelKey: "header.user.menu.profile",
+    icon: CircleUser,
+    iconColor: "text-blue-400",
+    href: "#",
+  },
+  {
+    key: "settings",
+    labelKey: "header.user.menu.settings",
+    icon: Settings2,
+    iconColor: "text-white/50",
+    href: "#",
+  },
+] as const
 
 export const MAIN_NAV_ITEMS: NavItemInterface[] = [
   { labelKey: "header.nav.home", getHref: (r) => r.home },
