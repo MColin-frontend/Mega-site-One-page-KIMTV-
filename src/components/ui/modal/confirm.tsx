@@ -90,7 +90,7 @@ function ConfirmModal({
               </div>
 
               <AlertDialog.Title className="text-24 font-700 text-white">{title}</AlertDialog.Title>
-              <AlertDialog.Description className="text-16 mt-2.5 leading-relaxed text-white/55">
+              <AlertDialog.Description className="text-16 text-muted mt-2.5 leading-relaxed">
                 {content}
               </AlertDialog.Description>
             </div>

@@ -27,7 +27,7 @@ export const HEADER_DROPDOWN_ITEMS = [
     key: "settings",
     labelKey: "header.user.menu.settings",
     icon: Settings2,
-    iconColor: "text-white/50",
+    iconColor: "text-muted",
     href: "#",
   },
 ] as const

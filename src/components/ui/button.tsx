@@ -19,9 +19,9 @@ const buttonVariants = cva(
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
         gradient:
-          "relative overflow-hidden rounded-full bg-gradient-button text-[var(--btn-primary-text)] h-9 px-5 gap-1.5 shadow-[0_2px_10px_theme(colors.gold/0.25)] hover:scale-[1.03] hover:shadow-[0_0_20px_4px_theme(colors.gold/0.35)] active:scale-95 before:absolute before:inset-0 before:w-1/2 before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] before:opacity-0 before:-translate-x-full hover:before:opacity-100 hover:before:[animation:shine_0.6s_ease-in-out]",
+          "relative overflow-hidden rounded-full bg-gradient-button text-btn-primary-text h-9 px-5 gap-1.5 shadow-[0_2px_10px_theme(colors.gold/0.25)] hover:scale-[1.03] hover:shadow-[0_0_20px_4px_theme(colors.gold/0.35)] active:scale-95 before:absolute before:inset-0 before:w-1/2 before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] before:opacity-0 before:-translate-x-full hover:before:opacity-100 hover:before:[animation:shine_0.6s_ease-in-out]",
         cancel:
-          "relative overflow-hidden rounded-full border border-white/15 bg-white/5 text-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:scale-[1.03] hover:border-white/30 hover:bg-white/10 hover:text-white active:scale-95 before:absolute before:inset-0 before:w-1/2 before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)] before:opacity-0 before:-translate-x-full hover:before:opacity-100 hover:before:[animation:shine_0.6s_ease-in-out]",
+          "relative overflow-hidden rounded-full border border-white/15 bg-white/5 text-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:scale-[1.03] hover:border-white/30 hover:bg-white/10 hover:text-white active:scale-95 before:absolute before:inset-0 before:w-1/2 before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)] before:opacity-0 before:-translate-x-full hover:before:opacity-100 hover:before:[animation:shine_0.6s_ease-in-out]",
       },
 
       size: {

@@ -203,8 +203,8 @@ export const Select = forwardRef<SelectHandle, SelectProps>(function Select(
                       opt.accent === "live"
                         ? "data-selected:font-600 text-red-400 data-highlighted:bg-red-500/10 data-selected:bg-red-500/15"
                         : opt.accent === "neutral"
-                          ? "data-selected:bg-gold/15 data-selected:text-gold data-selected:font-600 text-white/75 data-highlighted:bg-white/8 data-highlighted:text-white"
-                          : "data-selected:bg-gold/15 data-selected:text-gold data-selected:font-600 text-white/75 data-highlighted:bg-white/8 data-highlighted:text-white",
+                          ? "data-selected:bg-gold/15 data-selected:text-gold data-selected:font-600 text-muted data-highlighted:bg-white/8 data-highlighted:text-white"
+                          : "data-selected:bg-gold/15 data-selected:text-gold data-selected:font-600 text-muted data-highlighted:bg-white/8 data-highlighted:text-white",
                       "data-disabled:pointer-events-none data-disabled:opacity-30"
                     )}
                   >

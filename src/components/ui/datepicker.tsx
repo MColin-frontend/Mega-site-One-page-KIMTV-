@@ -168,7 +168,7 @@ function CalendarGrid({
           type="button"
           onClick={onPrev}
           className={cn(
-            "rounded-6 flex size-7 items-center justify-center text-white/50 transition-colors hover:bg-white/10 hover:text-white",
+            "rounded-6 text-muted flex size-7 items-center justify-center transition-colors hover:bg-white/10 hover:text-white",
             hidePrev && "invisible"
           )}
         >
@@ -181,7 +181,7 @@ function CalendarGrid({
           type="button"
           onClick={onNext}
           className={cn(
-            "rounded-6 flex size-7 items-center justify-center text-white/50 transition-colors hover:bg-white/10 hover:text-white",
+            "rounded-6 text-muted flex size-7 items-center justify-center transition-colors hover:bg-white/10 hover:text-white",
             hideNext && "invisible"
           )}
         >
@@ -194,7 +194,7 @@ function CalendarGrid({
         {VI_DAYS.map((d) => (
           <div
             key={d}
-            className="font-600 flex h-7 items-center justify-center text-[10px] tracking-wide text-white/30"
+            className="font-600 text-muted flex h-7 items-center justify-center text-[10px] tracking-wide"
           >
             {d}
           </div>
@@ -248,14 +248,14 @@ function CalendarGrid({
                   isDisabled
                     ? "cursor-not-allowed text-white/20"
                     : isOtherMonth
-                      ? "text-white/30 hover:bg-white/10 hover:text-white/60"
+                      ? "text-muted hover:text-muted hover:bg-white/10"
                       : isEndpoint
                         ? "bg-blue font-600 text-white"
                         : inRange
                           ? "text-white hover:bg-white/10"
                           : isToday
                             ? "font-700 text-gold hover:bg-white/10"
-                            : "text-white/65 hover:bg-white/10 hover:text-white"
+                            : "text-muted hover:bg-white/10 hover:text-white"
                 )}
               >
                 {date.getDate()}
@@ -298,7 +298,7 @@ function PickerFooter({ label, onClear }: { label: string; onClear: () => void }
       <button
         type="button"
         onClick={onClear}
-        className="text-12 font-500 text-white/60 transition-colors hover:text-white/90"
+        className="text-12 font-500 text-muted transition-colors hover:text-white/90"
       >
         Xoá
       </button>

@@ -43,7 +43,7 @@ function AvatarFallback({ className, children, ...props }: React.HTMLAttributes<
   return (
     <div
       className={cn(
-        "text-10 font-600 flex size-full items-center justify-center bg-white/15 text-white/70",
+        "text-10 font-600 text-muted flex size-full items-center justify-center bg-white/15",
         className
       )}
       {...props}
@@ -101,7 +101,7 @@ function AvatarGroupCount({ className, children, ...props }: React.HTMLAttribute
   return (
     <div
       className={cn(
-        "text-10 font-600 relative flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/70 ring-2 ring-[#0c1526]",
+        "text-10 font-600 text-muted relative flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 ring-2 ring-[#0c1526]",
         className
       )}
       style={{ marginLeft: `-${overlap}px` }}
