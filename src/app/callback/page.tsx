@@ -68,7 +68,7 @@ export default function CallbackPage() {
       {status === "processing" && (
         <>
           <div className="border-blue h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
-          <p className="text-14 text-white/60">{t("header.auth.callback.processing")}</p>
+          <p className="text-14 text-muted">{t("header.auth.callback.processing")}</p>
         </>
       )}
       {(status === "error" || status === "exchange_error") && (

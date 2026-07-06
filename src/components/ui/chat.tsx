@@ -5,6 +5,7 @@ import { LogIn, RefreshCw, Send, X } from "lucide-react"
 
 import { fetchChatMessagesAction, fetchPinnedMessagesAction } from "@/server/actions/chat.action"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "@/hooks/useRouter"
 
 import { useTranslation } from "@/i18n"
@@ -28,6 +29,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
+import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
@@ -71,6 +73,7 @@ export interface ChatProps {
   onBanRoom?: (message: ChatMessage, mute: boolean) => void
   onBanAll?: (message: ChatMessage, mute: boolean) => void
   onSetManager?: (message: ChatMessage, set: boolean) => void
+  inputSuffix?: React.ReactNode
   className?: string
 }
 
@@ -202,10 +205,7 @@ function MessageItem({
                 {VipIcon}
               </div>
               {message.sendTime && (
-                <Typography
-                  variant="overline"
-                  className="ml-auto shrink-0 text-white/45 tabular-nums"
-                >
+                <Typography variant="overline" className="text-muted ml-auto shrink-0 tabular-nums">
                   {new Date(message.sendTime * 1000).toLocaleTimeString("vi-VN", {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -213,7 +213,7 @@ function MessageItem({
                 </Typography>
               )}
             </div>
-            <Typography as="span" variant="body-sm" className="text-white/70">
+            <Typography as="span" variant="body-sm" className="text-muted">
               {t("chat.welcome")}
             </Typography>
           </div>
@@ -246,7 +246,7 @@ function MessageItem({
             rounded="full"
           />
         ) : (
-          <Typography as="span" size="10" weight="600" className="text-white/60">
+          <Typography as="span" size="10" weight="600" className="text-muted">
             {message.userName?.slice(0, 1).toUpperCase()}
           </Typography>
         )}
@@ -269,7 +269,7 @@ function MessageItem({
             </Typography>
           </div>
           {timeStr && (
-            <Typography variant="overline" className="shrink-0 text-white/35 tabular-nums">
+            <Typography variant="overline" className="text-muted shrink-0 tabular-nums">
               {timeStr}
             </Typography>
           )}
@@ -462,7 +462,7 @@ const DEFAULT_SOCIALS: ChatSocials = {
 }
 
 export function Chat({
-  isLoggedIn = false,
+  isLoggedIn: isLoggedInProp,
   userRole = CHAT_USER_ROLE.NOT_LOGIN,
   socials,
   onLogin,
@@ -473,10 +473,15 @@ export function Chat({
   onBanRoom,
   onBanAll,
   onSetManager,
+  inputSuffix,
   className,
 }: ChatProps) {
   const { t } = useTranslation()
   const { getParam } = useRouter()
+  const { login: ssoLogin, isLoggedIn: authLoggedIn } = useAuth()
+
+  const isLoggedIn = isLoggedInProp ?? authLoggedIn
+  const handleLogin = onLogin ?? ssoLogin
 
   /* ── Internal state ──────────────────────────────────────── */
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -813,7 +818,7 @@ export function Chat({
             as="span"
             variant="caption"
             weight="600"
-            className="tracking-widest text-white/50 uppercase"
+            className="text-muted tracking-widest uppercase"
           >
             Live Chat
           </Typography>
@@ -939,47 +944,48 @@ export function Chat({
       </div>
       {/* end messages section */}
       {/* Input */}
-      <div
-        className={cn(
-          "rounded-6 flex shrink-0 items-center gap-2 bg-[#0f2040]/80 backdrop-blur-xl",
-          CHAT_INPUT_HEIGHT
-        )}
-      >
-        {isLoggedIn ? (
-          <>
-            <input
-              type="text"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t("chat.placeholder")}
-              className="flex-1 bg-transparent font-['Roboto'] text-[14px] text-white outline-none placeholder:text-white/40"
-            />
-            <Button
-              variant="ghost"
-              size="icon"
+      {isLoggedIn ? (
+        <Input
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={t("chat.placeholder")}
+          wrapperClassName={cn(
+            "rounded-full bg-chat-input-bg backdrop-blur-xl pr-1",
+            CHAT_INPUT_HEIGHT
+          )}
+          suffix={inputSuffix}
+          rightIcon={
+            <button
               onClick={submitMessage}
-              className="size-5 shrink-0 text-white hover:bg-transparent"
+              className="text-muted bg-chat-input-btn hover:bg-chat-input-btn-hover flex size-8 shrink-0 items-center justify-center rounded-full transition-all hover:text-white active:scale-90"
             >
-              <Send className="size-5" />
-            </Button>
-          </>
-        ) : (
-          <button
-            onClick={onLogin}
-            className="group rounded-8 hover:border-gold/30 hover:bg-gold/10 flex flex-1 items-center justify-center gap-2 border border-white/10 bg-white/5 px-4 py-2 transition-all duration-200"
-          >
-            <LogIn className="group-hover:text-gold/80 size-3.5 shrink-0 text-white/40 transition-colors" />
-            <Typography
-              as="span"
-              variant="body-sm"
-              className="group-hover:text-gold/80 text-white/40 transition-colors"
+              <Send className="size-3.5 translate-x-px" />
+            </button>
+          }
+        />
+      ) : (
+        <Input
+          placeholder={t("chat.placeholder")}
+          disabled
+          wrapperClassName={cn("rounded-full bg-chat-input-bg backdrop-blur-xl", CHAT_INPUT_HEIGHT)}
+          prefix={
+            <button
+              onClick={handleLogin}
+              className="group flex items-center gap-1.5 transition-colors"
             >
-              {t("chat.loginToChat")}
-            </Typography>
-          </button>
-        )}
-      </div>
+              <LogIn className="group-hover:text-gold/80 text-muted size-3.5 shrink-0 transition-colors" />
+              <Typography
+                as="span"
+                variant="body-sm"
+                className="group-hover:text-gold/80 text-muted whitespace-nowrap transition-colors"
+              >
+                {t("chat.loginToChat")}
+              </Typography>
+            </button>
+          }
+        />
+      )}
       {/* User popup */}
       {popupMessage && (
         <UserPopup

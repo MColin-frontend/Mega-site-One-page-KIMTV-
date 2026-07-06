@@ -54,14 +54,13 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
           alt={user.name ?? "Avatar"}
           width={size}
           height={size}
-          objectFit="cover"
           rounded="full"
         />
       )
     }
     return (
       <div className="from-blue/80 to-blue flex h-full w-full items-center justify-center bg-gradient-to-br">
-        <Typography as="span" variant="caption" weight="700" className="text-white">
+        <Typography variant="caption" weight="700" className="text-white">
           {initial}
         </Typography>
       </div>
@@ -97,7 +96,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
             <Typography variant="body-sm" weight="600" className="truncate text-white">
               {user.name ?? t("header.user.fallback-name")}
             </Typography>
-            <Typography variant="caption" className="text-white/40">
+            <Typography variant="caption" className="text-muted">
               {t("header.user.account")}
             </Typography>
           </div>
@@ -114,7 +113,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
               <item.icon className={cn("size-4 shrink-0 transition-colors", item.iconColor)} />
               <Typography
                 variant="body-sm"
-                className="whitespace-nowrap text-white/75 transition-colors group-hover:text-white"
+                className="text-muted whitespace-nowrap transition-colors group-hover:text-white"
               >
                 {t(item.labelKey)}
               </Typography>
@@ -144,16 +143,18 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
         </div>
       </div>
 
-      <ConfirmModal
-        open={state.confirm}
-        onOpenChange={(v) => setOpen("confirm", v)}
-        title={t("header.user.logout.title")}
-        content={t("header.user.logout.content")}
-        confirmLabel={t("header.user.logout.confirm")}
-        cancelLabel={t("header.user.logout.cancel")}
-        type="destructive"
-        onConfirm={onLogout}
-      />
+      {state.confirm && (
+        <ConfirmModal
+          open={state.confirm}
+          onOpenChange={(v) => setOpen("confirm", v)}
+          title={t("header.user.logout.title")}
+          content={t("header.user.logout.content")}
+          confirmLabel={t("header.user.logout.confirm")}
+          cancelLabel={t("header.user.logout.cancel")}
+          type="destructive"
+          onConfirm={onLogout}
+        />
+      )}
     </div>
   )
 }
@@ -162,7 +163,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
 function SearchInput() {
   const { t } = useTranslation()
   const { state, open, close } = useModal("search")
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState<string>("")
   const inputRef = useRef<HTMLInputElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -192,7 +193,7 @@ function SearchInput() {
           "border shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
           state.search
             ? "border-white/25 bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-            : "border-white/10 bg-white/[0.05] text-white/45 hover:border-white/20 hover:bg-white/10 hover:text-white"
+            : "text-muted border-white/10 bg-white/[0.05] hover:border-white/20 hover:bg-white/10 hover:text-white"
         )}
       >
         <Search className="h-[15px] w-[15px]" />
@@ -210,7 +211,7 @@ function SearchInput() {
             : "pointer-events-none w-8 scale-x-0 opacity-0"
         )}
       >
-        <Search className="h-3.5 w-3.5 shrink-0 text-white/40" />
+        <Search className="text-muted h-3.5 w-3.5 shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -218,7 +219,7 @@ function SearchInput() {
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Escape" && collapse()}
           placeholder={t("header.search.placeholder")}
-          className="text-13 flex-1 bg-transparent text-white outline-none placeholder:text-white/30"
+          className="text-13 placeholder:text-placeholder flex-1 bg-transparent text-white outline-none"
         />
         {value && (
           <button
@@ -226,7 +227,7 @@ function SearchInput() {
               setValue("")
               inputRef.current?.focus()
             }}
-            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/40 transition-all hover:bg-white/20 hover:text-white/70"
+            className="text-muted hover:text-muted flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-white/20"
           >
             <X className="h-3 w-3" />
           </button>
@@ -296,7 +297,7 @@ export function Header() {
                 state.mobileMenu ? t("header.mobileMenu.close") : t("header.mobileMenu.open")
               }
               onClick={() => toggle("mobileMenu")}
-              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/45 shadow-[0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white lg:hidden"
+              className="text-muted relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] shadow-[0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white lg:hidden"
             >
               <Menu
                 className={cn(
@@ -349,7 +350,7 @@ export function Header() {
                 onClick={() => close("mobileMenu")}
                 className={cn(
                   "flex h-[52px] items-center gap-3 transition-colors",
-                  active ? "text-gold" : "text-white/70 hover:text-white"
+                  active ? "text-gold" : "text-muted hover:text-white"
                 )}
               >
                 <span

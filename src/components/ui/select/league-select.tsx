@@ -157,7 +157,7 @@ export function LeagueSelect({
                   onClick={clearAll}
                   className={cn(
                     "rounded-8 flex cursor-pointer items-center gap-1.5 px-2.5 py-1.5 transition-colors duration-150",
-                    hasSelection ? "text-white/60 hover:bg-white/8 hover:text-white" : "text-gold"
+                    hasSelection ? "text-muted hover:bg-white/8 hover:text-white" : "text-gold"
                   )}
                 >
                   {hasSelection ? (
@@ -180,12 +180,12 @@ export function LeagueSelect({
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder={t("home.league-select.searchPlaceholder")}
-                    className="text-12 font-400 h-8 flex-1 bg-transparent text-white outline-none placeholder:text-white/40"
+                    className="text-12 font-400 placeholder:text-placeholder h-8 flex-1 bg-transparent text-white outline-none"
                   />
                   {search && (
                     <button
                       onClick={() => setSearch("")}
-                      className="flex size-4 cursor-pointer items-center justify-center rounded-full text-white hover:text-white/70"
+                      className="hover:text-muted flex size-4 cursor-pointer items-center justify-center rounded-full text-white"
                     >
                       <X className="size-3" />
                     </button>

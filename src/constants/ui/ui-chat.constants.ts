@@ -51,7 +51,7 @@ export const CHAT_SOCIAL_NAMES = {
 } as const
 
 /* ── Layout ──────────────────────────────────────────────── */
-export const CHAT_INPUT_HEIGHT = "h-[38px]"
+export const CHAT_INPUT_HEIGHT = "h-[46px]"
 export const CHAT_MSG_PADDING = "px-[18px]"
 export const CHAT_POPUP_WIDTH = "w-[418px]"
 export const CHAT_ADMIN_BTN = "h-[50px] w-[220px]"

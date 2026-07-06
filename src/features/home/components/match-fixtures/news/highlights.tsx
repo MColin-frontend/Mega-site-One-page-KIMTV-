@@ -106,7 +106,7 @@ function HighlightSlide({ item, isActive }: { item: NewsItem; href: string; isAc
                     className="size-4 shrink-0 overflow-hidden rounded-full"
                   />
                 )}
-                <Typography variant="caption" className="truncate text-white/50">
+                <Typography variant="caption" className="text-muted truncate">
                   {item.userName}
                 </Typography>
               </div>
@@ -147,7 +147,7 @@ export function HighlightsCarousel({ items }: HighlightsCarouselProps) {
         <Typography variant="h2">Highlights</Typography>
         <Link
           href={routes.video.index}
-          className="group/btn text-13 font-500 flex items-center gap-1 overflow-hidden pr-1 text-white/60 transition-colors hover:text-white"
+          className="group/btn text-13 font-500 text-muted flex items-center gap-1 overflow-hidden pr-1 transition-colors hover:text-white"
         >
           <span className="transition-all duration-200 group-hover/btn:italic">
             {t("home.news.viewAll")}

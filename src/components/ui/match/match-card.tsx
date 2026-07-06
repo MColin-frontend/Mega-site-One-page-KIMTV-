@@ -227,7 +227,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
           />
           <Tooltip>
             <TooltipTrigger className="max-w-[250px] min-w-0 overflow-hidden">
-              <Typography variant="body-sm" className="block truncate text-left text-white/70">
+              <Typography variant="body-sm" className="text-muted block truncate text-left">
                 {match.leagueName}
               </Typography>
             </TooltipTrigger>
@@ -265,7 +265,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                 <Typography variant="h4" weight="700" className="text-white tabular-nums">
                   {match.homeScore ?? 0}
                 </Typography>
-                <Typography variant="h5" className="text-white/40">
+                <Typography variant="h5" className="text-muted">
                   :
                 </Typography>
                 <Typography variant="h4" weight="700" className="text-white tabular-nums">
@@ -299,7 +299,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
         {/* Date/time */}
         {!isUpcoming && match.startTime && (
           <>
-            <Typography variant="body" className="text-center text-white/60">
+            <Typography variant="body" className="text-muted text-center">
               {formatMatchDate(match.startTime)} • {formatMatchTime(match.startTime)}
             </Typography>
             {isLive && (
@@ -344,12 +344,12 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                     >
                       {String(value).padStart(2, "0")}
                     </Typography>
-                    <Typography as="span" size="10" className="mt-0.5 text-white/35">
+                    <Typography as="span" size="10" className="text-muted mt-0.5">
                       {label}
                     </Typography>
                   </div>
                   {i < 2 && (
-                    <Typography variant="h5" weight="700" className="leading-100 text-white/30">
+                    <Typography variant="h5" weight="700" className="text-muted leading-100">
                       :
                     </Typography>
                   )}
@@ -374,7 +374,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                   <Typography variant="body" weight="500" className="text-white/80">
                     {statsData[i].home ?? 0}
                   </Typography>
-                  <Typography variant="body" className="text-white/50">
+                  <Typography variant="body" className="text-muted">
                     -
                   </Typography>
                   <Typography variant="body" weight="500" className="text-white/80">
@@ -398,7 +398,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                 ))}
                 {anchors.length > 3 && (
                   <div className="relative -ml-1.5 flex size-[26px] items-center justify-center rounded-full bg-white/10 ring-2 ring-[#0c1526]">
-                    <Typography as="span" size="10" weight="600" className="text-white/70">
+                    <Typography as="span" size="10" weight="600" className="text-muted">
                       +{anchors.length - 3}
                     </Typography>
                   </div>

@@ -84,7 +84,7 @@ function ShareButton() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="group flex h-[30px] items-center gap-1.5 rounded-full border border-transparent px-3 text-white/50 transition-all duration-200 hover:border-[rgba(255,187,0,0.35)] hover:bg-gradient-to-b hover:from-[#111] hover:via-[#222] hover:to-[#111]"
+        className="group text-muted flex h-[30px] items-center gap-1.5 rounded-full border border-transparent px-3 transition-all duration-200 hover:border-[rgba(255,187,0,0.35)] hover:bg-gradient-to-b hover:from-[#111] hover:via-[#222] hover:to-[#111]"
         style={{ whiteSpace: "nowrap" }}
       >
         <Share2 className="size-[14px] shrink-0 transition-colors group-hover:text-[rgba(234,195,103,0.8)]" />
@@ -102,7 +102,7 @@ function ShareButton() {
             <input
               readOnly
               value={typeof window !== "undefined" ? window.location.href : ""}
-              className="rounded-6 text-12 min-w-0 flex-1 border border-white/10 bg-white/5 px-2 py-1.5 text-white/70 outline-none"
+              className="rounded-6 text-12 text-muted min-w-0 flex-1 border border-white/10 bg-white/5 px-2 py-1.5 outline-none"
             />
             <button
               onClick={handleCopy}
@@ -253,7 +253,7 @@ export function HeroVideo({
               <Typography variant="h4" weight="700" className="text-white tabular-nums">
                 {activeMatch.homeScore ?? 0}
               </Typography>
-              <Typography variant="h5" className="text-white/40">
+              <Typography variant="h5" className="text-muted">
                 :
               </Typography>
               <Typography variant="h4" weight="700" className="text-white tabular-nums">
@@ -310,7 +310,7 @@ export function HeroVideo({
                 >
                   {activeMatch.homeCornerKick ?? 0}
                 </Typography>
-                <Typography as="span" variant="caption" className="text-white/50">
+                <Typography as="span" variant="caption" className="text-muted">
                   -
                 </Typography>
                 <Typography
@@ -332,7 +332,7 @@ export function HeroVideo({
                 >
                   {activeMatch.homeYellowCard ?? 0}
                 </Typography>
-                <Typography as="span" variant="caption" className="text-white/50">
+                <Typography as="span" variant="caption" className="text-muted">
                   -
                 </Typography>
                 <Typography
@@ -354,7 +354,7 @@ export function HeroVideo({
                 >
                   {activeMatch.homeRedCard ?? 0}
                 </Typography>
-                <Typography as="span" variant="caption" className="text-white/50">
+                <Typography as="span" variant="caption" className="text-muted">
                   -
                 </Typography>
                 <Typography
@@ -385,7 +385,7 @@ export function HeroVideo({
                     as="div"
                     size="10"
                     weight="600"
-                    className="relative -ml-1.5 flex size-[26px] items-center justify-center rounded-full bg-white/10 text-white/70 ring-2 ring-[#0c1526]"
+                    className="text-muted relative -ml-1.5 flex size-[26px] items-center justify-center rounded-full bg-white/10 ring-2 ring-[#0c1526]"
                   >
                     +{activeMatch.anchors.length - 3}
                   </Typography>
