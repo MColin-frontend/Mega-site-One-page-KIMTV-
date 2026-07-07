@@ -3,8 +3,9 @@ import common from "./vi/common.json"
 import footer from "./vi/footer.json"
 import header from "./vi/header.json"
 import home from "./vi/home.json"
+import news from "./vi/news.json"
 
-const vi = { common, header, footer, home, chat }
+const vi = { common, header, footer, home, news, chat }
 
 export default vi
 
@@ -105,13 +106,6 @@ export interface Dictionary {
     "match-schedule": {
       title: string
     }
-    news: {
-      title: string
-      latest: string
-      category: string
-      viewAll: string
-      empty: string
-    }
     "league-select": {
       all: string
       unit: string
@@ -121,6 +115,34 @@ export interface Dictionary {
       searchPlaceholder: string
       empty: string
       favorites: string
+    }
+  }
+  news: {
+    title: string
+    pageTitle: string
+    latest: string
+    popular: string
+    category: string
+    viewAll: string
+    empty: string
+    subtitle: string
+    readMore: string
+    backToList: string
+    publishedBy: string
+    hotVideos: string
+    author: {
+      follow: string
+      following: string
+    }
+    comment: {
+      title: string
+      placeholder: string
+      reply: string
+      delete: string
+      submit: string
+      empty: string
+      loginToComment: string
+      viewMore: string
     }
   }
   chat: {
