@@ -49,7 +49,7 @@ httpClient.interceptors.request.use(async (config) => {
   try {
     const { cookies } = await import("next/headers")
     const token = (await cookies()).get("token")?.value
-    if (token) config.headers = { ...config.headers, token }
+    if (token) (config.headers as Record<string, string>)["token"] = token
   } catch {
     // không có next/headers (Pages Router hoặc edge context)
   }

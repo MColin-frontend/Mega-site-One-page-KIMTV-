@@ -31,18 +31,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: yarn
 
       - name: Install deps
-        run: npm ci
+        run: yarn --frozen-lockfile
         env:
           HUSKY: 0
 
       - name: Lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Typecheck
-        run: npm run typecheck
+        run: yarn typecheck
 
   # --------------------------------------------------------------------------
   build-and-push:
