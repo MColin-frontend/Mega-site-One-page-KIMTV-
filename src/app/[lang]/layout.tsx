@@ -26,7 +26,9 @@ export default async function LangLayout({
     <>
       <Header />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <div className="max-md:hidden">
+        <Footer />
+      </div>
       <BackToTop />
       <Toaster />
     </>

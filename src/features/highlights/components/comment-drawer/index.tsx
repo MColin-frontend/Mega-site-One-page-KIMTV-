@@ -63,6 +63,7 @@ export function CommentDrawer({
   const newsIdRef = useRef(newsId)
   const loginUserIdRef = useRef(loginUserId)
   const commentTypeRef = useRef(commentType)
+  const isPostingRef = useRef(false)
   const { isLoading, isLoadingMore, total, page } = params
 
   const {
@@ -99,36 +100,43 @@ export function CommentDrawer({
   }
 
   async function handleSubmit({ content: text }: CommentFormInterface, type: CommentType) {
+    if (isPostingRef.current) return
+    isPostingRef.current = true
+
     const { parent, to } = reply
 
     if (type === CommentType.REPLY) resetReply()
     else resetMain()
 
-    await postComment({
-      payload: {
-        commentType,
-        content: text,
-        mainNewsId: Number(newsIdRef.current),
-        userSourceId: loginUserId,
-        topFloorId: type === CommentType.REPLY ? Number(parent!.ncid) : 0,
-        ...(type === CommentType.REPLY && {
-          replyToCommentId: Number(to!.ncid),
-          replyToUserSourceId: to!.userSourceId,
-        }),
-      },
-      loginUserId,
-      userProfile: { userName: user?.name, avatar: user?.avatar },
-      total,
-      setComments,
-      setParams,
-      onCountChange,
-      messageSuccess: t(
-        type === CommentType.REPLY ? "video.comment.replySuccess" : "video.comment.postSuccess"
-      ),
-      messageError: t("video.comment.postError"),
-      parentNcid: type === CommentType.REPLY ? Number(parent!.ncid) : undefined,
-      replyUserName: type === CommentType.REPLY ? (to?.userName ?? "") : undefined,
-    })
+    try {
+      await postComment({
+        payload: {
+          commentType,
+          content: text,
+          mainNewsId: Number(newsIdRef.current),
+          userSourceId: loginUserId,
+          topFloorId: type === CommentType.REPLY ? Number(parent!.ncid) : 0,
+          ...(type === CommentType.REPLY && {
+            replyToCommentId: Number(to!.ncid),
+            replyToUserSourceId: to!.userSourceId,
+          }),
+        },
+        loginUserId,
+        userProfile: { userName: user?.name, avatar: user?.avatar },
+        total,
+        setComments,
+        setParams,
+        onCountChange,
+        messageSuccess: t(
+          type === CommentType.REPLY ? "video.comment.replySuccess" : "video.comment.postSuccess"
+        ),
+        messageError: t("video.comment.postError"),
+        parentNcid: type === CommentType.REPLY ? Number(parent!.ncid) : undefined,
+        replyUserName: type === CommentType.REPLY ? (to?.userName ?? "") : undefined,
+      })
+    } finally {
+      isPostingRef.current = false
+    }
   }
 
   async function handleRemoveComment(item: ReplyItem) {

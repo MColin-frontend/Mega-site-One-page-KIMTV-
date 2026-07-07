@@ -254,7 +254,7 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-header sticky top-0 z-50 w-full">
+      <header id="site-header" className="bg-header sticky top-0 z-50 w-full">
         <div className="container flex h-fit items-center gap-3 py-3">
           <Link href={routes.home} className="shrink-0" onClick={() => close("mobileMenu")}>
             <Img

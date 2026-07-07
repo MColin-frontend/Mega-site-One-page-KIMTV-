@@ -5,14 +5,13 @@ import { getRequest } from "@/server/services/request"
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const userId = searchParams.get("userId") ?? ""
+  const loginUserId = searchParams.get("loginUserId") ?? ""
   const isFollow = searchParams.get("isFollow") !== "false"
 
   if (!userId) return NextResponse.json({ success: false })
 
-  // Java identifies the current user from the token header forwarded by request.ts interceptor.
-  // No loginUserId needed — mirrors KIMTV-PC: Api.followUser({ isFollow, userId }).
   const res = await getRequest<unknown>("/user/follow-user", {
-    params: { isFollow, userId },
+    params: { isFollow, userId, loginUserId },
   })
 
   return NextResponse.json({ success: res.success })

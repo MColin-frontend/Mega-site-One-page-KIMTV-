@@ -82,10 +82,6 @@ async function fetchComments(params: FetchCommentsParamsInterface) {
     })
 }
 
-// ---------------------------------------------------------------------------
-// postComment — optimistic pending placeholder, then hydrate with real record
-// ---------------------------------------------------------------------------
-
 async function postComment(params: {
   payload: PostCommentPayloadInterface
   loginUserId: string
@@ -200,13 +196,7 @@ async function postComment(params: {
       return true
     }
 
-    let hydrated = await tryHydrate()
-    if (!hydrated) {
-      // Server may need a moment to persist the record; retry once
-      await new Promise<void>((r) => setTimeout(r, 600))
-      hydrated = await tryHydrate()
-    }
-
+    const hydrated = await tryHydrate()
     if (!hydrated) {
       // Fallback: remove the pending item (list stays server-consistent from next fetch)
       setComments((prev) => removePendingByKey(prev, clientKey))

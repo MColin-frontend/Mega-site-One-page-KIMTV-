@@ -22,12 +22,13 @@ const SOCIAL_API = {
 
 async function toggleFollowAction(params: {
   userId: string | number
+  loginUserId?: string
   setFollowMap: Dispatch<SetStateAction<Record<string, boolean>>>
   setVideos: Dispatch<SetStateAction<HighlightVideoInterface[]>>
   setFollowLoading: Dispatch<SetStateAction<boolean>>
   messageSuccess?: string
 }): Promise<void> {
-  const { userId, setFollowMap, setVideos, setFollowLoading, messageSuccess } = params
+  const { userId, loginUserId, setFollowMap, setVideos, setFollowLoading, messageSuccess } = params
   const aid = String(userId)
 
   // Optimistic update
@@ -35,7 +36,7 @@ async function toggleFollowAction(params: {
   setFollowLoading(true)
 
   try {
-    const url = `${SOCIAL_API.FOLLOW}?userId=${aid}&isFollow=true`
+    const url = `${SOCIAL_API.FOLLOW}?userId=${aid}&isFollow=true&loginUserId=${encodeURIComponent(loginUserId ?? "")}`
     const res = await clientGet<{ success: boolean }>(url)
     const ok = res.success && Boolean(res.data?.success)
 

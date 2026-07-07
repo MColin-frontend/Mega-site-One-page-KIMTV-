@@ -50,7 +50,7 @@ import {
   IcShare,
   IcUnmute,
 } from "./feed-icons"
-import { FeedSkeleton, MenuSkeleton } from "./skeleton"
+import { FeedSkeleton } from "./skeleton"
 
 // ─── Static icon maps (module-level, không re-create mỗi render) ─────────────
 type MenuIconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>
@@ -160,15 +160,15 @@ export function HighlightsFeed({
     if (typeof window === "undefined") return
     const vw = window.innerWidth
     const vh = window.innerHeight
-    const headerH = document.getElementById("header")?.offsetHeight ?? 72
+    const headerH = document.getElementById("site-header")?.offsetHeight ?? 60
     const isMobile = vw <= 768
-    const topMenuH = isMobile ? 80 : 0
+    const bottomNavH = isMobile ? 56 : 0
     const sideMenuW = isMobile ? 0 : 96
     const railW = isMobile ? 0 : 60
     const gap = 12
 
-    const stageH = Math.max(vh - headerH - topMenuH - 20, 360)
-    const maxPlayerW = Math.max(vw - sideMenuW - railW - gap * 2 - (isMobile ? 32 : 48), 260)
+    const stageH = Math.max(vh - headerH - bottomNavH - (isMobile ? 0 : 20), 360)
+    const maxPlayerW = Math.max(vw - sideMenuW - railW - gap * 2 - (isMobile ? 0 : 48), 260)
     let pw = Math.round((stageH * 9) / 16)
     if (pw > maxPlayerW) pw = maxPlayerW
 
@@ -491,6 +491,7 @@ export function HighlightsFeed({
     } else {
       await toggleFollowAction({
         userId: String(currentItem?.authorId),
+        loginUserId: user?.userId ? String(user.userId) : "",
         setFollowMap,
         setVideos,
         setFollowLoading,
@@ -533,18 +534,15 @@ export function HighlightsFeed({
   }))
 
   return (
-    <div className="flex w-full gap-3" style={{ height: stageHeight, minHeight: stageHeight }}>
-      {/* ── Side menu (desktop) ─────────────────────────────────────────── */}
-      {loading ? <MenuSkeleton /> : null}
-      <aside
-        className={cn(
-          "feed-menu sticky w-24 shrink-0 self-start pt-6 max-md:hidden",
-          loading && "hidden"
-        )}
-      >
-        <nav className="flex flex-col gap-0.5 rounded-2xl border border-white/8 bg-[rgba(22,24,35,0.92)] px-2 py-2.5 shadow-xl backdrop-blur-xl">
+    <div
+      className="flex w-full gap-3 max-md:gap-0"
+      style={{ height: stageHeight, minHeight: stageHeight }}
+    >
+      {/* ── Side menu (desktop) / Bottom nav (mobile) ───────────────────── */}
+      <aside className="feed-menu sticky w-24 shrink-0 self-start pt-6 max-md:fixed max-md:right-0 max-md:bottom-0 max-md:left-0 max-md:z-30 max-md:w-full max-md:pt-0">
+        <nav className="flex flex-col gap-0.5 rounded-2xl border border-white/8 bg-[rgba(22,24,35,0.92)] px-2 py-2.5 shadow-xl backdrop-blur-xl max-md:flex-row max-md:gap-0 max-md:rounded-none max-md:border-0 max-md:border-t max-md:border-white/10 max-md:px-0 max-md:py-0 max-md:shadow-none">
           {/* Filter group */}
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-0.5 max-md:contents">
             {filterMenuItems.map(({ key, label, Icon }) => (
               <Button
                 key={key}
@@ -553,10 +551,11 @@ export function HighlightsFeed({
                 onClick={() => onMenuChange(key)}
                 className={cn(
                   "relative h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 px-1 py-2.5 text-[11px] leading-tight font-medium transition-all [&_svg]:size-auto",
+                  "active:translate-y-0 active:scale-95",
+                  "max-md:min-h-0 max-md:flex-1 max-md:rounded-none max-md:px-1 max-md:py-3",
                   activeMenu === key
                     ? "bg-[rgba(255,210,32,0.1)] opacity-100 backdrop-blur-sm"
-                    : "bg-transparent opacity-60 hover:bg-white/6 hover:opacity-90",
-                  loading && "cursor-not-allowed opacity-30"
+                    : "bg-transparent opacity-60 hover:bg-white/6 hover:opacity-90"
                 )}
               >
                 <MenuIcon Icon={Icon} active={activeMenu === key} />
@@ -564,24 +563,24 @@ export function HighlightsFeed({
                   as="span"
                   variant="caption"
                   className={cn(
-                    "line-clamp-2 text-center text-[11px] leading-tight font-medium",
+                    "line-clamp-1 text-center text-[11px] leading-tight font-medium",
                     activeMenu === key ? "text-[#ffd220]" : "text-white/70"
                   )}
                 >
                   {label}
                 </Typography>
                 {activeMenu === key && (
-                  <span className="absolute bottom-1 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-full bg-[#ffd220]" />
+                  <span className="absolute bottom-1 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-full bg-[#ffd220] max-md:bottom-0" />
                 )}
               </Button>
             ))}
           </div>
 
           {/* Divider */}
-          <div className="mx-1.5 my-2 h-px bg-linear-to-r from-transparent via-white/14 to-transparent" />
+          <div className="mx-1.5 my-2 h-px bg-linear-to-r from-transparent via-white/14 to-transparent max-md:hidden" />
 
           {/* Link group */}
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-0.5 max-md:contents">
             {linkMenuItems.map(({ key, label, Icon, url, external }) => (
               <Button
                 key={key}
@@ -593,13 +592,13 @@ export function HighlightsFeed({
                     window.location.href = url
                   }
                 }}
-                className="h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 bg-transparent px-1 py-2.5 opacity-60 hover:bg-white/6 hover:opacity-90 [&_svg]:size-auto"
+                className="h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 bg-transparent px-1 py-2.5 opacity-60 hover:bg-white/6 hover:opacity-90 active:translate-y-0 active:scale-95 max-md:min-h-0 max-md:flex-1 max-md:rounded-none max-md:px-1 max-md:py-3 [&_svg]:size-auto"
               >
                 <MenuIcon Icon={Icon} />
                 <Typography
                   as="span"
                   variant="caption"
-                  className="line-clamp-2 text-center text-[11px] leading-tight font-medium text-white/70"
+                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-white/70"
                 >
                   {label}
                 </Typography>
@@ -608,42 +607,6 @@ export function HighlightsFeed({
           </div>
         </nav>
       </aside>
-
-      {/* ── Mobile top menu ─────────────────────────────────────────────── */}
-      <div className="absolute top-0 right-0 left-0 z-10 flex scrollbar-none items-center gap-1 overflow-x-auto bg-black/60 px-3 py-2 backdrop-blur-sm md:hidden">
-        {filterMenuItems.map(({ key, label }) => (
-          <Button
-            key={key}
-            type="button"
-            onClick={() => onMenuChange(key)}
-            className={cn(
-              "h-auto shrink-0 rounded-full border-0 px-3 py-1.5 text-xs font-semibold transition-colors",
-              activeMenu === key
-                ? "bg-[#ffd220] text-black hover:bg-[#ffd220]/90"
-                : "bg-white/10 text-white/70 hover:bg-white/20"
-            )}
-          >
-            {label}
-          </Button>
-        ))}
-        <span className="mx-0.5 h-5 w-px shrink-0 bg-white/15" />
-        {linkMenuItems.map(({ key, label, url, external }) => (
-          <Button
-            key={key}
-            type="button"
-            onClick={() => {
-              if (external || /^https?:\/\//i.test(url)) {
-                window.open(url, "_blank", "noopener,noreferrer")
-              } else {
-                window.location.href = url
-              }
-            }}
-            className="h-auto shrink-0 rounded-full border-0 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/70 hover:bg-white/20"
-          >
-            {label}
-          </Button>
-        ))}
-      </div>
 
       <main className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden bg-black">
         {loading || !layoutReady ? (
@@ -663,7 +626,12 @@ export function HighlightsFeed({
             {isAwaitingNext && <FeedSkeleton playerWidth={playerWidth} stageHeight={stageHeight} />}
 
             {/* center: player + rail */}
-            <div className={cn("flex h-full items-stretch gap-3", isAwaitingNext && "invisible")}>
+            <div
+              className={cn(
+                "flex h-full items-stretch gap-3 max-md:relative",
+                isAwaitingNext && "invisible"
+              )}
+            >
               {/* Player */}
               <div
                 className="relative overflow-hidden rounded bg-black"
@@ -832,12 +800,12 @@ export function HighlightsFeed({
               </div>
 
               {/* Rail */}
-              <aside className="flex flex-col items-center justify-center gap-7 self-stretch py-4 max-md:hidden">
+              <aside className="flex flex-col items-center justify-center gap-7 self-stretch py-4 max-md:absolute max-md:top-1/2 max-md:right-1 max-md:z-15 max-md:-translate-y-1/2 max-md:gap-4 max-md:py-0">
                 {/* Avatar + Follow */}
                 <div className="relative">
                   {currentItem?.authorId ? (
                     <Link href={`/user-info/${currentItem.authorId}`}>
-                      <Avatar size={56} className="border-2 border-white">
+                      <Avatar size={56} className="border-2 border-white max-md:size-10!">
                         <AvatarImage
                           src={currentItem?.userAvatar}
                           alt={currentItem?.userName || ""}
@@ -845,7 +813,7 @@ export function HighlightsFeed({
                       </Avatar>
                     </Link>
                   ) : (
-                    <Avatar size={56} className="border-2 border-white">
+                    <Avatar size={56} className="border-2 border-white max-md:size-10!">
                       <AvatarImage
                         src={currentItem?.userAvatar}
                         alt={currentItem?.userName || ""}
@@ -857,7 +825,7 @@ export function HighlightsFeed({
                       type="button"
                       disabled={followLoading}
                       onClick={handleFollow}
-                      className="absolute -bottom-2.5 left-1/2 h-6 w-6 -translate-x-1/2 rounded-full border-0 bg-[#fe2c55] p-0 text-center text-xl leading-6 font-bold text-white hover:bg-[#fe2c55]/90"
+                      className="absolute -bottom-2.5 left-1/2 h-6 w-6 -translate-x-1/2 rounded-full border-0 bg-[#fe2c55] p-0 text-center text-xl leading-6 font-bold text-white hover:bg-[#fe2c55]/90 max-md:h-5 max-md:w-5 max-md:text-sm"
                     >
                       +
                     </Button>
@@ -869,9 +837,9 @@ export function HighlightsFeed({
                   type="button"
                   disabled={likeLoading}
                   onClick={() => toggleLike(false)}
-                  className="h-auto w-auto flex-col items-center gap-2 border-0 bg-transparent text-white hover:bg-transparent disabled:opacity-60"
+                  className="h-auto w-auto flex-col items-center gap-2 border-0 bg-transparent p-0 text-white hover:bg-transparent disabled:opacity-60 max-md:gap-1"
                 >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)]">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)] max-md:h-11 max-md:w-11">
                     {isLiked ? (
                       <IcHeartFilled className="text-[#fe2c55]" />
                     ) : (
@@ -881,7 +849,7 @@ export function HighlightsFeed({
                   <Typography
                     as="span"
                     variant="label"
-                    className={cn("font-semibold", isLiked && "text-[#fe2c55]")}
+                    className={cn("font-semibold max-md:text-[11px]", isLiked && "text-[#fe2c55]")}
                   >
                     {formatCount(displayLikeCount)}
                   </Typography>
@@ -891,12 +859,16 @@ export function HighlightsFeed({
                 <Button
                   type="button"
                   onClick={() => openDrawer("comment")}
-                  className="h-auto w-auto flex-col items-center gap-2 border-0 bg-transparent text-white hover:bg-transparent"
+                  className="h-auto w-auto flex-col items-center gap-2 border-0 bg-transparent p-0 text-white hover:bg-transparent max-md:gap-1"
                 >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)]">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)] max-md:h-11 max-md:w-11">
                     <IcComment className="text-white" />
                   </span>
-                  <Typography as="span" variant="label" className="font-semibold">
+                  <Typography
+                    as="span"
+                    variant="label"
+                    className="font-semibold max-md:text-[11px]"
+                  >
                     {formatCount(Number(currentItem?.commentCount) || 0)}
                   </Typography>
                 </Button>
@@ -905,10 +877,10 @@ export function HighlightsFeed({
                 <Button
                   type="button"
                   onClick={handleShareVideo}
-                  className="h-auto w-auto flex-col items-center gap-2 border-0 bg-transparent text-white hover:bg-transparent"
+                  className="h-auto w-auto flex-col items-center gap-2 border-0 bg-transparent p-0 text-white hover:bg-transparent max-md:gap-1"
                   aria-label={t("video.actions.share")}
                 >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)]">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)] max-md:h-11 max-md:w-11">
                     <IcShare className="text-white" />
                   </span>
                 </Button>
@@ -916,7 +888,7 @@ export function HighlightsFeed({
             </div>
 
             {/* Nav buttons */}
-            <div className="absolute top-1/2 right-0 flex -translate-y-1/2 flex-col gap-3 pr-1">
+            <div className="absolute top-1/2 right-0 flex -translate-y-1/2 flex-col gap-3 pr-1 max-md:hidden">
               <Button
                 type="button"
                 disabled={currentIndex <= 0}
