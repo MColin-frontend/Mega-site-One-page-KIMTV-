@@ -1,4 +1,5 @@
-import { fetchInitialHighlights, resolveInitialMenu } from "@/features/highlights/highlights.api"
+import { resolveInitialMenu } from "@/features/highlights/highlights.api"
+import { fetchInitialHighlights } from "@/features/highlights/highlights.server"
 
 import { HighlightsFeed } from "./feed"
 

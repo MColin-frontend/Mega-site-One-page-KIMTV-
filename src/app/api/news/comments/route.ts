@@ -1,27 +1,14 @@
-import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 
 import { getRequest, postRequest } from "@/server/services/request"
-import type { KimtvUser } from "@/lib/auth-cookie"
-
-async function getLoginUserId(): Promise<string> {
-  try {
-    const store = await cookies()
-    const raw = store.get("userInfo")?.value
-    if (!raw) return ""
-    const user = JSON.parse(decodeURIComponent(raw)) as KimtvUser
-    return String(user.userId ?? "")
-  } catch {
-    return ""
-  }
-}
+import { getServerLoginUserId } from "@/lib/auth-server"
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
   const newsId = sp.get("newsId")
   if (!newsId) return NextResponse.json({ success: false }, { status: 400 })
 
-  const loginUserId = await getLoginUserId()
+  const loginUserId = await getServerLoginUserId()
   const res = await getRequest("/news/news-comment", {
     params: {
       newsId,
@@ -36,7 +23,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const loginUserId = await getLoginUserId()
+  const loginUserId = await getServerLoginUserId()
   if (!loginUserId)
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
 
@@ -46,7 +33,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const loginUserId = await getLoginUserId()
+  const loginUserId = await getServerLoginUserId()
   if (!loginUserId)
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
 

@@ -11,7 +11,7 @@ import type {
   ReplyStateInterface,
 } from "@/models"
 import { Drawer } from "@base-ui/react/drawer"
-import { ChevronDown, X } from "lucide-react"
+import { X } from "lucide-react"
 
 import { useAuth } from "@/hooks/use-auth"
 
@@ -95,9 +95,9 @@ export function CommentDrawer({
     handleFetchComment(page)
   }, [handleFetchComment, page])
 
-  function handleLoadMoreComments() {
-    setParams((s) => ({ ...s, page: s.page + 1, isLoadingMore: true }))
-  }
+  // function handleLoadMoreComments() {
+  //   setParams((s) => ({ ...s, page: s.page + 1, isLoadingMore: true }))
+  // }
 
   async function handleSubmit({ content: text }: CommentFormInterface, type: CommentType) {
     if (isPostingRef.current) return

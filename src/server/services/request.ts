@@ -1,5 +1,7 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from "axios"
 
+import { KIMTV_API_HEADERS } from "@/lib/kimtv-headers"
+
 // toast chỉ hoạt động ở client context — server action sẽ no-op
 
 import { assertServerEnv, env } from "@/config/env"
@@ -25,33 +27,45 @@ import { toast } from "@/components/ui/toast"
  */
 
 const DEFAULT_HEADERS: Readonly<Record<string, string>> = {
-  Accept: "application/json, text/plain, */*",
+  ...KIMTV_API_HEADERS,
   "Content-Type": "application/json",
-  lan: "vi",
-  sysType: "PC",
 }
 
 export const httpClient: AxiosInstance = axios.create({
   baseURL: env.apiBaseUrl,
-  // Timeout chuẩn: tính cả thời gian chờ phản hồi, hủy nếu quá hạn.
   timeout: env.apiTimeoutMs,
   timeoutErrorMessage: `Request timeout sau ${env.apiTimeoutMs}ms`,
-  headers: {
-    ...DEFAULT_HEADERS,
-    Origin: env.apiOrigin,
-    Referer: `${env.apiOrigin}/`,
-  },
+  headers: DEFAULT_HEADERS,
 })
 
-// Cache-buster `_t` + tự động kẹp token từ cookie nếu có.
+// Cache-buster `_t` + token + Origin/Referer giả lập kimtv.net (không dùng localhost).
 httpClient.interceptors.request.use(async (config) => {
   config.params = { ...config.params, _t: Date.now() }
+  const headers = config.headers as Record<string, string>
+  headers.lan = headers.lan ?? KIMTV_API_HEADERS.lan
+  headers.sysType = headers.sysType ?? KIMTV_API_HEADERS.sysType
+  headers.Accept = headers.Accept ?? KIMTV_API_HEADERS.Accept
+
+  if (env.apiOrigin) {
+    const origin = env.apiOrigin.replace(/\/$/, "")
+    headers.Origin = origin
+    if (!headers.Referer) headers.Referer = `${origin}/`
+  }
+
   try {
     const { cookies } = await import("next/headers")
-    const token = (await cookies()).get("token")?.value
-    if (token) (config.headers as Record<string, string>)["token"] = token
+    const store = await cookies()
+    const token = store.get("token")?.value
+    if (token && !headers.token) headers.token = token
+
+    // Forward auth cookie nếu caller chưa set (server components / API routes).
+    if (!headers.Cookie) {
+      const { buildKimtvAuthCookieHeader } = await import("@/lib/kimtv-headers")
+      const cookieHeader = buildKimtvAuthCookieHeader(store)
+      if (cookieHeader) headers.Cookie = cookieHeader
+    }
   } catch {
-    // không có next/headers (Pages Router hoặc edge context)
+    // không có next/headers
   }
   return config
 })

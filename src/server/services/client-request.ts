@@ -5,6 +5,8 @@
  * Luôn resolve, không throw — return { success, data, httpStatus }.
  */
 
+import { buildKimtvClientHeaders } from "@/lib/kimtv-headers"
+
 import { toast } from "@/components/ui/toast"
 
 export interface ClientRequestResult<T> {
@@ -31,17 +33,24 @@ function getTokenFromCookie(): string {
   return match ? decodeURIComponent(match[1]) : ""
 }
 
+function kimtvHeaders(token: string): HeadersInit {
+  return {
+    ...DEFAULT_HEADERS,
+    ...buildKimtvClientHeaders(token || null),
+  }
+}
+
 async function request<T>(
   url: string,
   options: ClientRequestOptions = {}
 ): Promise<ClientRequestResult<T>> {
   const { isMessageError, messageSuccess, messageError, ...fetchOptions } = options
   const token = getTokenFromCookie()
-  const authHeaders: HeadersInit = token ? { token } : {}
   try {
     const res = await fetch(url, {
       ...fetchOptions,
-      headers: { ...DEFAULT_HEADERS, ...authHeaders, ...fetchOptions.headers },
+      credentials: "include",
+      headers: { ...kimtvHeaders(token), ...fetchOptions.headers },
     })
     const httpStatus = res.status
 

@@ -4,7 +4,7 @@ import { getTranslation } from "@/i18n/get-locale"
 import { getRoutes } from "@/config/routes"
 
 import { fetchFeaturedNewsAction, fetchLatestNewsListAction } from "@/features/home/home.api"
-import { fetchPopularNewsListAction } from "@/features/news/news.api"
+import { fetchPopularNewsListAction } from "@/features/news/news.server"
 import { Typography } from "@/components/ui/typography"
 
 import { NewsHeroCarousel } from "./hero"

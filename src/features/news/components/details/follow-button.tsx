@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 
-import { clientGet } from "@/lib/client-request"
+import { followUser, getJavaErrorMessage, isJavaSuccess } from "@/lib/java-client"
 import { useAuth } from "@/hooks/use-auth"
 
 import { useTranslation } from "@/i18n"
 
-import { USER_ROUTES } from "@/features/news/news.api"
+import { toast } from "@/components/ui/toast"
 
 interface FollowButtonProps {
   authorId: number | null | undefined
@@ -30,15 +30,17 @@ export function FollowButton({ authorId, initialFollow }: FollowButtonProps) {
     if (loading) return
 
     const next = !following
-    setFollowing(next)
     setLoading(true)
 
     try {
-      const qs = new URLSearchParams({ isFollow: String(next), userId: String(authorId) })
-      const res = await clientGet<{ success: boolean }>(`${USER_ROUTES.FOLLOW}?${qs}`)
-      if (!res?.success) setFollowing(!next)
-    } catch {
-      setFollowing(!next)
+      const res = await followUser({ isFollow: next, userId: authorId as number })
+      if (isJavaSuccess(res)) {
+        setFollowing(next)
+        toast.success(t("video.follow.success"))
+      } else {
+        const errMsg = getJavaErrorMessage(res)
+        if (errMsg) toast.error(errMsg)
+      }
     } finally {
       setLoading(false)
     }

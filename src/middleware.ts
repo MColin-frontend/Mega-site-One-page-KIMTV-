@@ -38,6 +38,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Bỏ qua _next/static, _next/image, favicon, api
-    "/((?!_next/static|_next/image|favicon.ico|api).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|java).*)",
   ],
 }
