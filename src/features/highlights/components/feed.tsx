@@ -209,42 +209,48 @@ export function HighlightsFeed({
 
   const displayLikeCount = Number(currentItem?.likeCount) || 0
   const canGoNext = currentIndex < videos.length - 1 || hasMore
+  const loginUserId =
+    user?.userId != null ? String(user.userId) : user?.uid != null ? String(user.uid) : ""
   const showFollowBtn =
     !!currentItem?.authorId &&
-    !(isLoggedIn && user?.userId && String(user.userId) === String(currentItem.authorId))
+    !(isLoggedIn && loginUserId && loginUserId === String(currentItem.authorId))
 
   // ── Fetch videos ─────────────────────────────────────────────────────────────
-  const fetchVideos = useCallback(async (menu: FeedMenu, pageNum = 1, append = false) => {
-    if (append) setLoadingMore(true)
-    else setLoading(true)
-    try {
-      const { videos: newVideos, hasMore: more } = await fetchVideoFeed({
-        status: menu,
-        page: pageNum,
-      })
-      if (append) {
-        setVideos((prev) => [...prev, ...newVideos])
-      } else {
-        setVideos(newVideos)
-        setCurrentIndex(0)
-      }
-      setHasMore(more)
-      setPage(pageNum)
-    } catch {
-      if (!append) setVideos([])
-    } finally {
-      if (append) {
-        setLoadingMore(false)
-        // Nếu pendingAdvance chưa được resolve (không có video mới), xóa skeleton
-        if (pendingAdvance.current) {
-          pendingAdvance.current = false
-          setIsAwaitingNext(false)
+  const fetchVideos = useCallback(
+    async (menu: FeedMenu, pageNum = 1, append = false) => {
+      if (append) setLoadingMore(true)
+      else setLoading(true)
+      try {
+        const { videos: newVideos, hasMore: more } = await fetchVideoFeed({
+          status: menu,
+          page: pageNum,
+          loginUserId,
+        })
+        if (append) {
+          setVideos((prev) => [...prev, ...newVideos])
+        } else {
+          setVideos(newVideos)
+          setCurrentIndex(0)
         }
-      } else {
-        setLoading(false)
+        setHasMore(more)
+        setPage(pageNum)
+      } catch {
+        if (!append) setVideos([])
+      } finally {
+        if (append) {
+          setLoadingMore(false)
+          // Nếu pendingAdvance chưa được resolve (không có video mới), xóa skeleton
+          if (pendingAdvance.current) {
+            pendingAdvance.current = false
+            setIsAwaitingNext(false)
+          }
+        } else {
+          setLoading(false)
+        }
       }
-    }
-  }, [])
+    },
+    [loginUserId]
+  )
 
   // ── Menu change ───────────────────────────────────────────────────────────────
   const onMenuChange = useCallback(

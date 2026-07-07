@@ -1,22 +1,19 @@
 import type { Dispatch, SetStateAction } from "react"
 
 import { clientGet } from "@/server/services/client-request"
-import { getRequest } from "@/server/services/request"
+import { followUser, getJavaErrorMessage, isJavaSuccess } from "@/lib/java-client"
 
 import type {
   FetchVideoFeedParamsInterface,
   HighlightVideoInterface,
-  InitialHighlightsDataInterface,
   VideoFeedResultInterface,
-  VideoResultRawInterface,
 } from "@/features/highlights/highlight.models"
 
-import { FeedMenu, LATEST_VIDEO_PAGE_SIZE, VALID_MENUS } from "./highlights.constants"
+import { FeedMenu, VALID_MENUS } from "./highlights.constants"
 
 // ─── Client-side social actions ──────────────────────────────────────────────
 
 const SOCIAL_API = {
-  FOLLOW: "/api/highlights/follow",
   LIKE: "/api/highlights/like",
 } as const
 
@@ -38,30 +35,27 @@ async function toggleFollowAction(params: {
   const { userId, setFollowMap, setVideos, setFollowLoading, messageSuccess } = params
   const aid = String(userId)
 
-  // Optimistic update
-  setFollowMap((prev) => ({ ...prev, [aid]: true }))
   setFollowLoading(true)
 
   try {
-    const url = `${SOCIAL_API.FOLLOW}?userId=${aid}&isFollow=true`
-    const res = await clientGet<{ success: boolean }>(url)
-    const ok = isRouteOk(res)
+    const res = await followUser({ isFollow: true, userId: aid })
 
-    if (ok) {
+    if (isJavaSuccess(res)) {
       if (messageSuccess) {
         const { toast } = await import("@/components/ui/toast")
         toast.success(messageSuccess)
       }
+      setFollowMap((prev) => ({ ...prev, [aid]: true }))
       setVideos((prev) =>
         prev.map((v) => (String(v.authorId) === aid ? { ...v, hasFollow: true } : v))
       )
     } else {
-      // Rollback
-      setFollowMap((prev) => ({ ...prev, [aid]: false }))
+      const errMsg = getJavaErrorMessage(res)
+      if (errMsg) {
+        const { toast } = await import("@/components/ui/toast")
+        toast.error(errMsg)
+      }
     }
-  } catch {
-    // Rollback
-    setFollowMap((prev) => ({ ...prev, [aid]: false }))
   } finally {
     setFollowLoading(false)
   }
@@ -113,9 +107,6 @@ async function toggleLikeAction(params: {
 }
 
 const VIDEO_API = {
-  FEATURED: "/news/featured-by-game",
-  POPULAR: "/news/get-popular-news-by-game",
-  LATEST: (tabType: number, pageIndex: number) => `/v4/${tabType}/video/${pageIndex}`,
   GET_VIDEOS: "/api/highlights/videos",
 } as const
 
@@ -133,37 +124,6 @@ function resolveInitialMenu(param: string | string[] | undefined): FeedMenu {
   return VALID_MENUS.includes(v ?? "") ? (v as FeedMenu) : FeedMenu.Featured
 }
 
-const EMPTY: InitialHighlightsDataInterface = { videos: [], hasMore: false }
-
-async function fetchInitialHighlights(
-  menu: FeedMenu = FeedMenu.Featured
-): Promise<InitialHighlightsDataInterface> {
-  switch (menu) {
-    case FeedMenu.Featured: {
-      const res = await getRequest<VideoResultRawInterface>(VIDEO_API.POPULAR, {
-        params: { gameIds: "", loginUserId: "" },
-      })
-      return res.success ? { videos: res.data?.videos ?? [], hasMore: false } : EMPTY
-    }
-
-    case FeedMenu.Trending: {
-      const res = await getRequest<VideoResultRawInterface>(VIDEO_API.FEATURED, {
-        params: { gameIds: "", loginUserId: "" },
-      })
-      return res.success ? { videos: res.data?.videos ?? [], hasMore: false } : EMPTY
-    }
-
-    case FeedMenu.Latest: {
-      const res = await getRequest<VideoResultRawInterface>(VIDEO_API.LATEST(0, 1), {
-        params: { tabType: 0, type: "video", pageIndex: 1, loginUserId: "" },
-      })
-      if (!res.success) return EMPTY
-      const records = res.data?.records ?? []
-      return { videos: records, hasMore: records.length >= LATEST_VIDEO_PAGE_SIZE }
-    }
-  }
-}
-
 export type {
   FetchVideoFeedParamsInterface,
   HighlightVideoInterface,
@@ -171,10 +131,4 @@ export type {
   VideoFeedResultInterface,
 } from "@/features/highlights/highlight.models"
 export { FeedMenu } from "./highlights.constants"
-export {
-  fetchVideoFeed,
-  fetchInitialHighlights,
-  resolveInitialMenu,
-  toggleFollowAction,
-  toggleLikeAction,
-}
+export { fetchVideoFeed, resolveInitialMenu, toggleFollowAction, toggleLikeAction }

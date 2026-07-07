@@ -1,24 +1,10 @@
-import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 
 import { getRequest } from "@/server/services/request"
-import type { KimtvUser } from "@/lib/auth-cookie"
-
-async function getLoginUserId(): Promise<string> {
-  try {
-    const store = await cookies()
-    const raw = store.get("userInfo")?.value
-    if (!raw) return ""
-    const user = JSON.parse(decodeURIComponent(raw)) as KimtvUser
-    const id = user.userId ?? user.uid
-    return id != null ? String(id) : ""
-  } catch {
-    return ""
-  }
-}
+import { getServerLoginUserId } from "@/lib/auth-server"
 
 export async function GET(req: NextRequest) {
-  const loginUserId = await getLoginUserId()
+  const loginUserId = await getServerLoginUserId()
   if (!loginUserId) {
     return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
   }

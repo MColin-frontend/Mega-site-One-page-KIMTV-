@@ -10,6 +10,25 @@ export interface KimtvUser {
   [key: string]: unknown
 }
 
+/** Parse raw `userInfo` cookie — backend Java trả `uid`, normalize về `userId`. */
+export function parseUserInfoCookie(raw: string | undefined | null): KimtvUser | null {
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(decodeURIComponent(raw)) as KimtvUser
+    if (parsed.uid != null && parsed.userId == null) {
+      parsed.userId = parsed.uid
+    }
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+export function getLoginUserIdFromUser(user: KimtvUser | null | undefined): string {
+  const id = user?.userId ?? user?.uid
+  return id != null ? String(id) : ""
+}
+
 function getCookieDomain(): string | undefined {
   if (typeof window === "undefined") return undefined
   let domain = window.location.hostname
@@ -52,16 +71,5 @@ export function getTokenFromCookie(): string | null {
 }
 
 export function getUserInfoFromCookie(): KimtvUser | null {
-  const raw = getCookie("userInfo")
-  if (!raw) return null
-  try {
-    const parsed = JSON.parse(raw) as KimtvUser
-    // Backend Java trả về `uid`, normalize về `userId` để dùng thống nhất trong app
-    if (parsed.uid != null && parsed.userId == null) {
-      parsed.userId = parsed.uid
-    }
-    return parsed
-  } catch {
-    return null
-  }
+  return parseUserInfoCookie(getCookie("userInfo"))
 }

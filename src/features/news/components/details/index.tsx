@@ -1,14 +1,14 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Heart, MessageCircle, Play } from "lucide-react"
+import { Heart, MessageCircle } from "lucide-react"
 
-import { formatDuration, formatPublishTime } from "@/lib/date"
+import { formatPublishTime } from "@/lib/date"
 
 import { getTranslation } from "@/i18n/get-locale"
 import { getRoutes } from "@/config/routes"
 import { FOOTBALL_GAME_ID } from "@/constants/component/home.constants"
 
-import { fetchHotNewsByGameAction, fetchNewsArticleAction } from "@/features/news/news.api"
+import { fetchHotNewsByGameAction, fetchNewsArticleAction } from "@/features/news/news.server"
 import { Breadcrumb } from "@/components/ui/breadcrumb"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
@@ -210,19 +210,10 @@ export async function NewsArticlePage({ slug }: { slug: string }) {
                           src={item.coverUrl}
                           alt={item.title}
                           fill
-                          objectFit="cover"
+                          objectFit="contain"
                           sizes="120px"
                           wrapperClassName="absolute inset-0"
-                          className="transition-transform duration-200 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                          <Play className="size-4 text-white drop-shadow" />
-                        </div>
-                        {item.durationMillis ? (
-                          <span className="rounded-4 text-10 font-600 absolute right-1 bottom-1 bg-black/75 px-1 py-0.5 text-white">
-                            {formatDuration(item.durationMillis)}
-                          </span>
-                        ) : null}
                       </div>
 
                       <div className="flex min-w-0 flex-1 flex-col gap-1">

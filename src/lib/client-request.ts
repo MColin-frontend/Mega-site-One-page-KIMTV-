@@ -7,9 +7,24 @@
  * - Luôn resolve, không throw
  */
 
+import { getTokenFromCookie } from "@/lib/auth-cookie"
+import { buildKimtvClientHeaders } from "@/lib/kimtv-headers"
+
+function kimtvFetchInit(init?: RequestInit): RequestInit {
+  const token = getTokenFromCookie()
+  return {
+    ...init,
+    credentials: "include",
+    headers: {
+      ...buildKimtvClientHeaders(token),
+      ...(init?.headers as Record<string, string> | undefined),
+    },
+  }
+}
+
 async function clientRequest<T>(url: string, init?: RequestInit): Promise<T | null> {
   try {
-    const res = await fetch(url, init)
+    const res = await fetch(url, kimtvFetchInit(init))
     if (!res.ok) return null
     return (await res.json()) as T
   } catch {
