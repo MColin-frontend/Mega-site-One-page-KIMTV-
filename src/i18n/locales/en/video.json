@@ -1,0 +1,49 @@
+{
+  "title": "Highlights",
+  "menu": {
+    "featured": "Trending",
+    "latest": "Latest",
+    "trending": "Featured",
+    "news": "News",
+    "promotion": "Promotion"
+  },
+  "actions": {
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "follow": "Follow",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "play": "Play",
+    "pause": "Pause",
+    "replay": "Replay"
+  },
+  "share": {
+    "copied": "Link copied"
+  },
+  "follow": {
+    "success": "Followed successfully"
+  },
+  "comment": {
+    "title": "Comments",
+    "placeholder": "Write a comment...",
+    "submit": "Post",
+    "loginPrompt": "Login to comment",
+    "empty": "No comments yet",
+    "loadMore": "Load more",
+    "posting": "Posting...",
+    "reply": "Reply",
+    "delete": "Delete",
+    "postSuccess": "Comment posted successfully",
+    "replySuccess": "Reply posted successfully",
+    "postError": "Failed to post comment, please try again",
+    "deleteSuccess": "Comment deleted",
+    "deleteError": "Failed to delete comment"
+  },
+  "empty": "No videos available",
+  "loadMore": "Loading...",
+  "seo": {
+    "title": "Sports Highlights - Latest Football Videos",
+    "description": "Watch the latest football highlights and sports videos. Scroll like TikTok, updated constantly."
+  }
+}

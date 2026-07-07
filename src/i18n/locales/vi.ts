@@ -3,8 +3,9 @@ import common from "./vi/common.json"
 import footer from "./vi/footer.json"
 import header from "./vi/header.json"
 import home from "./vi/home.json"
+import video from "./vi/video.json"
 
-const vi = { common, header, footer, home, chat }
+const vi = { common, header, footer, home, chat, video }
 
 export default vi
 
@@ -157,5 +158,41 @@ export interface Dictionary {
       setManager: string
     }
     loginToChat: string
+  }
+  video: {
+    title: string
+    menu: { featured: string; latest: string; trending: string; news: string; promotion: string }
+    actions: {
+      like: string
+      comment: string
+      share: string
+      follow: string
+      mute: string
+      unmute: string
+      play: string
+      pause: string
+      replay: string
+    }
+    share: { copied: string }
+    follow: { success: string }
+    comment: {
+      title: string
+      placeholder: string
+      submit: string
+      loginPrompt: string
+      empty: string
+      loadMore: string
+      posting: string
+      reply: string
+      delete: string
+      postSuccess: string
+      replySuccess: string
+      postError: string
+      deleteSuccess: string
+      deleteError: string
+    }
+    empty: string
+    loadMore: string
+    seo: { title: string; description: string }
   }
 }

@@ -1,5 +1,8 @@
 export interface KimtvUser {
+  /** Field chuẩn hóa — luôn có sau khi parse cookie (map từ uid hoặc userId gốc). */
   userId?: number | string
+  /** Field gốc từ Java backend. */
+  uid?: number | string
   name?: string
   avatar?: string
   phone?: string
@@ -52,7 +55,12 @@ export function getUserInfoFromCookie(): KimtvUser | null {
   const raw = getCookie("userInfo")
   if (!raw) return null
   try {
-    return JSON.parse(raw) as KimtvUser
+    const parsed = JSON.parse(raw) as KimtvUser
+    // Backend Java trả về `uid`, normalize về `userId` để dùng thống nhất trong app
+    if (parsed.uid != null && parsed.userId == null) {
+      parsed.userId = parsed.uid
+    }
+    return parsed
   } catch {
     return null
   }

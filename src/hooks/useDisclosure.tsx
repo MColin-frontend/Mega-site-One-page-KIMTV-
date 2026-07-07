@@ -1,10 +1,18 @@
 import { useCallback, useState } from "react"
 
-type ModalState<T extends string> = Record<T, boolean>
+type DisclosureState<T extends string> = Record<T, boolean>
 
-export function useModal<T extends string>(...keys: T[]) {
-  const [state, setState] = useState<ModalState<T>>(
-    () => Object.fromEntries(keys.map((k) => [k, false])) as ModalState<T>
+/**
+ * Quản lý nhiều open/close state bằng key string.
+ * Dùng cho modal, drawer, dropdown, panel, tooltip,...
+ *
+ * @example
+ * const { state, open, close } = useDisclosure("login", "register")
+ * open("login")  // → state.login = true
+ */
+export function useDisclosure<T extends string>(...keys: T[]) {
+  const [state, setState] = useState<DisclosureState<T>>(
+    () => Object.fromEntries(keys.map((k) => [k, false])) as DisclosureState<T>
   )
 
   const open = useCallback((key: T) => {
