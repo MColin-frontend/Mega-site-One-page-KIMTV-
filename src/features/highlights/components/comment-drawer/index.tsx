@@ -100,19 +100,17 @@ export function CommentDrawer({
   // }
 
   async function handleSubmit({ content: text }: CommentFormInterface, type: CommentType) {
-    if (isPostingRef.current) return
+    const trimmed = text.trim()
+    if (isPostingRef.current || !trimmed) return
     isPostingRef.current = true
 
     const { parent, to } = reply
 
-    if (type === CommentType.REPLY) resetReply()
-    else resetMain()
-
     try {
-      await postComment({
+      const ok = await postComment({
         payload: {
           commentType,
-          content: text,
+          content: trimmed,
           mainNewsId: Number(newsIdRef.current),
           userSourceId: loginUserId,
           topFloorId: type === CommentType.REPLY ? Number(parent!.ncid) : 0,
@@ -134,6 +132,14 @@ export function CommentDrawer({
         parentNcid: type === CommentType.REPLY ? Number(parent!.ncid) : undefined,
         replyUserName: type === CommentType.REPLY ? (to?.userName ?? "") : undefined,
       })
+
+      if (!ok) return
+
+      if (type === CommentType.REPLY) {
+        closeReply()
+      } else {
+        resetMain({ content: "" })
+      }
     } finally {
       isPostingRef.current = false
     }
