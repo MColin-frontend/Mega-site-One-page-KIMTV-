@@ -110,15 +110,15 @@ export default async function NewsList() {
   const { t, locale } = await getTranslation()
   const routes = getRoutes(locale)
   const commonProps = {
-    categoryLabel: t("home.news.category"),
+    categoryLabel: t("news.category"),
     viewAllHref: routes.news.index,
-    viewAllLabel: t("home.news.viewAll"),
+    viewAllLabel: t("news.viewAll"),
     getHref: (id: string) => routes.news.article(id),
   }
 
   return (
     <Suspense fallback={<NewsSectionSkeleton />}>
-      <FeaturedSection {...commonProps} title={t("home.news.title")} />
+      <FeaturedSection {...commonProps} title={t("news.title")} />
     </Suspense>
   )
 }

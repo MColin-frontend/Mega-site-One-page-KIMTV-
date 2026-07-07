@@ -257,7 +257,15 @@ export function Header() {
       <header className="bg-header sticky top-0 z-50 w-full">
         <div className="container flex h-fit items-center gap-3 py-3">
           <Link href={routes.home} className="shrink-0" onClick={() => close("mobileMenu")}>
-            <Img src={kimtvLogo} alt="KimTV" width={130} height={48} priority objectFit="contain" />
+            <Img
+              src={kimtvLogo}
+              alt="KimTV"
+              width={130}
+              height={48}
+              priority
+              objectFit="contain"
+              style={{ height: "auto" }}
+            />
           </Link>
 
           <nav className="flex flex-1 items-center justify-center gap-8 px-8 max-lg:hidden">

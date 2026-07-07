@@ -107,13 +107,6 @@ export interface Dictionary {
     "match-schedule": {
       title: string
     }
-    news: {
-      title: string
-      latest: string
-      category: string
-      viewAll: string
-      empty: string
-    }
     "league-select": {
       all: string
       unit: string

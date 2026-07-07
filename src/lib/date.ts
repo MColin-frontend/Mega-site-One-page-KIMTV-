@@ -62,3 +62,25 @@ export function formatFootballGameTime(gameTime: number): string {
   if (gameTime > 90) return `90+${gameTime - 90}`
   return String(gameTime)
 }
+
+/** Unix timestamp (giây hoặc ms) → "dd/MM/yyyy HH:mm". */
+export function formatPublishTime(publishTime: string | number | undefined | null): string {
+  if (!publishTime) return ""
+  const ts = typeof publishTime === "number" ? publishTime : Number(publishTime)
+  if (!ts) return ""
+  const date = new Date(ts > 1e10 ? ts : ts * 1000)
+  return date.toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
+/** Milliseconds → "mm:ss" (dùng cho duration video). */
+export function formatDuration(ms: number): string {
+  const s = Math.floor(ms / 1000)
+  const m = Math.floor(s / 60)
+  return `${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`
+}

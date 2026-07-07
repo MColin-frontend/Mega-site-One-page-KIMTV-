@@ -115,16 +115,16 @@ export default function NewsMobileCarousel({ featured, latest, locale }: NewsCar
   return (
     <div className="flex flex-col gap-6">
       <NewsSection
-        title={t("home.news.title")}
+        title={t("news.title")}
         viewAllHref={newsIndexPath}
-        viewAllLabel={t("home.news.viewAll")}
+        viewAllLabel={t("news.viewAll")}
         items={featured}
         locale={locale}
       />
       <NewsSection
-        title={t("home.news.latest")}
+        title={t("news.latest")}
         viewAllHref={newsIndexPath}
-        viewAllLabel={t("home.news.viewAll")}
+        viewAllLabel={t("news.viewAll")}
         items={latest}
         locale={locale}
       />

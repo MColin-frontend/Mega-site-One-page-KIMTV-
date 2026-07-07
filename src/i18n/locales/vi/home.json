@@ -23,13 +23,6 @@
   "match-schedule": {
     "title": "Các trận đấu"
   },
-  "news": {
-    "title": "Tin tức xu hướng",
-    "latest": "Tin tức mới nhất",
-    "category": "Bóng đá",
-    "viewAll": "Xem tất cả",
-    "empty": "Không có tin tức"
-  },
   "league-select": {
     "all": "Tất cả giải",
     "unit": "giải",
