@@ -1,9 +1,21 @@
 "use client"
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { ReactSVG } from "react-svg"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import {
+  ChevronDown,
+  ChevronUp,
+  Heart,
+  MessageCircle,
+  Pause,
+  Play,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from "lucide-react"
 
 import { cn, formatCount, formatDuration } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
@@ -31,38 +43,31 @@ import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 import type { VideoFeedPlayerHandle } from "@/components/ui/video-feed-player"
 
-import {
-  IcComment,
-  IcHeart,
-  IcHeartBurst,
-  IcHeartFilled,
-  IcMenuFeatured,
-  IcMenuLatest,
-  IcMenuNews,
-  IcMenuPromotion,
-  IcMenuTrending,
-  IcMute,
-  IcNavDown,
-  IcNavUp,
-  IcPauseHint,
-  IcPlay,
-  IcReplay,
-  IcShare,
-  IcUnmute,
-} from "./feed-icons"
+import icShare from "@assets/icons/common/ic-share.svg"
+import icDiscount from "@assets/icons/video/ic-discount.svg"
+import icGuide from "@assets/icons/video/ic-guide.svg"
+import icNews from "@assets/icons/video/ic-news.svg"
+import icOutstanding from "@assets/icons/video/ic-outstanding.svg"
+import icTopTrending from "@assets/icons/video/ic-top-trending.svg"
+
 import { FeedSkeleton } from "./skeleton"
 
-// ─── Static icon maps (module-level, không re-create mỗi render) ─────────────
-type MenuIconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>
-
-const FILTER_ICON: Record<FeedMenu, MenuIconComponent> = {
-  [FeedMenu.Featured]: IcMenuTrending,
-  [FeedMenu.Latest]: IcMenuLatest,
-  [FeedMenu.Trending]: IcMenuFeatured,
+function svgSrc(mod: unknown): string {
+  return typeof mod === "string" ? mod : (mod as { src: string }).src
 }
-const LINK_ICON: Record<string, MenuIconComponent> = {
-  news: IcMenuNews,
-  promotion: IcMenuPromotion,
+
+const menuIconClass =
+  "size-5 shrink-0 [&>div]:flex [&>div]:items-center [&>div]:justify-center [&_svg]:h-5! [&_svg]:w-5!"
+
+// ─── Static icon maps (module-level, không re-create mỗi render) ─────────────
+const FILTER_ICON: Record<FeedMenu, string> = {
+  [FeedMenu.Featured]: svgSrc(icTopTrending),
+  [FeedMenu.Latest]: svgSrc(icGuide),
+  [FeedMenu.Trending]: svgSrc(icOutstanding),
+}
+const LINK_ICON: Record<string, string> = {
+  news: svgSrc(icNews),
+  promotion: svgSrc(icDiscount),
 }
 
 const VideoFeedPlayer = dynamic(
@@ -82,10 +87,6 @@ function resolveNewsId(item: HighlightVideoInterface | null): string {
 
 function resolveIsFollowed(item: HighlightVideoInterface): boolean {
   return resolveIsLiked(item.hasFollow)
-}
-
-function MenuIcon({ Icon, active }: { Icon: MenuIconComponent; active?: boolean }) {
-  return <Icon className={cn("size-5 shrink-0", active ? "text-[#ffd220]" : "text-white/60")} />
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -478,7 +479,6 @@ export function HighlightsFeed({
       isLike: fromDoubleTap ? true : !wasLiked,
       wasLiked,
       originalCount: displayLikeCount,
-      loginUserId: user?.userId ? String(user.userId) : "",
       setLikedMap,
       setVideos,
       setLikeLoading,
@@ -491,7 +491,6 @@ export function HighlightsFeed({
     } else {
       await toggleFollowAction({
         userId: String(currentItem?.authorId),
-        loginUserId: user?.userId ? String(user.userId) : "",
         setFollowMap,
         setVideos,
         setFollowLoading,
@@ -519,7 +518,7 @@ export function HighlightsFeed({
   const filterMenuItems = FILTER_MENU_CONFIG.map((c) => ({
     ...c,
     label: t(c.labelKey),
-    Icon: FILTER_ICON[c.key],
+    iconSrc: FILTER_ICON[c.key],
   }))
 
   const linkUrlMap: Record<string, string> = {
@@ -529,7 +528,7 @@ export function HighlightsFeed({
   const linkMenuItems = LINK_MENU_CONFIG.map((c) => ({
     ...c,
     label: t(c.labelKey),
-    Icon: LINK_ICON[c.key],
+    iconSrc: LINK_ICON[c.key],
     url: linkUrlMap[c.key],
   }))
 
@@ -543,29 +542,27 @@ export function HighlightsFeed({
         <nav className="flex flex-col gap-0.5 rounded-2xl border border-white/8 bg-[rgba(22,24,35,0.92)] px-2 py-2.5 shadow-xl backdrop-blur-xl max-md:flex-row max-md:gap-0 max-md:rounded-none max-md:border-0 max-md:border-t max-md:border-white/10 max-md:px-0 max-md:py-0 max-md:shadow-none">
           {/* Filter group */}
           <div className="flex flex-col gap-0.5 max-md:contents">
-            {filterMenuItems.map(({ key, label, Icon }) => (
+            {filterMenuItems.map(({ key, label, iconSrc }) => (
               <Button
                 key={key}
                 type="button"
+                variant="ghost"
                 disabled={loading}
                 onClick={() => onMenuChange(key)}
                 className={cn(
-                  "relative h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 px-1 py-2.5 text-[11px] leading-tight font-medium transition-all [&_svg]:size-auto",
-                  "active:translate-y-0 active:scale-95",
+                  "group relative h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 px-1 py-2.5 text-[11px] leading-tight font-medium shadow-none transition-colors",
+                  "active:translate-y-0 active:scale-95 active:bg-transparent",
                   "max-md:min-h-0 max-md:flex-1 max-md:rounded-none max-md:px-1 max-md:py-3",
                   activeMenu === key
-                    ? "bg-[rgba(255,210,32,0.1)] opacity-100 backdrop-blur-sm"
-                    : "bg-transparent opacity-60 hover:bg-white/6 hover:opacity-90"
+                    ? "bg-transparent text-[#ffd220] opacity-100 hover:bg-transparent hover:text-[#ffd220]"
+                    : "bg-transparent text-white/60 opacity-60 hover:bg-transparent hover:text-[#ffd220] hover:opacity-100"
                 )}
               >
-                <MenuIcon Icon={Icon} active={activeMenu === key} />
+                <ReactSVG src={iconSrc} className={menuIconClass} />
                 <Typography
                   as="span"
                   variant="caption"
-                  className={cn(
-                    "line-clamp-1 text-center text-[11px] leading-tight font-medium",
-                    activeMenu === key ? "text-[#ffd220]" : "text-white/70"
-                  )}
+                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit"
                 >
                   {label}
                 </Typography>
@@ -581,10 +578,11 @@ export function HighlightsFeed({
 
           {/* Link group */}
           <div className="flex flex-col gap-0.5 max-md:contents">
-            {linkMenuItems.map(({ key, label, Icon, url, external }) => (
+            {linkMenuItems.map(({ key, label, iconSrc, url, external }) => (
               <Button
                 key={key}
                 type="button"
+                variant="ghost"
                 onClick={() => {
                   if (external || /^https?:\/\//i.test(url)) {
                     window.open(url, "_blank", "noopener,noreferrer")
@@ -592,13 +590,13 @@ export function HighlightsFeed({
                     window.location.href = url
                   }
                 }}
-                className="h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 bg-transparent px-1 py-2.5 opacity-60 hover:bg-white/6 hover:opacity-90 active:translate-y-0 active:scale-95 max-md:min-h-0 max-md:flex-1 max-md:rounded-none max-md:px-1 max-md:py-3 [&_svg]:size-auto"
+                className="group h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 bg-transparent px-1 py-2.5 text-white/60 opacity-60 shadow-none transition-colors hover:bg-transparent hover:text-[#ffd220] hover:opacity-100 active:translate-y-0 active:scale-95 active:bg-transparent max-md:min-h-0 max-md:flex-1 max-md:rounded-none max-md:px-1 max-md:py-3"
               >
-                <MenuIcon Icon={Icon} />
+                <ReactSVG src={iconSrc} className={menuIconClass} />
                 <Typography
                   as="span"
                   variant="caption"
-                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-white/70"
+                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit"
                 >
                   {label}
                 </Typography>
@@ -699,7 +697,11 @@ export function HighlightsFeed({
                     onClick={toggleMute}
                     aria-label={isMuted ? t("video.actions.unmute") : t("video.actions.mute")}
                   >
-                    {isMuted ? <IcMute /> : <IcUnmute />}
+                    {isMuted ? (
+                      <VolumeX className="size-[22px] text-white" strokeWidth={2} />
+                    ) : (
+                      <Volume2 className="size-[22px] text-white" strokeWidth={2} />
+                    )}
                   </Button>
                 )}
 
@@ -707,7 +709,7 @@ export function HighlightsFeed({
                 {showPauseHint && (
                   <div className="pointer-events-none absolute inset-0 z-18 flex animate-[feedPauseHint_0.5s_ease_forwards] items-center justify-center">
                     <div className="flex h-18 w-18 items-center justify-center rounded-full border-2 border-white/85 bg-black/28 backdrop-blur-[10px]">
-                      <IcPauseHint className="text-white" />
+                      <Pause className="size-11 text-white" strokeWidth={2} />
                     </div>
                   </div>
                 )}
@@ -722,9 +724,9 @@ export function HighlightsFeed({
                   >
                     <span className="flex h-18 w-18 items-center justify-center rounded-full border-2 border-white/92 bg-black/28 backdrop-blur-[10px] transition-transform hover:scale-105">
                       {isEnded ? (
-                        <IcReplay className="text-white" />
+                        <RotateCcw className="size-9 text-white" strokeWidth={2} />
                       ) : (
-                        <IcPlay className="text-white" />
+                        <Play className="size-11 fill-white text-white" strokeWidth={2} />
                       )}
                     </span>
                   </Button>
@@ -733,7 +735,7 @@ export function HighlightsFeed({
                 {/* Heart burst */}
                 {showHeartBurst && (
                   <div className="pointer-events-none absolute inset-0 z-18 flex animate-[heartPop_0.7s_ease_forwards] items-center justify-center text-[#fe2c55]">
-                    <IcHeartBurst />
+                    <Heart className="size-24 fill-[#fe2c55] text-[#fe2c55]" strokeWidth={1.8} />
                   </div>
                 )}
 
@@ -841,9 +843,9 @@ export function HighlightsFeed({
                 >
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)] max-md:h-11 max-md:w-11">
                     {isLiked ? (
-                      <IcHeartFilled className="text-[#fe2c55]" />
+                      <Heart className="size-8 fill-[#fe2c55] text-[#fe2c55]" strokeWidth={1.8} />
                     ) : (
-                      <IcHeart className="text-white" />
+                      <Heart className="size-8 text-white" strokeWidth={1.8} />
                     )}
                   </span>
                   <Typography
@@ -862,7 +864,7 @@ export function HighlightsFeed({
                   className="h-auto w-auto flex-col items-center gap-2 border-0 bg-transparent p-0 text-white hover:bg-transparent max-md:gap-1"
                 >
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)] max-md:h-11 max-md:w-11">
-                    <IcComment className="text-white" />
+                    <MessageCircle className="size-8 text-white" strokeWidth={1.8} />
                   </span>
                   <Typography
                     as="span"
@@ -881,7 +883,10 @@ export function HighlightsFeed({
                   aria-label={t("video.actions.share")}
                 >
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(84,84,84,0.72)] max-md:h-11 max-md:w-11">
-                    <IcShare className="text-white" />
+                    <ReactSVG
+                      src={svgSrc(icShare)}
+                      className="size-8 text-white [&_svg]:h-8! [&_svg]:w-8! [&>div]:flex [&>div]:size-full [&>div]:items-center [&>div]:justify-center"
+                    />
                   </span>
                 </Button>
               </aside>
@@ -896,7 +901,7 @@ export function HighlightsFeed({
                 className="h-12 w-12 rounded-full border-0 bg-white/12 text-white hover:bg-white/22 disabled:opacity-35"
                 aria-label="Previous"
               >
-                <IcNavUp />
+                <ChevronUp className="size-5" strokeWidth={2} />
               </Button>
               <Button
                 type="button"
@@ -905,7 +910,7 @@ export function HighlightsFeed({
                 className="h-12 w-12 rounded-full border-0 bg-white/12 text-white hover:bg-white/22 disabled:opacity-35"
                 aria-label="Next"
               >
-                <IcNavDown />
+                <ChevronDown className="size-5" strokeWidth={2} />
               </Button>
             </div>
           </div>

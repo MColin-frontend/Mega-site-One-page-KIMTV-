@@ -20,15 +20,22 @@ const SOCIAL_API = {
   LIKE: "/api/highlights/like",
 } as const
 
+function isRouteOk(res: { success: boolean; data: unknown }): boolean {
+  if (!res.success || res.data == null) return false
+  if (typeof res.data === "object" && res.data !== null && "success" in res.data) {
+    return Boolean((res.data as { success: boolean }).success)
+  }
+  return true
+}
+
 async function toggleFollowAction(params: {
   userId: string | number
-  loginUserId?: string
   setFollowMap: Dispatch<SetStateAction<Record<string, boolean>>>
   setVideos: Dispatch<SetStateAction<HighlightVideoInterface[]>>
   setFollowLoading: Dispatch<SetStateAction<boolean>>
   messageSuccess?: string
 }): Promise<void> {
-  const { userId, loginUserId, setFollowMap, setVideos, setFollowLoading, messageSuccess } = params
+  const { userId, setFollowMap, setVideos, setFollowLoading, messageSuccess } = params
   const aid = String(userId)
 
   // Optimistic update
@@ -36,9 +43,9 @@ async function toggleFollowAction(params: {
   setFollowLoading(true)
 
   try {
-    const url = `${SOCIAL_API.FOLLOW}?userId=${aid}&isFollow=true&loginUserId=${encodeURIComponent(loginUserId ?? "")}`
+    const url = `${SOCIAL_API.FOLLOW}?userId=${aid}&isFollow=true`
     const res = await clientGet<{ success: boolean }>(url)
-    const ok = res.success && Boolean(res.data?.success)
+    const ok = isRouteOk(res)
 
     if (ok) {
       if (messageSuccess) {
@@ -66,21 +73,11 @@ async function toggleLikeAction(params: {
   wasLiked: boolean
   /** likeCount trước khi toggle — dùng để rollback chính xác */
   originalCount: number
-  loginUserId?: string
   setLikedMap: Dispatch<SetStateAction<Record<string, boolean>>>
   setVideos: Dispatch<SetStateAction<HighlightVideoInterface[]>>
   setLikeLoading: Dispatch<SetStateAction<boolean>>
 }): Promise<void> {
-  const {
-    newsId,
-    isLike,
-    wasLiked,
-    originalCount,
-    loginUserId,
-    setLikedMap,
-    setVideos,
-    setLikeLoading,
-  } = params
+  const { newsId, isLike, wasLiked, originalCount, setLikedMap, setVideos, setLikeLoading } = params
 
   setLikeLoading(true)
 
@@ -104,9 +101,9 @@ async function toggleLikeAction(params: {
   }
 
   try {
-    const url = `${SOCIAL_API.LIKE}?flag=1&typeId=${encodeURIComponent(newsId)}&isLike=${isLike}&loginUserId=${encodeURIComponent(loginUserId ?? "")}`
+    const url = `${SOCIAL_API.LIKE}?flag=1&typeId=${encodeURIComponent(newsId)}&isLike=${isLike}`
     const res = await clientGet<{ success: boolean }>(url)
-    const ok = res.success && Boolean(res.data?.success)
+    const ok = isRouteOk(res)
     if (!ok) rollback()
   } catch {
     rollback()

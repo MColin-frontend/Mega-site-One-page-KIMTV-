@@ -359,7 +359,8 @@ export function CommentDrawer({
                     </div>
                   )}
 
-                  {!isLoadingMore && params?.total > comments.length && (
+                  {/* TODO */}
+                  {/* {!isLoadingMore && params?.total > comments.length && (
                     <button
                       onClick={handleLoadMoreComments}
                       className="group/more text-gold/70 hover:text-gold mx-auto mt-1 mb-3 flex items-center gap-1.5 text-xs font-medium transition-all"
@@ -370,12 +371,11 @@ export function CommentDrawer({
                         className="transition-transform duration-200 group-hover/more:translate-y-0.5"
                       />
                     </button>
-                  )}
+                  )} */}
                 </div>
               )}
             </div>
 
-            {/* Main input */}
             <div className="shrink-0 border-t border-white/[0.06] p-4">
               <Controller
                 name="content"
