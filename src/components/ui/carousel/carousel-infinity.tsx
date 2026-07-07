@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Autoplay from "embla-carousel-autoplay"
 import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react"
 
-import { CAROUSEL_ROUND_NAV_BUTTON_CLASS } from "@/constants/ui/ui-carousel.constants"
+import { SlideNavNext, SlideNavPrev } from "@/components/ui/slide-nav"
 
 export type CarouselInfinityApi = UseEmblaCarouselType[1]
 
@@ -199,33 +199,19 @@ export default function CarouselInfinity<T>({
         </div>
       </div>
 
-      <button
+      <SlideNavPrev
         onClick={scrollPrev}
-        aria-label="Previous"
         disabled={!canScrollPrev}
-        className={`${CAROUSEL_ROUND_NAV_BUTTON_CLASS} absolute top-1/2 left-0 z-10 -translate-x-3 -translate-y-1/2 duration-200 ${showNavAlways ? "opacity-100" : "opacity-0 group-hover/carousel:opacity-100"}`}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          className="h-4 w-4 fill-none stroke-current stroke-2 max-sm:h-3.5 max-sm:w-3.5"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
+        variant="gold"
+        className={`absolute top-1/2 left-0 z-10 -translate-x-3 -translate-y-1/2 duration-200 ${showNavAlways ? "opacity-100" : "opacity-0 group-hover/carousel:opacity-100"}`}
+      />
 
-      <button
+      <SlideNavNext
         onClick={scrollNext}
-        aria-label="Next"
         disabled={!canScrollNext}
-        className={`${CAROUSEL_ROUND_NAV_BUTTON_CLASS} absolute top-1/2 right-0 z-10 translate-x-3 -translate-y-1/2 duration-200 ${showNavAlways ? "opacity-100" : "opacity-0 group-hover/carousel:opacity-100"}`}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          className="h-4 w-4 fill-none stroke-current stroke-2 max-sm:h-3.5 max-sm:w-3.5"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        variant="gold"
+        className={`absolute top-1/2 right-0 z-10 translate-x-3 -translate-y-1/2 duration-200 ${showNavAlways ? "opacity-100" : "opacity-0 group-hover/carousel:opacity-100"}`}
+      />
     </div>
   )
 }
