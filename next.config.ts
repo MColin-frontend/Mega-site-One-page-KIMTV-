@@ -1,6 +1,7 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   // Bundle server tối giản cho Docker — chỉ copy `.next/standalone` vào image runner.
   output: "standalone",
   images: {

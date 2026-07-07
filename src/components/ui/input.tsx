@@ -21,7 +21,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" 
 
 const wrapperVariants: Record<InputVariant, string> = {
   default: cn(
-    "border border-input-border bg-input-surface",
+    "border border-input-border bg-input-surface backdrop-blur-sm",
     "transition-all duration-200",
     "hover:border-input-border-hover hover:bg-input-surface-hover hover:shadow-input-hover",
     "focus-within:border-input-border-focus focus-within:bg-input-surface-hover",
@@ -31,9 +31,9 @@ const wrapperVariants: Record<InputVariant, string> = {
 }
 
 const sizes: Record<InputSize, string> = {
-  sm: "h-8  rounded-8  px-2.5 gap-2   text-12",
-  default: "h-9  rounded-10 px-3   gap-2.5 text-14",
-  lg: "h-11 rounded-12 px-3.5 gap-3   text-14",
+  sm: "h-8  rounded-8  px-2.5 py-1   gap-2   text-12",
+  default: "h-9  rounded-10 px-3   py-1.5 gap-2.5 text-14",
+  lg: "h-11 rounded-12 px-3.5 py-2   gap-3   text-14",
 }
 
 const iconSizes: Record<InputSize, string> = {
@@ -65,7 +65,7 @@ export function Input({
     <input
       className={cn(
         "min-w-0 flex-1 bg-transparent text-white outline-none",
-        "placeholder:text-placeholder transition-colors duration-200",
+        "placeholder:text-placeholder placeholder:text-16 transition-colors duration-200",
         !hasWrapper && wrapperVariants[variant],
         !hasWrapper && sizes[inputSize],
         !hasWrapper && "w-full",

@@ -18,6 +18,23 @@ export type {
   AnchorRoomVo,
 } from "./match.models"
 export type {
+  HighlightVideoInterface,
+  VideoResultRawInterface,
+  InitialHighlightsDataInterface,
+  CommentRecordInterface,
+  CommentListResultInterface,
+  PostCommentPayloadInterface,
+  PostCtx,
+  FetchCommentsParamsInterface,
+  ReplyItem,
+  CommentItem,
+  CommentDrawerPropsInterface,
+  FetchStateInterface,
+  ReplyStateInterface,
+  CommentFormInterface,
+  CommentParamsState,
+} from "@/features/highlights/highlight.models"
+export type {
   ApiEnvelopeInterface,
   NormalizedErrorInterface,
   RequestOptionsInterface,

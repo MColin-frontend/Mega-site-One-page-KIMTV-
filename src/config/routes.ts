@@ -21,6 +21,7 @@ export const getRoutes = (locale: LocaleType) => ({
     register: localePath(locale, "dang-ky"),
   },
   inviteFriend: localePath(locale, "moi-ban"),
+  userInfo: (userId: string | number) => `/user-info/${userId}`,
 })
 
 export type Routes = ReturnType<typeof getRoutes>

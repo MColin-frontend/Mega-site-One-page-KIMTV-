@@ -37,6 +37,26 @@ export function formatKickOff(ts: number, locale = "vi-VN"): string {
   })
 }
 
+/**
+ * Format unix timestamp (seconds hoặc milliseconds) → chuỗi ngày giờ.
+ * Tự phát hiện đơn vị: >= 1e12 là ms, ngược lại là giây.
+ */
+export function formatTimestamp(value: string | number | undefined, locale = "vi-VN"): string {
+  if (!value) return ""
+  const ts = Number(value)
+  if (!ts) return ""
+  const ms = ts < 1e12 ? ts * 1000 : ts
+  const d = new Date(ms)
+  if (isNaN(d.getTime())) return ""
+  return d.toLocaleDateString(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
 /** Phút bóng đá — quá 90 hiển thị dạng `90+6`. */
 export function formatFootballGameTime(gameTime: number): string {
   if (gameTime > 90) return `90+${gameTime - 90}`

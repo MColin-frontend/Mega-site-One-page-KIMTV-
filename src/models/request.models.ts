@@ -24,14 +24,18 @@ interface RequestResultInterface<T> {
 
 /** Option cho mỗi request: gồm config axios + điều khiển message thông báo. */
 interface RequestOptionsInterface extends AxiosRequestConfig {
-  /** Message hiển thị khi thành công. */
   successMessage?: string
-  /** Message hiển thị khi lỗi (override message mặc định từ server). */
   errorMessage?: string
-  /** Có hiển thị message khi thành công không (mặc định: false). */
   showSuccess?: boolean
-  /** Có hiển thị message khi lỗi không (mặc định: true). */
   showError?: boolean
+  /** Toast success khi request thành công. */
+  isMessageSuccess?: boolean
+  /** Toast error khi request thất bại (default error lấy từ response). */
+  isMessageError?: boolean
+  /** Override message success cho toast. */
+  messageSuccess?: string
+  /** Override message error cho toast (nếu không có thì lấy từ response). */
+  messageError?: string
 }
 
 /** Lỗi chuẩn hóa nội bộ — gói status/message/code. */

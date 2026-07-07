@@ -7,7 +7,7 @@ import { LogOut, Menu, Search, UserRound, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
-import { useModal } from "@/hooks/useModal"
+import { useDisclosure } from "@/hooks/useDisclosure"
 
 import { SLUG_MAP, useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
@@ -28,7 +28,7 @@ interface AvatarDropdownProps {
 
 function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
   const { t } = useTranslation()
-  const { state, open, close, toggle, setOpen } = useModal("dropdown", "confirm")
+  const { state, open, close, toggle, setOpen } = useDisclosure("dropdown", "confirm")
   const wrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -162,7 +162,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
 /* ── Search ──────────────────────────────────────────────── */
 function SearchInput() {
   const { t } = useTranslation()
-  const { state, open, close } = useModal("search")
+  const { state, open, close } = useDisclosure("search")
   const [value, setValue] = useState<string>("")
   const inputRef = useRef<HTMLInputElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -242,7 +242,7 @@ export function Header() {
   const { t, locale } = useTranslation()
   const pathname = usePathname()
   const routes = getRoutes(locale)
-  const { state, toggle, close } = useModal("mobileMenu")
+  const { state, toggle, close } = useDisclosure("mobileMenu")
   const { user, isLoggedIn, login, logout } = useAuth()
 
   function isActive(href: string): boolean {

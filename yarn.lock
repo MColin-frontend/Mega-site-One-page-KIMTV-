@@ -217,7 +217,7 @@
     "@babel/plugin-transform-modules-commonjs" "^7.29.7"
     "@babel/plugin-transform-typescript" "^7.29.7"
 
-"@babel/runtime@^7.15.3", "@babel/runtime@^7.29.2":
+"@babel/runtime@^7.15.3", "@babel/runtime@^7.28.6", "@babel/runtime@^7.29.2":
   version "7.29.7"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.29.7.tgz"
   integrity sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==
@@ -1076,6 +1076,15 @@
     postcss "8.5.15"
     tailwindcss "4.3.1"
 
+"@tanem/svg-injector@^11.3.1":
+  version "11.3.2"
+  resolved "https://registry.npmjs.org/@tanem/svg-injector/-/svg-injector-11.3.2.tgz#5e98d8c136c85418c4f5ceacb1c07d8286dd1363"
+  integrity sha512-ueEvDtrnWHK9FpPWcAC5J4hNcibHjfJCwURhSdt72xOa2fWgndNR9ro7nzb6SwAeB0dioMvxsv7/kKdm4znytw==
+  dependencies:
+    "@babel/runtime" "^7.28.6"
+    content-type "^1.0.5"
+    tslib "^2.8.1"
+
 "@tanstack/query-core@5.101.2":
   version "5.101.2"
   resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.101.2.tgz"
@@ -1130,6 +1139,11 @@
   integrity sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==
   dependencies:
     undici-types "~6.21.0"
+
+"@types/prop-types@^15.7.15":
+  version "15.7.15"
+  resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.15.tgz#e6e5a86d602beaca71ce5163fadf5f95d70931c7"
+  integrity sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==
 
 "@types/react-dom@^19":
   version "19.2.3"
@@ -4452,10 +4466,32 @@ react-dom@19.2.4:
   dependencies:
     scheduler "^0.27.0"
 
+react-hook-form@^7.81.0:
+  version "7.81.0"
+  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.81.0.tgz#003f1b4fd13102ab1142aec220572401ad1edac4"
+  integrity sha512-ocbmr2p5KBMoAfj4WCUvped33lVi1Kd5DuDUvQDnB6VEAacOjPI/jMbtDdbhco4y9ct4xUuCmMY0b/C9L0QHjw==
+
 react-is@^16.13.1:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+
+react-svg@^17.2.4:
+  version "17.2.4"
+  resolved "https://registry.npmjs.org/react-svg/-/react-svg-17.2.4.tgz#0683a7c25e72e1c5754d776cd532488fe47eaeef"
+  integrity sha512-sqhO7OljLNmP6xgOQUxl1w0MWukcruKQygvKO5k+66ak/wRzDubYBOazq6p/HyYowCXsSirEMflosQ+bpCt/5Q==
+  dependencies:
+    "@babel/runtime" "^7.28.6"
+    "@tanem/svg-injector" "^11.3.1"
+    "@types/prop-types" "^15.7.15"
+    prop-types "^15.8.1"
+
+react-toastify@^11.1.0:
+  version "11.1.0"
+  resolved "https://registry.npmjs.org/react-toastify/-/react-toastify-11.1.0.tgz#3d3c73a44d5cac868ee9a52e0f90dd706532c4a4"
+  integrity sha512-e9h23x3phN0wbFeB6yovmWp7lobzV4CaCH0LO8nVP6H7Y+3GbcLpIzMm9dJhcp1RXbpyfvjgpfXqO80QAmn7sg==
+  dependencies:
+    clsx "^2.1.1"
 
 react@19.2.4:
   version "19.2.4"

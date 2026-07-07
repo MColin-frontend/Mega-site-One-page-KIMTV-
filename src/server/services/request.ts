@@ -1,5 +1,7 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from "axios"
 
+// toast chỉ hoạt động ở client context — server action sẽ no-op
+
 import { assertServerEnv, env } from "@/config/env"
 import type {
   ApiEnvelopeInterface,
@@ -7,6 +9,8 @@ import type {
   RequestOptionsInterface,
   RequestResultInterface,
 } from "@/models/request.models"
+
+import { toast } from "@/components/ui/toast"
 
 /**
  * HTTP client (axios) gọi backend KimTV (Java) — CHỈ chạy trên server.
@@ -39,9 +43,16 @@ export const httpClient: AxiosInstance = axios.create({
   },
 })
 
-// Cache-buster `_t` trên mọi request (giống FE gốc).
-httpClient.interceptors.request.use((config) => {
+// Cache-buster `_t` + tự động kẹp token từ cookie nếu có.
+httpClient.interceptors.request.use(async (config) => {
   config.params = { ...config.params, _t: Date.now() }
+  try {
+    const { cookies } = await import("next/headers")
+    const token = (await cookies()).get("token")?.value
+    if (token) (config.headers as Record<string, string>)["token"] = token
+  } catch {
+    // không có next/headers (Pages Router hoặc edge context)
+  }
   return config
 })
 
@@ -71,40 +82,53 @@ async function request<T>(
   config: AxiosRequestConfig,
   options: RequestOptionsInterface = {}
 ): Promise<RequestResultInterface<T>> {
-  const { successMessage, errorMessage, showSuccess = false, showError = true } = options
+  const {
+    successMessage,
+    errorMessage,
+    showSuccess = false,
+    showError = true,
+    isMessageSuccess = false,
+    isMessageError = false,
+    messageSuccess,
+    messageError,
+  } = options
 
   try {
-    // Đảm bảo env bắt buộc đã được nạp (báo lỗi rõ nếu quên set trên server).
     assertServerEnv()
 
     const res = await httpClient.request<ApiEnvelopeInterface<T>>(config)
     const envelope = res.data
 
-    // Backend trả 200 nhưng status !== success → coi là lỗi nghiệp vụ.
     if (envelope?.status !== "success") {
       const serverMsg = envelope?.errorMsg ?? envelope?.message ?? "Yêu cầu thất bại"
+      const errMsg = messageError ?? errorMessage ?? serverMsg
+      if (isMessageError) toast.error(errMsg)
       return {
         success: false,
         data: null,
-        message: showError ? (errorMessage ?? serverMsg) : null,
+        message: showError ? errMsg : null,
         errorCode: envelope?.errorCode ?? null,
         httpStatus: res.status,
       }
     }
 
+    const sucMsg = messageSuccess ?? successMessage ?? null
+    if (isMessageSuccess && sucMsg) toast.success(sucMsg)
     return {
       success: true,
       data: envelope.result,
-      message: showSuccess ? (successMessage ?? null) : null,
+      message: showSuccess ? sucMsg : null,
       errorCode: null,
       httpStatus: res.status,
     }
   } catch (error) {
     const normalized = normalizeError(error)
+    const errMsg = messageError ?? errorMessage ?? normalized.message
+    if (isMessageError) toast.error(errMsg)
     return {
       success: false,
       data: null,
-      message: showError ? (errorMessage ?? normalized.message) : null,
+      message: showError ? errMsg : null,
       errorCode: normalized.errorCode,
       httpStatus: normalized.httpStatus,
     }

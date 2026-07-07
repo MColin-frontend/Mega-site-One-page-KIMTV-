@@ -55,12 +55,13 @@
 
   /* ─── Input ─── */
   --input-border: rgba(255, 255, 255, 0.1);
-  --input-surface: rgba(255, 255, 255, 0.04);
+  --input-surface: rgba(255, 255, 255, 0.08);
   --input-border-hover: rgba(255, 255, 255, 0.22);
-  --input-surface-hover: rgba(255, 255, 255, 0.07);
+  --input-surface-hover: rgba(255, 255, 255, 0.13);
   --input-border-focus: rgba(246, 195, 67, 0.55);
-  --input-shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  --input-shadow-focus: 0 0 0 3px rgba(246, 195, 67, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --input-shadow-hover:
+    0 0 0 3px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --input-shadow-focus: 0 0 0 3px rgba(246, 195, 67, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   /* ─── Chat input ─── */
   --chat-input-bg: rgba(15, 32, 64, 0.8);
@@ -612,6 +613,14 @@
   padding-inline: 15px;
 }
 
+/* ─── Scrollbar hide ─────────────────────────────────────────── */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ─── xgplayer overrides ────────────────────────────────────── */
 .xgplayer .xgplayer-controls,
 .xgplayer .xg-inner-controls,
@@ -679,5 +688,61 @@
   100% {
     opacity: 0;
     transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
+  }
+}
+
+/* ─── React Toastify overrides ─────────────────────────────────── */
+.Toastify__toast {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  min-height: unset !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+.Toastify__progress-bar {
+  height: 3px !important;
+  border-radius: 0 0 8px 8px !important;
+  background: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.Toastify__progress-bar--animated {
+  animation: Toastify__trackProgress linear 1 !important;
+}
+
+/* ── Video feed animations ───────────────────────────────────────────────── */
+@keyframes feedPauseHint {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes heartPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
   }
 }
