@@ -1,10 +1,10 @@
 import { getRequest, postRequest } from "@/server/services/request"
+import { MATCH_API } from "@/lib/match.utils"
 
 import { env } from "@/config/env"
-import { FOOTBALL_GAME_ID, MATCH_STATUS_TAB } from "@/constants/component/home.constants"
+import { FOOTBALL_GAME_ID } from "@/constants/component/home.constants"
 import { DateRangeEnum } from "@/enums/common.enum"
 import type {
-  ApiConfig,
   FeaturedNewsResult,
   LatestNewsResult,
   NewsItem,
@@ -16,62 +16,13 @@ import type { LiveMatch } from "@/features/home/components/hero-video"
 export type { ApiConfig, NewsItem, LeagueApiItem, LeagueApiResult } from "@/models/home.models"
 
 export const HOME_API = {
-  /** Danh sách giải đấu theo ngày/option */
   MATCH_LEAGUES: "/league/v2/match-leagues",
-  /** Trận đang live (today) */
-  MATCH_SCHEDULE: "/v2/match/get-pc-game-match-by-condition",
-  /** Tất cả / sắp / kết thúc — body: { date, gameId, leagueIds, option, page, lot } */
-  MATCH_H5_LIST: "/sports-match-h5/list",
-  /** Ngày mai */
   MATCH_UPCOMING: "/v2/match/get-pc-upcoming-game-match",
-  /** Hôm qua */
   MATCH_PAST: "/v2/match/get-pc-past-game-match",
-  /** Tin tức nổi bật theo game */
   NEWS_FEATURED: "/news/featured-by-game",
   NEWS_POPULAR: "/news/get-popular-news-by-game",
-  /** Tin mới nhất theo tab (tabType=0: tất cả) */
   NEWS_LATEST: "/v4/0/new/1",
 } as const
-
-const H5_OPTION: Partial<Record<string, number>> = {
-  [MATCH_STATUS_TAB.ALL]: 1,
-  [MATCH_STATUS_TAB.UPCOMING]: 1,
-  [MATCH_STATUS_TAB.FINISHED]: 2,
-}
-
-/**
- * Chọn endpoint + method + body phù hợp.
- *
- * @param statusFilter  Giá trị filter hiện tại ("all" | "live" | "upcoming" | "finished")
- * @param date          DateRangeEnum (yesterday/tomorrow) hoặc null (today)
- * @param pickedDateTs  Unix timestamp (giây) của ngày đang xem — dùng cho h5 list
- */
-function getApiConfig(
-  statusFilter: string,
-  pickedDateTs: number,
-  leagueIds: number[] = []
-): ApiConfig {
-  if (statusFilter === MATCH_STATUS_TAB.LIVE) {
-    return {
-      endpoint: HOME_API.MATCH_SCHEDULE,
-      method: "POST",
-      params: { gameId: [] },
-      paginate: false,
-    }
-  }
-
-  return {
-    endpoint: HOME_API.MATCH_H5_LIST,
-    method: "POST",
-    params: {
-      date: pickedDateTs,
-      gameId: FOOTBALL_GAME_ID,
-      leagueIds: leagueIds.length > 0 ? leagueIds.join(",") : "",
-      option: H5_OPTION[statusFilter] ?? 1,
-      lot: null,
-    },
-  }
-}
 
 async function fetchLatestNewsAction(): Promise<NewsItem | null> {
   try {
@@ -117,13 +68,13 @@ function getEndpointByDate(date: string | null): string {
     case DateRangeEnum.TOMORROW:
       return HOME_API.MATCH_UPCOMING
     default:
-      return HOME_API.MATCH_SCHEDULE
+      return MATCH_API.LIVE
   }
 }
 
 async function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
   try {
-    const res = await postRequest<unknown[]>(HOME_API.MATCH_SCHEDULE, { gameId: [] })
+    const res = await postRequest<unknown[]>(MATCH_API.LIVE, { gameId: [] })
     if (!res.success || !Array.isArray(res.data)) return []
 
     return res.data
@@ -197,6 +148,5 @@ export {
   fetchFeaturedNewsAction,
   fetchPopularNewsAction,
   fetchLiveMatchesAction,
-  getApiConfig,
   getEndpointByDate,
 }
