@@ -14,7 +14,7 @@ export function NewsPopularPanel({
   if (!items.length) return null
 
   return (
-    <div className="card-glow rounded-12 panel-popular flex flex-col gap-4 p-5">
+    <div className="card-glow rounded-12 panel-news flex flex-col gap-4 p-5">
       <NewsPanelHeader title={title} viewAllHref={viewAllHref} viewAllLabel={viewAllLabel} />
 
       <div className="flex flex-col gap-1">

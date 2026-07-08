@@ -6,6 +6,7 @@ import { getTranslation } from "@/i18n/get-locale"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { Typography } from "@/components/ui/typography"
 
+import { ScheduleSidebar } from "./schedule-sidebar"
 import { ScheduleSkeleton } from "./skeleton"
 
 const ScheduleList = dynamic(() => import("./schedule-list"), {
@@ -29,9 +30,19 @@ export async function SchedulePage() {
       </ScrollReveal>
 
       <ScrollReveal variant="fade-up" duration={600} distance={32} threshold={0.04}>
-        <Suspense fallback={<ScheduleSkeleton />}>
-          <ScheduleList />
-        </Suspense>
+        <div className="grid grid-cols-10 gap-4 max-lg:flex max-lg:flex-col">
+          <div className="col-span-7 max-lg:order-1">
+            <Suspense fallback={<ScheduleSkeleton />}>
+              <ScheduleList />
+            </Suspense>
+          </div>
+
+          <div className="col-span-3 max-lg:order-2 max-lg:w-full lg:sticky lg:top-[76px] lg:self-start">
+            <Suspense fallback={null}>
+              <ScheduleSidebar />
+            </Suspense>
+          </div>
+        </div>
       </ScrollReveal>
     </div>
   )

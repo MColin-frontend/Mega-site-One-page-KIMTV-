@@ -185,6 +185,7 @@ export interface Dictionary {
   schedule: {
     pageTitle: string
     subtitle: string
+    latestNews: string
   }
   video: {
     title: string
