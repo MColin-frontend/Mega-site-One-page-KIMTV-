@@ -5,9 +5,9 @@ import { Controller, useForm } from "react-hook-form"
 import type {
   CommentDrawerPropsInterface,
   CommentFormInterface,
-  CommentItem,
-  CommentParamsState,
-  ReplyItem,
+  CommentItemInterface,
+  CommentParamsStateInterface,
+  CommentRecordInterface,
   ReplyStateInterface,
 } from "@/models"
 import { Drawer } from "@base-ui/react/drawer"
@@ -24,8 +24,9 @@ import {
   fetchComments,
   likeComment,
   postComment,
-} from "@/features/highlights/comments.api"
-import { resolveIsLiked } from "@/features/highlights/comments.utils"
+} from "@/features/highlights/api/highlights.api"
+import { resolveIsLiked } from "@/features/highlights/highlights.utils"
+import { NEWS_PANEL_STYLE } from "@/features/news/components/shared"
 import { Button } from "@/components/ui/button"
 import { Empty } from "@/components/ui/empty"
 import { MessageInput } from "@/components/ui/message-input"
@@ -45,8 +46,8 @@ export function CommentDrawer({
   const routes = getRoutes(locale)
   const { user, isLoggedIn } = useAuth()
 
-  const [comments, setComments] = useState<CommentItem[]>([])
-  const [params, setParams] = useState<CommentParamsState>({
+  const [comments, setComments] = useState<CommentItemInterface[]>([])
+  const [params, setParams] = useState<CommentParamsStateInterface>({
     isLoading: true,
     isLoadingMore: false,
     total: commentCount,
@@ -80,8 +81,8 @@ export function CommentDrawer({
     formState: { isSubmitting: isReplySubmitting },
   } = useForm<CommentFormInterface>({ defaultValues: { content: "" } })
 
-  const handleFetchComment = useCallback(async (page: number) => {
-    await fetchComments({
+  const handleFetchComment = useCallback((page: number) => {
+    return fetchComments({
       newsId: newsIdRef.current,
       page,
       loginUserId: loginUserIdRef.current,
@@ -99,55 +100,54 @@ export function CommentDrawer({
   //   setParams((s) => ({ ...s, page: s.page + 1, isLoadingMore: true }))
   // }
 
-  async function handleSubmit({ content: text }: CommentFormInterface, type: CommentType) {
+  function handleSubmit({ content: text }: CommentFormInterface, type: CommentType) {
     const trimmed = text.trim()
     if (isPostingRef.current || !trimmed) return
     isPostingRef.current = true
 
     const { parent, to } = reply
 
-    try {
-      const ok = await postComment({
-        payload: {
-          commentType,
-          content: trimmed,
-          mainNewsId: Number(newsIdRef.current),
-          userSourceId: loginUserId,
-          topFloorId: type === CommentType.REPLY ? Number(parent!.ncid) : 0,
-          ...(type === CommentType.REPLY && {
-            replyToCommentId: Number(to!.ncid),
-            replyToUserSourceId: to!.userSourceId,
-          }),
-        },
-        loginUserId,
-        userProfile: { userName: user?.name, avatar: user?.avatar },
-        total,
-        setComments,
-        setParams,
-        onCountChange,
-        messageSuccess: t(
-          type === CommentType.REPLY ? "video.comment.replySuccess" : "video.comment.postSuccess"
-        ),
-        messageError: t("video.comment.postError"),
-        parentNcid: type === CommentType.REPLY ? Number(parent!.ncid) : undefined,
-        replyUserName: type === CommentType.REPLY ? (to?.userName ?? "") : undefined,
+    return postComment({
+      payload: {
+        commentType,
+        content: trimmed,
+        mainNewsId: Number(newsIdRef.current),
+        userSourceId: loginUserId,
+        topFloorId: type === CommentType.REPLY ? Number(parent!.ncid) : 0,
+        ...(type === CommentType.REPLY && {
+          replyToCommentId: Number(to!.ncid),
+          replyToUserSourceId: to!.userSourceId,
+        }),
+      },
+      loginUserId,
+      userProfile: { userName: user?.name, avatar: user?.avatar },
+      total,
+      setComments,
+      setParams,
+      onCountChange,
+      messageSuccess: t(
+        type === CommentType.REPLY ? "video.comment.replySuccess" : "video.comment.postSuccess"
+      ),
+      messageError: t("video.comment.postError"),
+      parentNcid: type === CommentType.REPLY ? Number(parent!.ncid) : undefined,
+      replyUserName: type === CommentType.REPLY ? (to?.userName ?? "") : undefined,
+    })
+      .then((ok) => {
+        if (!ok) return
+        if (type === CommentType.REPLY) {
+          closeReply()
+        } else {
+          resetMain({ content: "" })
+        }
       })
-
-      if (!ok) return
-
-      if (type === CommentType.REPLY) {
-        closeReply()
-      } else {
-        resetMain({ content: "" })
-      }
-    } finally {
-      isPostingRef.current = false
-    }
+      .finally(() => {
+        isPostingRef.current = false
+      })
   }
 
-  async function handleRemoveComment(item: ReplyItem) {
+  function handleRemoveComment(item: CommentRecordInterface) {
     if (!item.ncid) return
-    await deleteComment({
+    return deleteComment({
       commentId: item.ncid,
       loginUserId,
       total,
@@ -159,16 +159,24 @@ export function CommentDrawer({
     })
   }
 
-  async function handleLiveComment(item: ReplyItem, parentNcid?: string | number) {
+  function handleLikeComment(item: CommentRecordInterface, parentNcid?: string | number) {
     const id = String(item.ncid)
     if (likeBusy[id]) return
     const isLike = !resolveIsLiked(item.isLike)
     setLikeBusy((prev) => ({ ...prev, [id]: true }))
 
-    // optimistic
-    const updateItem = (c: ReplyItem) =>
+    const updateItem = (c: CommentRecordInterface) =>
       String(c.ncid) === id
         ? { ...c, isLike, likeCount: Math.max(0, (Number(c.likeCount) || 0) + (isLike ? 1 : -1)) }
+        : c
+
+    const rollbackItem = (c: CommentRecordInterface) =>
+      String(c.ncid) === id
+        ? {
+            ...c,
+            isLike: !isLike,
+            likeCount: Math.max(0, (Number(c.likeCount) || 0) + (isLike ? -1 : 1)),
+          }
         : c
 
     if (parentNcid) {
@@ -181,22 +189,13 @@ export function CommentDrawer({
       )
     } else {
       setComments((prev) =>
-        prev.map((c) => (String(c.ncid) === id ? (updateItem(c) as CommentItem) : c))
+        prev.map((c) => (String(c.ncid) === id ? (updateItem(c) as CommentItemInterface) : c))
       )
     }
 
-    try {
-      const ok = await likeComment({ commentId: item.ncid, isLike, loginUserId })
-      if (!ok) {
-        // rollback
-        const rollbackItem = (c: ReplyItem) =>
-          String(c.ncid) === id
-            ? {
-                ...c,
-                isLike: !isLike,
-                likeCount: Math.max(0, (Number(c.likeCount) || 0) + (isLike ? -1 : 1)),
-              }
-            : c
+    return likeComment({ commentId: item.ncid, isLike, loginUserId })
+      .then((ok) => {
+        if (ok) return
         if (parentNcid) {
           setComments((prev) =>
             prev.map((c) =>
@@ -207,22 +206,18 @@ export function CommentDrawer({
           )
         } else {
           setComments((prev) =>
-            prev.map((c) => (String(c.ncid) === id ? (rollbackItem(c) as CommentItem) : c))
+            prev.map((c) => (String(c.ncid) === id ? (rollbackItem(c) as CommentItemInterface) : c))
           )
         }
-      }
-    } catch {
-      /* ignore */
-    } finally {
-      setLikeBusy((prev) => ({ ...prev, [id]: false }))
-    }
+      })
+      .finally(() => setLikeBusy((prev) => ({ ...prev, [id]: false })))
   }
 
-  function isOwn(item: ReplyItem) {
+  function isOwn(item: CommentRecordInterface) {
     return isLoggedIn && loginUserId && String(item.userSourceId) === loginUserId
   }
 
-  function openReply(parent: CommentItem, item?: ReplyItem) {
+  function openReply(parent: CommentItemInterface, item?: CommentRecordInterface) {
     setReply({ parent, to: item ?? parent })
 
     resetReply()
@@ -233,7 +228,7 @@ export function CommentDrawer({
     resetReply()
   }
 
-  function renderCard(item: ReplyItem, parentComment?: CommentItem) {
+  function renderCard(item: CommentRecordInterface, parentComment?: CommentItemInterface) {
     const profileId = item.userSourceId && item.userSourceId !== "0" ? item.userSourceId : null
     const isReply = !!parentComment
     return (
@@ -243,13 +238,13 @@ export function CommentDrawer({
         userInfoHref={profileId ? routes.userInfo(profileId) : null}
         onNavigate={onClose}
         likeBusy={!!likeBusy[String(item.ncid)]}
-        onLike={() => handleLiveComment(item, parentComment?.ncid)}
+        onLike={() => handleLikeComment(item, parentComment?.ncid)}
         isLoggedIn={isLoggedIn}
         isOwn={!!isOwn(item)}
         onReply={
           parentComment
             ? () => openReply(parentComment, item)
-            : () => openReply(item as CommentItem)
+            : () => openReply(item as CommentItemInterface)
         }
         onDelete={() => handleRemoveComment(item)}
         replyLabel={t("video.comment.reply")}
@@ -270,7 +265,10 @@ export function CommentDrawer({
         <Drawer.Backdrop className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]" />
 
         <Drawer.Viewport className="fixed inset-0 z-50 flex justify-end">
-          <Drawer.Popup className="flex h-full w-full max-w-[550px] flex-col bg-[#0d1a2e]/80 shadow-2xl backdrop-blur-2xl transition-transform duration-300 ease-out outline-none data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full">
+          <Drawer.Popup
+            className="card-glow flex h-full w-full max-w-[550px] flex-col shadow-2xl transition-transform duration-300 ease-out outline-none data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full"
+            style={NEWS_PANEL_STYLE}
+          >
             {/* Header */}
             <header className="shrink-0 px-5 pt-5 pb-4">
               <div className="flex items-center justify-between">

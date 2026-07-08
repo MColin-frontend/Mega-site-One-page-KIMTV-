@@ -1,16 +1,22 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import type { ReplyItem } from "@/models"
+import type { CommentRecordInterface } from "@/models"
 import { MessageCircle, X } from "lucide-react"
 
-import { clientDelete, clientGet, clientPost } from "@/server/services/client-request"
+import { javaGet, javaPost } from "@/server/services/client-request"
 import { useAuth } from "@/hooks/use-auth"
 
 import { useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
 import type { NewsComment } from "@/models/home.models"
 
+import { CommentCard } from "@/features/highlights/components/comment-drawer/comment-card"
+import {
+  CommentListSkeleton,
+  CommentLoadMoreSkeleton,
+  CommentPendingSkeleton,
+} from "@/features/highlights/components/skeleton"
 import {
   buildPendingPlaceholder,
   collectKnownCommentIds,
@@ -21,14 +27,7 @@ import {
   replacePendingWithRecord,
   resolveIsLiked,
   resolvePostedCommentId,
-} from "@/features/highlights/comments.utils"
-import { CommentCard } from "@/features/highlights/components/comment-drawer/comment-card"
-import {
-  CommentListSkeleton,
-  CommentLoadMoreSkeleton,
-  CommentPendingSkeleton,
-} from "@/features/highlights/components/skeleton"
-import { NEWS_ROUTES } from "@/features/news/news.api"
+} from "@/features/highlights/highlights.utils"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { MessageInput } from "@/components/ui/message-input"
@@ -39,8 +38,6 @@ import { NEWS_PANEL_STYLE } from "../shared"
 
 const PAGE_SIZE = 100
 
-type ApiBody = { success?: boolean; data?: unknown; message?: string | null }
-
 function extractRecords(raw: unknown): unknown[] {
   if (Array.isArray(raw)) return raw
   if (raw && typeof raw === "object") {
@@ -50,18 +47,6 @@ function extractRecords(raw: unknown): unknown[] {
     if (Array.isArray(obj.data)) return obj.data
   }
   return []
-}
-
-function isApiOk(res: { success: boolean; data: unknown } | null): boolean {
-  if (!res?.success || res.data == null) return false
-  const body = res.data as ApiBody
-  return body.success !== false
-}
-
-function getApiResult(res: { success: boolean; data: unknown } | null): unknown {
-  if (!res?.data || typeof res.data !== "object") return null
-  const body = res.data as ApiBody
-  return body.data ?? body
 }
 
 function ncidNum(id: string | number | undefined) {
@@ -157,17 +142,19 @@ export function CommentSection({
 
   const fetchPage = useCallback(
     async (page: number): Promise<NewsComment[]> => {
-      const qs = new URLSearchParams({
-        newsId: String(newsId),
-        pageIndex: String(page),
-        pageSize: String(PAGE_SIZE),
-        commentType: String(newsType),
+      const result = await javaGet<unknown>("/news/news-comment", {
+        params: {
+          newsId: String(newsId),
+          pageIndex: page,
+          pageSize: PAGE_SIZE,
+          commentType: newsType,
+          loginUserId,
+        },
       })
-      const res = await clientGet<ApiBody>(`${NEWS_ROUTES.COMMENTS}?${qs}`)
-      if (!isApiOk(res)) return []
-      return normalizeCommentList(extractRecords(getApiResult(res))) as NewsComment[]
+      if (result == null) return []
+      return normalizeCommentList(extractRecords(result)) as NewsComment[]
     },
-    [newsId, newsType]
+    [newsId, newsType, loginUserId]
   )
 
   const loadComments = useCallback(
@@ -321,15 +308,16 @@ export function CommentSection({
     setSubmitting(true)
 
     try {
-      const res = await clientPost<ApiBody>(NEWS_ROUTES.COMMENTS, {
+      const result = await javaPost<unknown>("/news/comment-news", {
         commentType: newsType,
         content,
         mainNewsId: Number(newsId),
         topFloorId: 0,
+        userSourceId: loginUserId,
       })
 
-      if (isApiOk(res)) {
-        const hydrated = await hydratePending(clientKey, content, getApiResult(res), knownIds)
+      if (result != null) {
+        const hydrated = await hydratePending(clientKey, content, result, knownIds)
         if (!hydrated) await loadComments(true, { silent: true })
         toast.success(t("video.comment.postSuccess"))
       } else {
@@ -374,20 +362,21 @@ export function CommentSection({
     setReplySubmitting(true)
 
     try {
-      const res = await clientPost<ApiBody>(NEWS_ROUTES.COMMENTS, {
+      const result = await javaPost<unknown>("/news/comment-news", {
         commentType: newsType,
         content,
         mainNewsId: Number(newsId),
         topFloorId: parentNcid,
         replyToCommentId: ncidNum(replyTo.ncid),
         replyToUserSourceId: replyTo.userSourceId,
+        userSourceId: loginUserId,
       })
 
-      if (isApiOk(res)) {
+      if (result != null) {
         const hydrated = await hydratePending(
           clientKey,
           content,
-          getApiResult(res),
+          result,
           knownIds,
           parentNcid,
           replyUserName
@@ -425,9 +414,10 @@ export function CommentSection({
   async function deleteComment(item: NewsComment) {
     if (!item.ncid) return
     try {
-      const qs = new URLSearchParams({ commentId: String(item.ncid) })
-      const res = await clientDelete<ApiBody>(`${NEWS_ROUTES.COMMENTS}?${qs}`)
-      if (isApiOk(res)) {
+      const result = await javaGet<unknown>("/news/remove-comment", {
+        params: { commentId: String(item.ncid), loginUserId },
+      })
+      if (result !== null) {
         emitTotal((n) => Math.max(0, n - 1))
         const id = ncidNum(item.ncid)
         setComments((prev) => {
@@ -476,10 +466,11 @@ export function CommentSection({
       setComments((prev) => prev.map((c) => (String(c.ncid) === id ? updateItem(c) : c)))
     }
 
-    const qs = new URLSearchParams({ flag: "2", isLike: String(isLike), typeId: id })
-    clientGet<ApiBody>(`${NEWS_ROUTES.LIKE}?${qs}`)
-      .then((res) => {
-        if (!isApiOk(res)) {
+    javaGet<unknown>("/news/user-like", {
+      params: { flag: "2", isLike: String(isLike), typeId: id, loginUserId },
+    })
+      .then((result) => {
+        if (result === null) {
           const rollbackItem = (c: NewsComment): NewsComment =>
             String(c.ncid) === id
               ? {
@@ -534,7 +525,7 @@ export function CommentSection({
     return (
       <CommentCard
         key={String(item.ncid)}
-        item={item as ReplyItem}
+        item={item as CommentRecordInterface}
         isReply={isReply}
         userInfoHref={profileId ? routes.userInfo(profileId) : null}
         onNavigate={() => {}}

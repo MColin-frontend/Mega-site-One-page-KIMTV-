@@ -5,7 +5,7 @@ import dynamic from "next/dynamic"
 import type { SimplePlayer } from "xgplayer"
 
 import { cn } from "@/lib/utils"
-import { useAdPlacements } from "@/hooks/use-ad-placements"
+import { useAdPlacements } from "@/hooks/tanstack/use-ad-placements"
 
 import "xgplayer/dist/index.min.css"
 

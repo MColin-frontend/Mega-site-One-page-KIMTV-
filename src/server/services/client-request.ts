@@ -1,13 +1,17 @@
 /**
- * Client-side HTTP helpers — mirror API của server/services/request.ts
- * nhưng dùng browser fetch, không import server-only modules.
- *
- * Luôn resolve, không throw — return { success, data, httpStatus }.
+ * Client-side HTTP — gọi `/java/*` (proxy backend) hoặc `/api/*` (Next routes).
+ * Dùng axios + KimTV headers, luôn resolve không throw.
  */
 
-import { buildKimtvClientHeaders } from "@/lib/kimtv-headers"
+import axios, { type AxiosRequestConfig } from "axios"
+
+import { getTokenFromCookie } from "@/lib/auth-cookie"
+
+import type { ApiEnvelopeInterface } from "@/models/request.models"
 
 import { toast } from "@/components/ui/toast"
+
+export type ClientParams = Record<string, string | number | boolean | null | undefined>
 
 export interface ClientRequestResult<T> {
   success: boolean
@@ -15,58 +19,64 @@ export interface ClientRequestResult<T> {
   httpStatus: number
 }
 
-export interface ClientRequestOptions extends RequestInit {
+export interface ClientRequestOptions {
+  params?: ClientParams
   isMessageSuccess?: boolean
   isMessageError?: boolean
   messageSuccess?: string
   messageError?: string
 }
 
-const DEFAULT_HEADERS: HeadersInit = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
+const clientHttp = axios.create({
+  withCredentials: true,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+})
+
+clientHttp.interceptors.request.use((config) => {
+  const token = getTokenFromCookie()
+  Object.assign(config.headers, {
+    Accept: "application/json, text/plain, */*",
+    lan: "vi",
+    sysType: "PC",
+    ...(token ? { token } : {}),
+  })
+  return config
+})
+
+/** Prefix backend path → Next.js Java proxy URL. Vd. `/news/foo` → `/java/news/foo` */
+export function javaUrl(path: string): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`
+  return `/java${normalized}`
 }
 
-function getTokenFromCookie(): string {
-  if (typeof document === "undefined") return ""
-  const match = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)
-  return match ? decodeURIComponent(match[1]) : ""
+export function isJavaSuccess(res: ApiEnvelopeInterface<unknown> | null | undefined): boolean {
+  return res?.status === "success"
 }
 
-function kimtvHeaders(token: string): HeadersInit {
-  return {
-    ...DEFAULT_HEADERS,
-    ...buildKimtvClientHeaders(token || null),
-  }
+export function getJavaErrorMessage(
+  res: ApiEnvelopeInterface<unknown> | null | undefined
+): string | null {
+  if (!res || res.status === "success") return null
+  return res.errorMsg ?? res.message ?? null
 }
 
 async function request<T>(
-  url: string,
+  config: AxiosRequestConfig,
   options: ClientRequestOptions = {}
 ): Promise<ClientRequestResult<T>> {
-  const { isMessageError, messageSuccess, messageError, ...fetchOptions } = options
-  const token = getTokenFromCookie()
+  const { isMessageError, messageSuccess, messageError } = options
   try {
-    const res = await fetch(url, {
-      ...fetchOptions,
-      credentials: "include",
-      headers: { ...kimtvHeaders(token), ...fetchOptions.headers },
-    })
-    const httpStatus = res.status
-
-    if (!res.ok) {
-      const errMsg = messageError ?? "Yêu cầu thất bại"
-      if (isMessageError) toast.error(errMsg)
-      return { success: false, data: null, httpStatus }
-    }
-
-    const data = (await res.json()) as T
+    const res = await clientHttp.request<T>(config)
     if (messageSuccess) toast.success(messageSuccess)
-    return { success: true, data, httpStatus }
-  } catch {
-    const errMsg = messageError ?? "Đã xảy ra lỗi, vui lòng thử lại"
+    return { success: true, data: res.data, httpStatus: res.status }
+  } catch (error) {
+    const httpStatus = axios.isAxiosError(error) ? (error.response?.status ?? 0) : 0
+    const errMsg = messageError ?? "Yêu cầu thất bại"
     if (isMessageError) toast.error(errMsg)
-    return { success: false, data: null, httpStatus: 0 }
+    return { success: false, data: null, httpStatus }
   }
 }
 
@@ -74,20 +84,66 @@ export function clientGet<T>(
   url: string,
   options?: ClientRequestOptions
 ): Promise<ClientRequestResult<T>> {
-  return request<T>(url, { ...options, method: "GET" })
+  return request<T>({ method: "GET", url, params: options?.params }, options)
 }
 
 export function clientPost<T>(
   url: string,
-  body: unknown,
+  body?: unknown,
   options?: ClientRequestOptions
 ): Promise<ClientRequestResult<T>> {
-  return request<T>(url, { ...options, method: "POST", body: JSON.stringify(body) })
+  return request<T>({ method: "POST", url, params: options?.params, data: body }, options)
 }
 
 export function clientDelete<T>(
   url: string,
   options?: ClientRequestOptions
 ): Promise<ClientRequestResult<T>> {
-  return request<T>(url, { ...options, method: "DELETE" })
+  return request<T>({ method: "DELETE", url, params: options?.params }, options)
+}
+
+type ToastOpts = Pick<
+  ClientRequestOptions,
+  "isMessageSuccess" | "messageSuccess" | "isMessageError" | "messageError"
+>
+
+function handleJavaToast<T>(
+  res: ClientRequestResult<ApiEnvelopeInterface<T>>,
+  opts: ToastOpts
+): T | null {
+  const envelope = res.data
+  if (res.success && isJavaSuccess(envelope)) {
+    if (opts.isMessageSuccess && opts.messageSuccess) toast.success(opts.messageSuccess)
+    return (envelope?.result ?? null) as T | null
+  }
+  if (opts.isMessageError) {
+    const errMsg = opts.messageError ?? getJavaErrorMessage(envelope) ?? "Yêu cầu thất bại"
+    toast.error(errMsg)
+  }
+  return null
+}
+
+export function javaGet<T>(path: string, options?: ClientRequestOptions): Promise<T | null> {
+  const { isMessageSuccess, messageSuccess, isMessageError, messageError, ...rest } = options ?? {}
+  return clientGet<ApiEnvelopeInterface<T>>(javaUrl(path), rest).then((res) =>
+    handleJavaToast(res, { isMessageSuccess, messageSuccess, isMessageError, messageError })
+  )
+}
+
+export function javaPost<T>(
+  path: string,
+  body?: unknown,
+  options?: ClientRequestOptions
+): Promise<T | null> {
+  const { isMessageSuccess, messageSuccess, isMessageError, messageError, ...rest } = options ?? {}
+  return clientPost<ApiEnvelopeInterface<T>>(javaUrl(path), body, rest).then((res) =>
+    handleJavaToast(res, { isMessageSuccess, messageSuccess, isMessageError, messageError })
+  )
+}
+
+export function javaDelete<T>(path: string, options?: ClientRequestOptions): Promise<T | null> {
+  const { isMessageSuccess, messageSuccess, isMessageError, messageError, ...rest } = options ?? {}
+  return clientDelete<ApiEnvelopeInterface<T>>(javaUrl(path), rest).then((res) =>
+    handleJavaToast(res, { isMessageSuccess, messageSuccess, isMessageError, messageError })
+  )
 }

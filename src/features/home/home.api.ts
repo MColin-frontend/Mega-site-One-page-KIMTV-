@@ -7,7 +7,6 @@ import type {
   ApiConfig,
   FeaturedNewsResult,
   LatestNewsResult,
-  LeagueApiResult,
   NewsItem,
   PopularNewsResult,
 } from "@/models/home.models"
@@ -111,20 +110,6 @@ async function fetchFeaturedNewsAction(gameIds = FOOTBALL_GAME_ID): Promise<News
   }
 }
 
-async function fetchLeaguesAction(gameId = FOOTBALL_GAME_ID, option = 1): Promise<LeagueApiResult> {
-  const empty: LeagueApiResult = { hotLeagus: [], moreLeagus: [] }
-  try {
-    const time = Math.floor(Date.now() / 1000)
-    const res = await getRequest<LeagueApiResult>(
-      `${HOME_API.MATCH_LEAGUES}?gameId=${gameId}&time=${time}&option=${option}`
-    )
-    if (!res.success || !res.data) return empty
-    return res.data
-  } catch {
-    return empty
-  }
-}
-
 function getEndpointByDate(date: string | null): string {
   switch (date) {
     case DateRangeEnum.YESTERDAY:
@@ -211,7 +196,6 @@ export {
   fetchLatestNewsListAction,
   fetchFeaturedNewsAction,
   fetchPopularNewsAction,
-  fetchLeaguesAction,
   fetchLiveMatchesAction,
   getApiConfig,
   getEndpointByDate,

@@ -13,22 +13,42 @@ export function Toaster() {
     <ToastContainer
       position="top-right"
       autoClose={4000}
-      hideProgressBar={false}
+      hideProgressBar
       closeOnClick={false}
       pauseOnHover
       draggable={false}
       closeButton={false}
-      toastStyle={{ background: "transparent", boxShadow: "none", padding: 0, marginBottom: 8 }}
-      style={{ width: "380px" }}
+      toastStyle={{ background: "transparent", boxShadow: "none", padding: 0, marginBottom: 6 }}
+      style={{ width: "360px" }}
     />
   )
 }
 
 const VARIANTS = {
-  success: { bg: "rgba(76,175,80,0.85)", Icon: CheckCircle },
-  error: { bg: "rgba(244,67,54,0.85)", Icon: XCircle },
-  info: { bg: "rgba(41,182,246,0.85)", Icon: Info },
-  warning: { bg: "rgba(255,152,0,0.85)", Icon: AlertTriangle },
+  success: {
+    border: "rgba(34,197,94,0.35)",
+    icon: "rgba(34,197,94,1)",
+    dot: "rgba(34,197,94,0.9)",
+    Icon: CheckCircle,
+  },
+  error: {
+    border: "rgba(239,68,68,0.35)",
+    icon: "rgba(239,68,68,1)",
+    dot: "rgba(239,68,68,0.9)",
+    Icon: XCircle,
+  },
+  info: {
+    border: "rgba(59,130,246,0.35)",
+    icon: "rgba(59,130,246,1)",
+    dot: "rgba(59,130,246,0.9)",
+    Icon: Info,
+  },
+  warning: {
+    border: "rgba(234,179,8,0.35)",
+    icon: "rgba(234,179,8,1)",
+    dot: "rgba(234,179,8,0.9)",
+    Icon: AlertTriangle,
+  },
 } as const
 
 type Variant = keyof typeof VARIANTS
@@ -46,36 +66,46 @@ function ToastContent({
   variant: Variant
   image?: string
 }) {
-  const { bg, Icon } = VARIANTS[variant]
+  const { border, icon, dot, Icon } = VARIANTS[variant]
   return (
     <div
       style={{
-        background: bg,
-        backdropFilter: "blur(40px)",
-        WebkitBackdropFilter: "blur(40px)",
-        borderRadius: 8,
+        background: "rgba(15,17,26,0.92)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: 10,
+        border: `1px solid ${border}`,
+        boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         width: "100%",
       }}
-      className="flex w-full items-center gap-3 px-4 py-3"
+      className="flex w-full items-start gap-3 px-4 py-3"
     >
       {image ? (
         <Image
           src={image}
           alt={title}
-          width={36}
-          height={36}
-          className="shrink-0 rounded-full object-cover"
+          width={32}
+          height={32}
+          className="mt-0.5 shrink-0 rounded-full object-cover"
         />
       ) : (
-        <Icon size={22} color="#fff" className="shrink-0" />
+        <span className="mt-0.5 shrink-0" style={{ color: icon }}>
+          <Icon size={18} />
+        </span>
       )}
 
       <div className="min-w-0 flex-1">
-        <Typography variant="body-sm" weight="600" className="text-white">
-          {title}
-        </Typography>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="inline-block size-1.5 shrink-0 rounded-full"
+            style={{ background: dot }}
+          />
+          <Typography variant="body-sm" weight="600" className="leading-snug text-white/95">
+            {title}
+          </Typography>
+        </div>
         {description && (
-          <Typography variant="caption" className="mt-0.5 text-white/80">
+          <Typography variant="caption" className="mt-0.5 leading-relaxed text-white/55">
             {description}
           </Typography>
         )}
@@ -83,16 +113,16 @@ function ToastContent({
 
       <button
         onClick={() => reactToast.dismiss(id)}
-        className="ml-2 shrink-0 text-white/60 transition-colors hover:text-white"
+        className="mt-0.5 shrink-0 text-white/30 transition-colors hover:text-white/70"
       >
-        <X size={16} />
+        <X size={14} />
       </button>
     </div>
   )
 }
 
 function show(variant: Variant, title: string, description?: string, image?: string) {
-  const id = `${variant}-${Date.now()}`
+  const id = crypto.randomUUID()
   reactToast(
     <ToastContent
       id={id}

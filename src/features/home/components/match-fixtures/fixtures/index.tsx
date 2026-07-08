@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic"
 
 import { formatDateParam, parseDateParam } from "@/lib/date"
-import { useLeagues } from "@/hooks/use-leagues"
+import { useLeagues } from "@/hooks/tanstack/use-leagues"
 import { useRouter } from "@/hooks/useRouter"
 
 import {

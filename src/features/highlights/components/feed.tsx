@@ -24,19 +24,17 @@ import { useDisclosure } from "@/hooks/useDisclosure"
 import { useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
 import { siteConfig } from "@/config/site"
+import { FeedMenu } from "@/enums/highlights.enum"
 
-import { resolveIsLiked } from "@/features/highlights/comments.utils"
-import type { HighlightVideoInterface } from "@/features/highlights/highlights.api"
 import {
   fetchVideoFeed,
   toggleFollowAction,
   toggleLikeAction,
-} from "@/features/highlights/highlights.api"
-import {
-  FeedMenu,
-  FILTER_MENU_CONFIG,
-  LINK_MENU_CONFIG,
-} from "@/features/highlights/highlights.constants"
+} from "@/features/highlights/api/highlights.api"
+import type { HighlightVideoInterface } from "@/features/highlights/highlight.models"
+import { FILTER_MENU_CONFIG, LINK_MENU_CONFIG } from "@/features/highlights/highlights.constants"
+import { resolveIsLiked } from "@/features/highlights/highlights.utils"
+import { NEWS_PANEL_STYLE } from "@/features/news/components/shared"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
@@ -78,8 +76,6 @@ const VideoFeedPlayer = dynamic(
 const CommentDrawer = dynamic(() => import("./comment-drawer").then((m) => m.CommentDrawer), {
   ssr: false,
 })
-
-export { FeedMenu }
 
 function resolveNewsId(item: HighlightVideoInterface | null): string {
   if (!item) return ""
@@ -959,6 +955,7 @@ export function HighlightsFeed({
       newsId,
       isLike: fromDoubleTap ? true : !wasLiked,
       wasLiked,
+      loginUserId,
       originalCount: displayLikeCount,
       setLikedMap,
       setVideos,
@@ -1020,7 +1017,10 @@ export function HighlightsFeed({
     >
       {/* ── Side menu (desktop) / Bottom nav (mobile) ───────────────────── */}
       <aside className="feed-menu sticky w-24 shrink-0 self-start pt-6 max-md:fixed max-md:right-0 max-md:bottom-0 max-md:left-0 max-md:z-30 max-md:w-full max-md:pt-0">
-        <nav className="flex flex-col gap-0.5 rounded-2xl border border-white/8 bg-[rgba(22,24,35,0.92)] px-2 py-2.5 shadow-xl backdrop-blur-xl max-md:flex-row max-md:gap-0 max-md:rounded-none max-md:border-0 max-md:border-t max-md:border-white/10 max-md:px-0 max-md:py-0 max-md:shadow-none">
+        <nav
+          className="card-glow flex flex-col gap-0.5 rounded-2xl px-2 py-2.5 max-md:flex-row max-md:gap-0 max-md:rounded-none max-md:border-0 max-md:border-t max-md:border-white/10 max-md:px-0 max-md:py-0 max-md:shadow-none"
+          style={NEWS_PANEL_STYLE}
+        >
           {/* Filter group */}
           <div className="flex flex-col gap-0.5 max-md:contents">
             {filterMenuItems.map(({ key, label, iconSrc }) => (

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { httpClient } from "@/server/services/request"
 import {
   buildKimtvAuthCookieHeader,
   buildKimtvBackendHeaders,
+  httpClient,
   KIMTV_DEFAULT_REFERER_PATH,
-} from "@/lib/kimtv-headers"
+} from "@/server/services/request"
 
 import { assertServerEnv, env } from "@/config/env"
 
