@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { LogIn, RefreshCw, Send, X } from "lucide-react"
+import { Controller, useForm } from "react-hook-form"
+import { RefreshCw, X } from "lucide-react"
 
 import { fetchChatMessagesAction, fetchPinnedMessagesAction } from "@/server/actions/chat.action"
 import { cn } from "@/lib/utils"
@@ -29,7 +30,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
-import { Input } from "@/components/ui/input"
+import { MessageInput } from "@/components/ui/message-input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
@@ -490,7 +491,13 @@ export function Chat({
     CHAT_CONNECTION_STATUS.DISCONNECTED
   )
   const [hasMoreMessages, setHasMoreMessages] = useState(false)
-  const [content, setContent] = useState("")
+  const {
+    control,
+    handleSubmit: handleFormSubmit,
+    reset: resetForm,
+  } = useForm<{ content: string }>({
+    defaultValues: { content: "" },
+  })
   const [showNewMsg, setShowNewMsg] = useState(false)
   const [expandedPinId, setExpandedPinId] = useState<string | number | null>(null)
   const [popupMessage, setPopupMessage] = useState<ChatMessage | null>(null)
@@ -699,22 +706,14 @@ export function Chat({
     if (el.scrollTop <= 60 && hasMoreMessages) handleLoadMore()
   }, [hasMoreMessages, handleLoadMore])
 
-  const submitMessage = useCallback(() => {
-    const text = content.trim()
-    if (!text) return
-    handleSend(text)
-    setContent("")
-  }, [content, handleSend])
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.nativeEvent.isComposing || e.keyCode === 229) return
-      if (e.key === "Enter") {
-        e.preventDefault()
-        submitMessage()
-      }
+  const onSendMessage = useCallback(
+    ({ content }: { content: string }) => {
+      const text = content.trim()
+      if (!text) return
+      handleSend(text)
+      resetForm()
     },
-    [submitMessage]
+    [handleSend, resetForm]
   )
 
   const handleDoubleClick = useCallback(
@@ -944,48 +943,19 @@ export function Chat({
       </div>
       {/* end messages section */}
       {/* Input */}
-      {isLoggedIn ? (
-        <Input
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={t("chat.placeholder")}
-          wrapperClassName={cn(
-            "rounded-full bg-chat-input-bg backdrop-blur-xl pr-1",
-            CHAT_INPUT_HEIGHT
-          )}
-          suffix={inputSuffix}
-          rightIcon={
-            <button
-              onClick={submitMessage}
-              className="text-muted bg-chat-input-btn hover:bg-chat-input-btn-hover flex size-8 shrink-0 items-center justify-center rounded-full transition-all hover:text-white active:scale-90"
-            >
-              <Send className="size-3.5 translate-x-px" />
-            </button>
-          }
-        />
-      ) : (
-        <Input
-          placeholder={t("chat.placeholder")}
-          disabled
-          wrapperClassName={cn("rounded-full bg-chat-input-bg backdrop-blur-xl", CHAT_INPUT_HEIGHT)}
-          prefix={
-            <button
-              onClick={handleLogin}
-              className="group flex items-center gap-1.5 transition-colors"
-            >
-              <LogIn className="group-hover:text-gold/80 text-muted size-3.5 shrink-0 transition-colors" />
-              <Typography
-                as="span"
-                variant="body-sm"
-                className="group-hover:text-gold/80 text-muted whitespace-nowrap transition-colors"
-              >
-                {t("chat.loginToChat")}
-              </Typography>
-            </button>
-          }
-        />
-      )}
+      <Controller
+        name="content"
+        control={control}
+        render={({ field }) => (
+          <MessageInput
+            value={field.value}
+            onChange={field.onChange}
+            onSubmit={handleFormSubmit(onSendMessage)}
+            placeholder={isLoggedIn ? t("chat.placeholder") : t("chat.loginToChat")}
+            className={cn("bg-chat-input-bg rounded-full backdrop-blur-xl", CHAT_INPUT_HEIGHT)}
+          />
+        )}
+      />
       {/* User popup */}
       {popupMessage && (
         <UserPopup

@@ -2,12 +2,11 @@
 
 import { useState } from "react"
 
-import { javaGet } from "@/server/services/client-request"
 import { useAuth } from "@/hooks/use-auth"
 
 import { useTranslation } from "@/i18n"
 
-import { HIGHLIGHTS_API } from "@/features/highlights/highlights.constants"
+import { handleFollowUser } from "@/features/news/news.api"
 
 interface FollowButtonProps {
   authorId: number | null | undefined
@@ -22,27 +21,19 @@ export function FollowButton({ authorId, initialFollow }: FollowButtonProps) {
 
   if (!authorId) return null
 
-  async function toggle() {
+  function toggle() {
     if (!isLoggedIn) {
       login()
       return
     }
     if (loading) return
-
-    const next = !following
-    setLoading(true)
-
-    try {
-      const result = await javaGet<unknown>(HIGHLIGHTS_API.SOCIAL.FOLLOW, {
-        params: { isFollow: next, userId: authorId as number },
-        isMessageError: true,
-        isMessageSuccess: true,
-        messageSuccess: t("video.follow.success"),
-      })
-      if (result !== null) setFollowing(next)
-    } finally {
-      setLoading(false)
-    }
+    handleFollowUser({
+      userId: authorId as number,
+      isFollow: !following,
+      setFollowing,
+      setLoading,
+      messageSuccess: t("video.follow.success"),
+    })
   }
 
   return (

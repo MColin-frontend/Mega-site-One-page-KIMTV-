@@ -9,6 +9,7 @@ export type {
   LatestNewsResult,
   LeagueApiItem,
   LeagueApiResult,
+  HotNewsResultInterface,
 } from "./home.models"
 export type { NavItemInterface } from "./layout.models"
 export type {

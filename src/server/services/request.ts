@@ -182,40 +182,41 @@ async function request<T>(
   }
 }
 
-export function getRequest<T>(
-  path: string,
-  options?: RequestOptionsInterface
-): Promise<RequestResultInterface<T>> {
-  return request<T>({ ...options, method: "GET", url: path }, options)
+function unwrap<T>(res: RequestResultInterface<T>): T | null {
+  return res.success ? (res.data ?? null) : null
+}
+
+export function getRequest<T>(path: string, options?: RequestOptionsInterface): Promise<T | null> {
+  return request<T>({ ...options, method: "GET", url: path }, options).then(unwrap)
 }
 
 export function postRequest<T>(
   path: string,
   body?: unknown,
   options?: RequestOptionsInterface
-): Promise<RequestResultInterface<T>> {
-  return request<T>({ ...options, method: "POST", url: path, data: body }, options)
+): Promise<T | null> {
+  return request<T>({ ...options, method: "POST", url: path, data: body }, options).then(unwrap)
 }
 
 export function putRequest<T>(
   path: string,
   body?: unknown,
   options?: RequestOptionsInterface
-): Promise<RequestResultInterface<T>> {
-  return request<T>({ ...options, method: "PUT", url: path, data: body }, options)
+): Promise<T | null> {
+  return request<T>({ ...options, method: "PUT", url: path, data: body }, options).then(unwrap)
 }
 
 export function patchRequest<T>(
   path: string,
   body?: unknown,
   options?: RequestOptionsInterface
-): Promise<RequestResultInterface<T>> {
-  return request<T>({ ...options, method: "PATCH", url: path, data: body }, options)
+): Promise<T | null> {
+  return request<T>({ ...options, method: "PATCH", url: path, data: body }, options).then(unwrap)
 }
 
 export function deleteRequest<T>(
   path: string,
   options?: RequestOptionsInterface
-): Promise<RequestResultInterface<T>> {
-  return request<T>({ ...options, method: "DELETE", url: path }, options)
+): Promise<T | null> {
+  return request<T>({ ...options, method: "DELETE", url: path }, options).then(unwrap)
 }

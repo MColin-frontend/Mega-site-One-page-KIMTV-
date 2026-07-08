@@ -85,3 +85,8 @@ export interface LeagueApiResult {
   hotLeagus: LeagueApiItem[]
   moreLeagus: LeagueApiItem[]
 }
+
+export interface HotNewsResultInterface {
+  news: NewsItem[]
+  videos: NewsItem[]
+}

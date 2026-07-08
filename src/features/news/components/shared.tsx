@@ -1,19 +1,9 @@
 import Link from "next/link"
 import { ArrowRight, Heart, MessageCircle } from "lucide-react"
 
-import { NewsItem } from "@/features/news/news.models"
-import { Typography } from "@/components/ui/typography"
+import type { NewsItem } from "@/models/home.models"
 
-/** Background + blur chung cho tất cả news panel wrapper. */
-export const NEWS_PANEL_STYLE: React.CSSProperties = {
-  background: [
-    "radial-gradient(ellipse at 10% 0%, rgba(74,140,255,0.16) 0%, transparent 55%)",
-    "radial-gradient(ellipse at 90% 100%, rgba(30,80,180,0.13) 0%, transparent 50%)",
-    "radial-gradient(ellipse at 50% 50%, rgba(20,50,120,0.08) 0%, transparent 70%)",
-    "rgba(8,15,30,0.85)",
-  ].join(", "),
-  backdropFilter: "blur(32px)",
-}
+import { Typography } from "@/components/ui/typography"
 
 interface NewsPanelHeaderProps {
   title: string

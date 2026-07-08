@@ -174,7 +174,7 @@ export function HeroVideo({
 
         {/* Match info bar */}
         <div
-          className="rounded-b-12 flex shrink-0 flex-col gap-2 border-t border-white/8 p-3 backdrop-blur-xl lg:gap-4 lg:p-4"
+          className="rounded-b-12 flex shrink-0 flex-col gap-4 border-t border-white/8 p-4 backdrop-blur-xl max-lg:gap-2 max-lg:p-3"
           style={{
             background:
               "radial-gradient(ellipse at 50% 0%, rgba(30,80,140,0.25) 0%, rgba(9,19,32,0.85) 70%)",
@@ -229,14 +229,19 @@ export function HeroVideo({
           </div>
 
           {/* Row 2: teams + score */}
-          <div className="flex items-center justify-between gap-2 lg:gap-8">
+          <div className="flex items-center justify-between gap-8 max-lg:gap-2">
             {/* Home */}
-            <div className="flex min-w-0 flex-1 flex-col-reverse items-center gap-2 lg:flex-row lg:justify-end lg:gap-2.5">
-              <Typography as="span" variant="body" weight="600" className="truncate text-white">
+            <div className="flex min-w-0 flex-1 flex-row justify-end gap-2.5 max-lg:flex-col-reverse max-lg:items-center max-lg:gap-2">
+              <Typography
+                as="span"
+                variant="body"
+                weight="600"
+                className="w-full truncate text-right text-white max-lg:text-center"
+              >
                 {activeMatch.homeTeam.name}
               </Typography>
               {activeMatch.homeTeam.logo && (
-                <div className="flex size-[28px] shrink-0 items-center justify-center lg:size-[52px]">
+                <div className="flex size-[52px] shrink-0 items-center justify-center max-lg:size-[28px]">
                   <Img
                     src={activeMatch.homeTeam.logo}
                     alt={activeMatch.homeTeam.name}
@@ -262,9 +267,9 @@ export function HeroVideo({
             </div>
 
             {/* Away */}
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-2 lg:flex-row lg:gap-2.5">
+            <div className="flex min-w-0 flex-1 flex-row gap-2.5 max-lg:flex-col max-lg:items-center max-lg:gap-2">
               {activeMatch.awayTeam.logo && (
-                <div className="flex size-[28px] shrink-0 items-center justify-center lg:size-[52px]">
+                <div className="flex size-[52px] shrink-0 items-center justify-center max-lg:size-[28px]">
                   <Img
                     src={activeMatch.awayTeam.logo}
                     alt={activeMatch.awayTeam.name}
@@ -274,7 +279,11 @@ export function HeroVideo({
                   />
                 </div>
               )}
-              <Typography variant="body" weight="600" className="truncate text-white">
+              <Typography
+                variant="body"
+                weight="600"
+                className="w-full truncate text-left text-white max-lg:text-center"
+              >
                 {activeMatch.awayTeam.name}
               </Typography>
             </div>
@@ -282,7 +291,7 @@ export function HeroVideo({
 
           {/* Period badge — mobile only, centered below teams */}
           {activeMatch.period != null && (
-            <div className="flex justify-center lg:hidden">
+            <div className="hidden max-lg:flex max-lg:justify-center">
               <MatchLiveBadge
                 halfLabel={
                   activeMatch.state != null ? (activeMatch.state <= 1 ? "H1" : "H2") : "LIVE"

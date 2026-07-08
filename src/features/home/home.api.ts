@@ -24,41 +24,22 @@ export const HOME_API = {
   NEWS_LATEST: "/v4/0/new/1",
 } as const
 
-async function fetchLatestNewsAction(): Promise<NewsItem | null> {
-  try {
-    const res = await getRequest<LatestNewsResult>(
-      `${HOME_API.NEWS_LATEST}?tabType=0&type=new&pageIndex=1`
-    )
-    if (!res.success || !res.data) return null
-    return res.data.records?.[0] ?? null
-  } catch (err) {
-    console.error("fetchLatestNewsAction error:", err)
-    return null
-  }
+function fetchLatestNewsAction(): Promise<NewsItem | null> {
+  return getRequest<LatestNewsResult>(
+    `${HOME_API.NEWS_LATEST}?tabType=0&type=new&pageIndex=1`
+  ).then((data) => data?.records?.[0] ?? null)
 }
 
-async function fetchLatestNewsListAction(limit = 5): Promise<NewsItem[]> {
-  try {
-    const res = await getRequest<LatestNewsResult>(
-      `${HOME_API.NEWS_LATEST}?tabType=0&type=new&pageIndex=1`
-    )
-    if (!res.success || !res.data) return []
-    return (res.data.records ?? []).slice(0, limit)
-  } catch (err) {
-    console.error("fetchLatestNewsListAction error:", err)
-    return []
-  }
+function fetchLatestNewsListAction(limit = 5): Promise<NewsItem[]> {
+  return getRequest<LatestNewsResult>(
+    `${HOME_API.NEWS_LATEST}?tabType=0&type=new&pageIndex=1`
+  ).then((data) => (data?.records ?? []).slice(0, limit))
 }
 
-async function fetchFeaturedNewsAction(gameIds = FOOTBALL_GAME_ID): Promise<NewsItem[]> {
-  try {
-    const res = await getRequest<FeaturedNewsResult>(`${HOME_API.NEWS_FEATURED}?gameIds=${gameIds}`)
-    if (!res.success || !res.data) return []
-    return res.data.news ?? []
-  } catch (err) {
-    console.error("fetchFeaturedNewsAction error:", err)
-    return []
-  }
+function fetchFeaturedNewsAction(gameIds = FOOTBALL_GAME_ID): Promise<NewsItem[]> {
+  return getRequest<FeaturedNewsResult>(`${HOME_API.NEWS_FEATURED}?gameIds=${gameIds}`)
+    .then((data) => data?.news ?? [])
+    .catch(() => [])
 }
 
 function getEndpointByDate(date: string | null): string {
@@ -72,74 +53,72 @@ function getEndpointByDate(date: string | null): string {
   }
 }
 
-async function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
-  try {
-    const res = await postRequest<unknown[]>(MATCH_API.LIVE, { gameId: [] })
-    if (!res.success || !Array.isArray(res.data)) return []
+function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
+  return postRequest<unknown[]>(MATCH_API.LIVE, { gameId: [] })
+    .then((data) => {
+      if (!Array.isArray(data)) return []
 
-    return res.data
-      .map((raw) => {
-        const m = raw as Record<string, unknown>
-        const liveUrls = (m.liveUrls as { liveUrl?: string; liveUrlFlv?: string }[] | null) ?? []
+      return data
+        .map((raw) => {
+          const m = raw as Record<string, unknown>
+          const liveUrls = (m.liveUrls as { liveUrl?: string; liveUrlFlv?: string }[] | null) ?? []
 
-        const wrapUrl = (raw: string) =>
-          env.isDev ? `/api/stream?url=${encodeURIComponent(raw)}` : raw
+          const wrapUrl = (raw: string) =>
+            env.isDev ? `/api/stream?url=${encodeURIComponent(raw)}` : raw
 
-        const sources = liveUrls.flatMap((u, i) => {
-          const result = []
-          if (u.liveUrl) result.push({ url: wrapUrl(u.liveUrl), name: `Nguồn ${i + 1} HLS` })
-          if (u.liveUrlFlv) result.push({ url: wrapUrl(u.liveUrlFlv), name: `Nguồn ${i + 1} FLV` })
-          return result
+          const sources = liveUrls.flatMap((u, i) => {
+            const result = []
+            if (u.liveUrl) result.push({ url: wrapUrl(u.liveUrl), name: `Nguồn ${i + 1} HLS` })
+            if (u.liveUrlFlv)
+              result.push({ url: wrapUrl(u.liveUrlFlv), name: `Nguồn ${i + 1} FLV` })
+            return result
+          })
+
+          if (sources.length === 0) return null
+
+          return {
+            id: m.matchId as number,
+            chatroomId: m.matchId as number,
+            gameId: (m.gameId as number) ?? 0,
+            homeTeam: {
+              name: (m.homeName as string) ?? "",
+              logo: (m.homeLogo as string) ?? "",
+            },
+            awayTeam: {
+              name: (m.awayName as string) ?? "",
+              logo: (m.awayLogo as string) ?? "",
+            },
+            homeScore: (m.homeScore as number) ?? undefined,
+            awayScore: (m.awayScore as number) ?? undefined,
+            period: (m.gameTime as number) ?? undefined,
+            state: (m.state as number) ?? null,
+            startTime: (m.startTime as number) ?? null,
+            leagueName: (m.leagueName as string) ?? undefined,
+            leagueLogo: (m.leagueLogo as string) ?? undefined,
+            homeCornerKick: (m.homeCornerKick as number) ?? undefined,
+            awayCornerKick: (m.awayCornerKick as number) ?? undefined,
+            homeYellowCard: (m.homeYellowCard as number) ?? undefined,
+            awayYellowCard: (m.awayYellowCard as number) ?? undefined,
+            homeRedCard: (m.homeRedCard as number) ?? undefined,
+            awayRedCard: (m.awayRedCard as number) ?? undefined,
+            anchors: ((m.anchorRoomVos as { userAvatar: string; userName: string }[]) ?? [])
+              .slice(0, 3)
+              .map((a) => ({ userAvatar: a.userAvatar, userName: a.userName })),
+            sources,
+          } satisfies LiveMatch
         })
-
-        if (sources.length === 0) return null
-
-        return {
-          id: m.matchId as number,
-          chatroomId: m.matchId as number,
-          gameId: (m.gameId as number) ?? 0,
-          homeTeam: {
-            name: (m.homeName as string) ?? "",
-            logo: (m.homeLogo as string) ?? "",
-          },
-          awayTeam: {
-            name: (m.awayName as string) ?? "",
-            logo: (m.awayLogo as string) ?? "",
-          },
-          homeScore: (m.homeScore as number) ?? undefined,
-          awayScore: (m.awayScore as number) ?? undefined,
-          period: (m.gameTime as number) ?? undefined,
-          state: (m.state as number) ?? null,
-          startTime: (m.startTime as number) ?? null,
-          leagueName: (m.leagueName as string) ?? undefined,
-          leagueLogo: (m.leagueLogo as string) ?? undefined,
-          homeCornerKick: (m.homeCornerKick as number) ?? undefined,
-          awayCornerKick: (m.awayCornerKick as number) ?? undefined,
-          homeYellowCard: (m.homeYellowCard as number) ?? undefined,
-          awayYellowCard: (m.awayYellowCard as number) ?? undefined,
-          homeRedCard: (m.homeRedCard as number) ?? undefined,
-          awayRedCard: (m.awayRedCard as number) ?? undefined,
-          anchors: ((m.anchorRoomVos as { userAvatar: string; userName: string }[]) ?? [])
-            .slice(0, 3)
-            .map((a) => ({ userAvatar: a.userAvatar, userName: a.userName })),
-          sources,
-        } satisfies LiveMatch
-      })
-      .filter(Boolean) as LiveMatch[]
-  } catch {
-    return []
-  }
+        .filter(Boolean) as LiveMatch[]
+    })
+    .catch(() => [])
 }
 
-async function fetchPopularNewsAction(gameIds = FOOTBALL_GAME_ID): Promise<NewsItem[]> {
-  try {
-    const res = await getRequest<PopularNewsResult>(`${HOME_API.NEWS_POPULAR}?gameIds=${gameIds}`)
-    if (!res.success || !res.data) return []
-    return res.data.videos ?? []
-  } catch (err) {
-    console.error("fetchPopularNewsAction error:", err)
-    return []
-  }
+function fetchPopularNewsAction(gameIds = FOOTBALL_GAME_ID): Promise<NewsItem[]> {
+  return getRequest<PopularNewsResult>(`${HOME_API.NEWS_POPULAR}?gameIds=${gameIds}`)
+    .then((data) => data?.videos ?? [])
+    .catch((err) => {
+      console.error("fetchPopularNewsAction error:", err)
+      return []
+    })
 }
 
 export {

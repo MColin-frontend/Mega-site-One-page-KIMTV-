@@ -25,8 +25,6 @@ function NewsListContent({
 }) {
   return (
     <>
-      {/* Desktop: danh sách dọc */}
-      {/* Desktop: danh sách dọc */}
       <div className="hidden flex-col lg:flex">
         {items.map((item) => (
           <div key={String(item.newsId)} className="mb-2">
@@ -39,7 +37,7 @@ function NewsListContent({
         ))}
       </div>
 
-      {/* Mobile: slide ngang */}
+      {/* Mobile: slide full width */}
       <div className="lg:hidden">
         <NewsCarouselMobile items={items} categoryLabel={categoryLabel} />
       </div>

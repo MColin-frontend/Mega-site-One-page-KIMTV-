@@ -197,7 +197,7 @@ export function VideoPlayer({
         src={playerOverlay?.[1]?.mediaPc || null}
         href={playerOverlay?.[1]?.jumpUrl || null}
         fallback={icLiveSmall}
-        className="absolute top-1 left-1 z-10 w-32"
+        className="absolute top-1 left-1 z-10 w-32 max-md:w-24 max-sm:w-16"
         skeletonClassName="aspect-[128/54]"
       />
     </div>
