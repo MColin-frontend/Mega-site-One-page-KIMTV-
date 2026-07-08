@@ -1,28 +1,22 @@
 import Link from "next/link"
 import { ArrowRight, Heart, MessageCircle } from "lucide-react"
 
-import { NewsItem } from "@/features/news/news.models"
+import { NEWS_PANEL_STYLE, POPULAR_PANEL_STYLE } from "@/constants/component/news.constants"
+
+import {
+  NewsMetaRowPropsInterface,
+  NewsPanelHeaderPropsInterface,
+} from "@/features/news/news.models"
 import { Typography } from "@/components/ui/typography"
 
-/** Background + blur chung cho tất cả news panel wrapper. */
-export const NEWS_PANEL_STYLE: React.CSSProperties = {
-  background: [
-    "radial-gradient(ellipse at 10% 0%, rgba(74,140,255,0.16) 0%, transparent 55%)",
-    "radial-gradient(ellipse at 90% 100%, rgba(30,80,180,0.13) 0%, transparent 50%)",
-    "radial-gradient(ellipse at 50% 50%, rgba(20,50,120,0.08) 0%, transparent 70%)",
-    "rgba(8,15,30,0.85)",
-  ].join(", "),
-  backdropFilter: "blur(32px)",
-}
-
-interface NewsPanelHeaderProps {
-  title: string
-  viewAllHref: string
-  viewAllLabel: string
-}
+export { NEWS_PANEL_STYLE, POPULAR_PANEL_STYLE }
 
 /** Header dùng chung cho tất cả news panel: tiêu đề + link "Xem tất cả". */
-export function NewsPanelHeader({ title, viewAllHref, viewAllLabel }: NewsPanelHeaderProps) {
+export function NewsPanelHeader({
+  title,
+  viewAllHref,
+  viewAllLabel,
+}: NewsPanelHeaderPropsInterface) {
   return (
     <div className="flex items-center justify-between">
       <Typography variant="h2" className="text-white uppercase">
@@ -39,13 +33,8 @@ export function NewsPanelHeader({ title, viewAllHref, viewAllLabel }: NewsPanelH
   )
 }
 
-interface NewsMetaRowProps {
-  item: Pick<NewsItem, "userName" | "likeCount" | "commentCount">
-  className?: string
-}
-
 /** Meta row dùng chung: tên tác giả + lượt thích + bình luận. */
-export function NewsMetaRow({ item, className }: NewsMetaRowProps) {
+export function NewsMetaRow({ item, className }: NewsMetaRowPropsInterface) {
   return (
     <div className={`flex flex-wrap items-center gap-3 ${className ?? ""}`}>
       {item.userName && (

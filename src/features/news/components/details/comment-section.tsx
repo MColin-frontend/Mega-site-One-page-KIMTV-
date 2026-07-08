@@ -11,22 +11,17 @@ import { useTranslation } from "@/i18n"
 import type { NewsComment } from "@/models/home.models"
 
 import { NEWS_ROUTES } from "@/features/news/news.api"
+import {
+  CommentComposeInputPropsInterface,
+  CommentSectionPropsInterface,
+} from "@/features/news/news.models"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
 import { NEWS_PANEL_STYLE } from "../shared"
 
-/* ─── CommentComposeInput ─────────────────────────────────── */
-
 const MAX_LENGTH = 500
-
-interface CommentComposeInputPropsInterface {
-  placeholder?: string
-  submitLabel?: string
-  loading?: boolean
-  onSubmit: (text: string) => void
-}
 
 function CommentComposeInput({
   placeholder = "",
@@ -81,8 +76,6 @@ function CommentComposeInput({
 
 const DEFAULT_AVATAR = "/images/common/img-avatar-default.png"
 const PAGE_SIZE = 100
-
-/* ─── utils (ported từ KIMTV-PC/plugins/utils.js) ────────── */
 
 function resolvePostedCommentId(result: unknown): number | null {
   if (result == null || result === "") return null
@@ -228,13 +221,11 @@ function AvatarSm({ src, alt }: { src?: string; alt: string }) {
 
 /* ─── main component ──────────────────────────────────────── */
 
-interface CommentSectionProps {
-  newsId: string | number
-  newsType?: number
-  initialCount?: number
-}
-
-export function CommentSection({ newsId, newsType = 1, initialCount = 0 }: CommentSectionProps) {
+export function CommentSection({
+  newsId,
+  newsType = 1,
+  initialCount = 0,
+}: CommentSectionPropsInterface) {
   const { t } = useTranslation()
   const { user, isLoggedIn, isLoading: authLoading, login } = useAuth()
 

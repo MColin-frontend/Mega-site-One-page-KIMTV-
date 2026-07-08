@@ -7,14 +7,10 @@ import { useAuth } from "@/hooks/use-auth"
 
 import { useTranslation } from "@/i18n"
 
-import { USER_ROUTES } from "@/features/news/news.api"
+import { NEWS_ROUTES } from "@/features/news/news.api"
+import { FollowButtonPropsInterface } from "@/features/news/news.models"
 
-interface FollowButtonProps {
-  authorId: number | null | undefined
-  initialFollow: boolean | null | undefined
-}
-
-export function FollowButton({ authorId, initialFollow }: FollowButtonProps) {
+export function FollowButton({ authorId, initialFollow }: FollowButtonPropsInterface) {
   const { t } = useTranslation()
   const { isLoggedIn, login } = useAuth()
   const [following, setFollowing] = useState(!!initialFollow)
@@ -35,7 +31,7 @@ export function FollowButton({ authorId, initialFollow }: FollowButtonProps) {
 
     try {
       const qs = new URLSearchParams({ isFollow: String(next), userId: String(authorId) })
-      const res = await clientGet<{ success: boolean }>(`${USER_ROUTES.FOLLOW}?${qs}`)
+      const res = await clientGet<{ success: boolean }>(`${NEWS_ROUTES.USER_FOLLOW}?${qs}`)
       if (!res?.success) setFollowing(!next)
     } catch {
       setFollowing(!next)

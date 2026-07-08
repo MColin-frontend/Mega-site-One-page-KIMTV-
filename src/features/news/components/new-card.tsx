@@ -2,19 +2,19 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
-import { NewsItemRowPropsInterface } from "@/features/news/news.models"
+import { NewsCardPropsInterface } from "@/features/news/news.models"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
 import { NewsMetaRow } from "./shared"
 
-export function NewsItemRow({ item, href, categoryLabel, className }: NewsItemRowPropsInterface) {
+export function NewsCard({ item, href, categoryLabel, className }: NewsCardPropsInterface) {
   return (
     <Link
       href={href}
       className={cn(
         "group rounded-8 -mx-2 flex gap-3 px-2 py-2 transition-all",
-        "hover:bg-blue/[0.07] hover:ring-1 hover:ring-white/[0.06]",
+        "hover:bg-blue/7 hover:ring-1 hover:ring-white/6",
         className
       )}
     >
