@@ -1,20 +1,13 @@
 "use client"
 
-import dynamic from "next/dynamic"
-
 import { useLeagues } from "@/hooks/tanstack/use-leagues"
 import { useFixturesFilter } from "@/hooks/use-fixtures-filter"
 
-import { FixtureListSkeleton } from "@/components/ui/match/fixture-list"
 import { buildLeagueGroupsFromApi } from "@/components/ui/select/league-select"
 
-import HeroFixtures from "./hero-banner"
+import { ScheduleFilter } from "./schedule-filter"
 
-const FixturesList = dynamic(() => import("./fixtures"), {
-  loading: () => <FixtureListSkeleton />,
-})
-
-function Fixtures() {
+export function ScheduleFilterBar() {
   const filter = useFixturesFilter()
   const { data: leaguesData } = useLeagues()
 
@@ -26,20 +19,17 @@ function Fixtures() {
   const groups = buildLeagueGroupsFromApi(leaguesData?.moreLeagus ?? [])
 
   return (
-    <section className="rounded-12 card-glow panel-news flex flex-col gap-4 p-5">
-      <HeroFixtures
+    <div className="rounded-12 bg-background/90 sticky top-[60px] z-20 border border-white/10 px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+      <ScheduleFilter
         groups={groups}
         hotLeagues={hotLeagues}
         pickedDate={filter.pickedDate}
-        statusFilter={filter.status}
+        status={filter.status}
         selectedLeagues={filter.leagueIds}
         onPickedDateChange={filter.setPickedDate}
-        onStatusChange={(val) => filter.setStatus(val as Parameters<typeof filter.setStatus>[0])}
+        onStatusChange={filter.setStatus}
         onLeagueChange={filter.setLeagueIds}
       />
-      <FixturesList />
-    </section>
+    </div>
   )
 }
-
-export default Fixtures
