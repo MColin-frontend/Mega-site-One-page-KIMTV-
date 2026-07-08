@@ -24,15 +24,14 @@ export type {
   CommentRecordInterface,
   CommentListResultInterface,
   PostCommentPayloadInterface,
-  PostCtx,
+  PostCtxInterface,
   FetchCommentsParamsInterface,
-  ReplyItem,
-  CommentItem,
+  CommentItemInterface,
   CommentDrawerPropsInterface,
   FetchStateInterface,
   ReplyStateInterface,
   CommentFormInterface,
-  CommentParamsState,
+  CommentParamsStateInterface,
 } from "@/features/highlights/highlight.models"
 export type {
   ApiEnvelopeInterface,

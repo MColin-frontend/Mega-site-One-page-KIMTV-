@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 
-import { followUser, getJavaErrorMessage, isJavaSuccess } from "@/lib/java-client"
+import { javaGet } from "@/server/services/client-request"
 import { useAuth } from "@/hooks/use-auth"
 
 import { useTranslation } from "@/i18n"
 
-import { toast } from "@/components/ui/toast"
+import { HIGHLIGHTS_API } from "@/features/highlights/highlights.constants"
 
 interface FollowButtonProps {
   authorId: number | null | undefined
@@ -33,14 +33,13 @@ export function FollowButton({ authorId, initialFollow }: FollowButtonProps) {
     setLoading(true)
 
     try {
-      const res = await followUser({ isFollow: next, userId: authorId as number })
-      if (isJavaSuccess(res)) {
-        setFollowing(next)
-        toast.success(t("video.follow.success"))
-      } else {
-        const errMsg = getJavaErrorMessage(res)
-        if (errMsg) toast.error(errMsg)
-      }
+      const result = await javaGet<unknown>(HIGHLIGHTS_API.SOCIAL.FOLLOW, {
+        params: { isFollow: next, userId: authorId as number },
+        isMessageError: true,
+        isMessageSuccess: true,
+        messageSuccess: t("video.follow.success"),
+      })
+      if (result !== null) setFollowing(next)
     } finally {
       setLoading(false)
     }

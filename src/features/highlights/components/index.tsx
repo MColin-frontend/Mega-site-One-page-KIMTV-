@@ -1,5 +1,5 @@
-import { resolveInitialMenu } from "@/features/highlights/highlights.api"
-import { fetchInitialHighlights } from "@/features/highlights/highlights.server"
+import { resolveInitialMenu } from "@/features/highlights/api/highlights.api"
+import { fetchInitialHighlights } from "@/features/highlights/api/highlights.server"
 
 import { HighlightsFeed } from "./feed"
 

@@ -1,9 +1,5 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from "axios"
 
-import { KIMTV_API_HEADERS } from "@/lib/kimtv-headers"
-
-// toast chỉ hoạt động ở client context — server action sẽ no-op
-
 import { assertServerEnv, env } from "@/config/env"
 import type {
   ApiEnvelopeInterface,
@@ -26,6 +22,48 @@ import { toast } from "@/components/ui/toast"
  *   getRequest / postRequest / putRequest / patchRequest / deleteRequest
  */
 
+const KIMTV_API_HEADERS = {
+  Accept: "application/json, text/plain, */*",
+  lan: "vi",
+  sysType: "PC",
+} as const
+
+export const KIMTV_DEFAULT_REFERER_PATH = "/videos/hot"
+
+export function buildKimtvBackendHeaders(options: {
+  apiOrigin: string
+  token?: string | null
+  refererPath?: string
+  cookieHeader?: string | null
+}): Record<string, string> {
+  const origin = options.apiOrigin.replace(/\/$/, "")
+  const path = options.refererPath ?? KIMTV_DEFAULT_REFERER_PATH
+  const referer = path.startsWith("http")
+    ? path
+    : `${origin}${path.startsWith("/") ? path : `/${path}`}`
+
+  return {
+    ...KIMTV_API_HEADERS,
+    Origin: origin,
+    Referer: referer,
+    ...(options.token ? { token: options.token } : {}),
+    ...(options.cookieHeader ? { Cookie: options.cookieHeader } : {}),
+  }
+}
+
+export function buildKimtvAuthCookieHeader(cookies: {
+  get: (name: string) => { value: string } | undefined
+}): string | undefined {
+  const parts: string[] = []
+  const lang = cookies.get("lang")?.value ?? "vi"
+  parts.push(`lang=${lang}`)
+  const token = cookies.get("token")?.value
+  if (token) parts.push(`token=${token}`)
+  const userInfo = cookies.get("userInfo")?.value
+  if (userInfo) parts.push(`userInfo=${encodeURIComponent(userInfo)}`)
+  return parts.length ? parts.join("; ") : undefined
+}
+
 const DEFAULT_HEADERS: Readonly<Record<string, string>> = {
   ...KIMTV_API_HEADERS,
   "Content-Type": "application/json",
@@ -42,9 +80,6 @@ export const httpClient: AxiosInstance = axios.create({
 httpClient.interceptors.request.use(async (config) => {
   config.params = { ...config.params, _t: Date.now() }
   const headers = config.headers as Record<string, string>
-  headers.lan = headers.lan ?? KIMTV_API_HEADERS.lan
-  headers.sysType = headers.sysType ?? KIMTV_API_HEADERS.sysType
-  headers.Accept = headers.Accept ?? KIMTV_API_HEADERS.Accept
 
   if (env.apiOrigin) {
     const origin = env.apiOrigin.replace(/\/$/, "")
@@ -58,9 +93,7 @@ httpClient.interceptors.request.use(async (config) => {
     const token = store.get("token")?.value
     if (token && !headers.token) headers.token = token
 
-    // Forward auth cookie nếu caller chưa set (server components / API routes).
     if (!headers.Cookie) {
-      const { buildKimtvAuthCookieHeader } = await import("@/lib/kimtv-headers")
       const cookieHeader = buildKimtvAuthCookieHeader(store)
       if (cookieHeader) headers.Cookie = cookieHeader
     }

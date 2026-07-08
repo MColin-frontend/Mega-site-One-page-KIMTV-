@@ -1,15 +1,6 @@
-// ─── Feed menu enum ───────────────────────────────────────────────────────────
+import { FeedMenu } from "@/enums/highlights.enum"
 
-/** reload = tải lại từ đầu | more = trang tiếp | silent = ngầm sau post */
-export type FetchMode = "reload" | "more" | "silent"
-
-export enum FeedMenu {
-  Featured = "featured", // Xu hướng — get-popular-news-by-game
-  Latest = "latest", // Mới nhất  — v4/0/video/{page}
-  Trending = "trending", // Nổi bật   — featured-by-game
-}
-
-export const VALID_MENUS = Object.values(FeedMenu) as string[]
+const VALID_MENUS = Object.values(FeedMenu) as string[]
 
 const GAME_ID = {
   /** "" — không lọc theo game cụ thể (hot/esports/other tab) */
@@ -68,22 +59,46 @@ const NEWS_TAB_MAP: Record<number, { abbr: string; gameId: GameIdValue; index: n
 
 // ─── Feed menu config ─────────────────────────────────────────────────────────
 
-export const FILTER_MENU_CONFIG = [
+const FILTER_MENU_CONFIG = [
   { key: FeedMenu.Featured, labelKey: "video.menu.featured" },
   { key: FeedMenu.Latest, labelKey: "video.menu.latest" },
   { key: FeedMenu.Trending, labelKey: "video.menu.trending" },
 ] as const
 
-export const LINK_MENU_CONFIG = [
+const LINK_MENU_CONFIG = [
   { key: "news", labelKey: "video.menu.news", external: false },
   { key: "promotion", labelKey: "video.menu.promotion", external: true },
 ] as const
 
+/** Backend KimTV paths — client gọi qua `/java/*`, server qua `getRequest`. */
+const HIGHLIGHTS_API = {
+  VIDEO: {
+    FEATURED: "/news/featured-by-game",
+    POPULAR: "/news/get-popular-news-by-game",
+    NEWS_TAB: "/get-news-tab",
+    LATEST: (tabType: number, pageIndex: number) => `/v4/${tabType}/video/${pageIndex}`,
+    LIKE: "/news/user-like",
+  },
+  COMMENT: {
+    LIST: "/news/news-comment",
+    POST: "/news/comment-news",
+    DELETE: "/news/remove-comment",
+  },
+  SOCIAL: {
+    FOLLOW: "/user/follow-user",
+  },
+} as const
+
+export { FeedMenu }
 export {
+  VALID_MENUS,
   GAME_ID,
   LATEST_VIDEO_PAGE_SIZE,
   PAGE_SIZE_COMMENT,
   TRENDING_WINDOW_MS,
   VIDEO_NEWS_TYPE,
   NEWS_TAB_MAP,
+  FILTER_MENU_CONFIG,
+  LINK_MENU_CONFIG,
+  HIGHLIGHTS_API,
 }

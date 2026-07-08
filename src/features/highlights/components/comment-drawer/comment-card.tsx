@@ -1,5 +1,5 @@
 import Link from "next/link"
-import type { ReplyItem } from "@/models"
+import type { CommentRecordInterface } from "@/models"
 import { Heart } from "lucide-react"
 
 import { formatTimestamp } from "@/lib/date"
@@ -9,7 +9,7 @@ import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
 export interface CommentCardProps {
-  item: ReplyItem
+  item: CommentRecordInterface
   isReply?: boolean
   userInfoHref: string | null
   onNavigate: () => void

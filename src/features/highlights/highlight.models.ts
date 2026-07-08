@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react"
 
-import type { FeedMenu } from "./highlights.constants"
+import type { FeedMenu } from "@/enums/highlights.enum"
 
 interface HighlightVideoInterface {
   newsId: string | number
@@ -75,9 +75,12 @@ interface PostCommentPayloadInterface {
   replyToUserSourceId?: string | number
 }
 
-type PostCtx =
-  | { kind: "comment" }
-  | { kind: "reply"; parentNcid: number; toNcid: number; toUserSourceId?: string }
+interface PostCtxInterface {
+  kind: "comment" | "reply"
+  parentNcid?: number
+  toNcid?: number
+  toUserSourceId?: string
+}
 
 interface FetchCommentsParamsInterface {
   newsId: string | number
@@ -85,12 +88,13 @@ interface FetchCommentsParamsInterface {
   loginUserId: string
   commentType: number
   pageSize?: number
-  setComments: Dispatch<SetStateAction<CommentItem[]>>
-  setParams: Dispatch<SetStateAction<CommentParamsState>>
+  setComments: Dispatch<SetStateAction<CommentItemInterface[]>>
+  setParams: Dispatch<SetStateAction<CommentParamsStateInterface>>
 }
 
-type ReplyItem = CommentRecordInterface
-type CommentItem = ReplyItem & { children?: ReplyItem[] }
+interface CommentItemInterface extends CommentRecordInterface {
+  children?: CommentRecordInterface[]
+}
 
 interface CommentDrawerPropsInterface {
   newsId: string | number
@@ -108,15 +112,15 @@ interface FetchStateInterface {
 }
 
 interface ReplyStateInterface {
-  parent: CommentItem | null
-  to: ReplyItem | null
+  parent: CommentItemInterface | null
+  to: CommentRecordInterface | null
 }
 
 interface CommentFormInterface {
   content: string
 }
 
-type CommentParamsState = {
+interface CommentParamsStateInterface {
   isLoading: boolean
   isLoadingMore: boolean
   total: number
@@ -143,13 +147,12 @@ export type {
   CommentRecordInterface,
   CommentListResultInterface,
   PostCommentPayloadInterface,
-  PostCtx,
+  PostCtxInterface,
   FetchCommentsParamsInterface,
-  ReplyItem,
-  CommentItem,
+  CommentItemInterface,
   CommentDrawerPropsInterface,
   FetchStateInterface,
   ReplyStateInterface,
   CommentFormInterface,
-  CommentParamsState,
+  CommentParamsStateInterface,
 }

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 
-import { useAdPlacements } from "@/hooks/use-ad-placements"
+import { useAdPlacements } from "@/hooks/tanstack/use-ad-placements"
 
 import heroBanner1 from "@assets/images/home/img-mockup-banner-1.png"
 

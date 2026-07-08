@@ -1,13 +1,18 @@
+import type { AdPlacementsInterface } from "@/models"
 import { useQuery } from "@tanstack/react-query"
 
-import { fetchPlacementsAction } from "@/server/actions/ad.action"
+import { javaGet } from "@/server/services/client-request"
 
 import { QUERY_KEYS } from "@/constants/query-keys.constants"
+
+const AD_API = {
+  PLACEMENTS: "/advertise/placements",
+} as const
 
 export function useAdPlacements() {
   return useQuery({
     queryKey: QUERY_KEYS.adPlacements,
-    queryFn: fetchPlacementsAction,
+    queryFn: () => javaGet<AdPlacementsInterface>(AD_API.PLACEMENTS),
     staleTime: Infinity,
     gcTime: Infinity,
   })
