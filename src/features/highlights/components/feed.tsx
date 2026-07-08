@@ -90,19 +90,80 @@ function resolveIsFollowed(item: HighlightVideoInterface): boolean {
   return resolveIsLiked(item.hasFollow)
 }
 
-function FeedPreviewSlide({
+/** Một slide trong stack — cùng cấu trúc DOM để React giữ instance player khi đổi prev/current/next. */
+function FeedStackSlide({
   item,
   width,
   height,
+  isActive,
+  playerRef,
+  isMuted = true,
+  videoReady = false,
+  isPaused = false,
+  isEnded = false,
+  showPauseHint = false,
+  showHeartBurst = false,
+  playbackProgress = 0,
+  newsId = "",
+  routes,
+  t,
+  onReady,
+  onPlay,
+  onPause,
+  onEnded,
+  onTimeUpdate,
+  onToggleMute,
+  onResume,
+  onProgressMouseDown,
 }: {
   item: HighlightVideoInterface
   width: number
   height: number
+  isActive: boolean
+  playerRef?: React.RefObject<VideoFeedPlayerHandle | null>
+  isMuted?: boolean
+  videoReady?: boolean
+  isPaused?: boolean
+  isEnded?: boolean
+  showPauseHint?: boolean
+  showHeartBurst?: boolean
+  playbackProgress?: number
+  newsId?: string
+  routes?: ReturnType<typeof getRoutes>
+  t?: ReturnType<typeof useTranslation>["t"]
+  onReady?: () => void
+  onPlay?: () => void
+  onPause?: () => void
+  onEnded?: () => void
+  onTimeUpdate?: (cur: number, dur: number) => void
+  onToggleMute?: () => void
+  onResume?: () => void
+  onProgressMouseDown?: (e: React.MouseEvent<HTMLDivElement>) => void
 }) {
   const cover = item.coverUrl ?? ""
+  const showCover = !isActive || !videoReady
+
   return (
     <div className="relative shrink-0 overflow-hidden rounded bg-black" style={{ width, height }}>
-      {cover ? (
+      {item.videoUrl ? (
+        <VideoFeedPlayer
+          ref={isActive ? playerRef : undefined}
+          url={item.videoUrl}
+          poster={cover}
+          muted={isActive ? isMuted : true}
+          volume={isActive ? 0.8 : 0}
+          autoplay={false}
+          active={isActive}
+          onReady={isActive ? onReady : undefined}
+          onPlay={isActive ? onPlay : undefined}
+          onPause={isActive ? onPause : undefined}
+          onEnded={isActive ? onEnded : undefined}
+          onTimeUpdate={isActive ? onTimeUpdate : undefined}
+          className="absolute inset-0 z-1"
+        />
+      ) : null}
+
+      {showCover && cover ? (
         <Img
           src={cover}
           alt={item.title ?? ""}
@@ -110,20 +171,132 @@ function FeedPreviewSlide({
           objectFit="contain"
           unoptimized
           sizes="100vw"
-          wrapperClassName="absolute inset-0"
+          wrapperClassName="absolute inset-0 z-2"
         />
       ) : null}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/72 via-black/40 to-transparent px-5 pt-16 pb-14">
-        <Typography as="span" variant="h2" className="mb-2 inline-block text-white drop-shadow">
-          @{item.userName || "KIMTV"}
-        </Typography>
-        <Typography
-          as="p"
-          variant="h6"
-          className="line-clamp-2 leading-snug text-white/95 drop-shadow"
-        >
-          {item.title}
-        </Typography>
+
+      {isActive ? (
+        <>
+          <div
+            aria-hidden="true"
+            data-feed-tap-zone
+            className={cn("absolute inset-0 z-14 cursor-pointer", isEnded && "pointer-events-none")}
+          />
+
+          {item.videoUrl && onToggleMute && t ? (
+            <Button
+              type="button"
+              data-feed-nav-block
+              className="absolute top-4 left-4 z-20 h-12 w-12 rounded-full border-0 bg-black/35 p-0 text-white hover:bg-black/50"
+              onClick={onToggleMute}
+              aria-label={isMuted ? t("video.actions.unmute") : t("video.actions.mute")}
+            >
+              {isMuted ? (
+                <VolumeX className="size-[22px] text-white" strokeWidth={2} />
+              ) : (
+                <Volume2 className="size-[22px] text-white" strokeWidth={2} />
+              )}
+            </Button>
+          ) : null}
+
+          {showPauseHint ? (
+            <div className="pointer-events-none absolute inset-0 z-18 flex animate-[feedPauseHint_0.5s_ease_forwards] items-center justify-center">
+              <div className="flex h-18 w-18 items-center justify-center rounded-full border-2 border-white/85 bg-black/28 backdrop-blur-[10px]">
+                <Pause className="size-11 text-white" strokeWidth={2} />
+              </div>
+            </div>
+          ) : null}
+
+          {((isPaused && !isEnded && videoReady) || isEnded) && onResume && t ? (
+            <div className="pointer-events-none absolute inset-0 z-18 flex items-center justify-center">
+              <Button
+                type="button"
+                data-feed-nav-block
+                className="pointer-events-auto h-18 w-18 rounded-full border-0 bg-transparent p-0 hover:bg-transparent"
+                onClick={onResume}
+                aria-label={isEnded ? t("video.actions.replay") : t("video.actions.play")}
+              >
+                <span className="flex h-18 w-18 items-center justify-center rounded-full border-2 border-white/92 bg-black/28 backdrop-blur-[10px] transition-transform hover:scale-105">
+                  {isEnded ? (
+                    <RotateCcw className="size-9 text-white" strokeWidth={2} />
+                  ) : (
+                    <Play className="size-11 fill-white text-white" strokeWidth={2} />
+                  )}
+                </span>
+              </Button>
+            </div>
+          ) : null}
+
+          {showHeartBurst ? (
+            <div className="pointer-events-none absolute inset-0 z-18 flex animate-[heartPop_0.7s_ease_forwards] items-center justify-center text-[#fe2c55]">
+              <Heart className="size-24 fill-[#fe2c55] text-[#fe2c55]" strokeWidth={1.8} />
+            </div>
+          ) : null}
+
+          {item.videoUrl && onProgressMouseDown ? (
+            <div className="absolute right-0 bottom-5 left-0 z-22 px-2" data-feed-nav-block>
+              {item.durationMillis ? (
+                <Typography
+                  as="p"
+                  variant="caption"
+                  className="mb-1.5 px-1 text-right font-semibold text-white/95"
+                  style={{ textShadow: "0 1px 4px rgba(0,0,0,.7)" }}
+                >
+                  {formatDuration(Number(item.durationMillis))}
+                </Typography>
+              ) : null}
+              <div className="feed-progress cursor-pointer" onMouseDown={onProgressMouseDown}>
+                <div className="feed-progress__track relative h-[3px] w-full rounded-full bg-white/25 transition-[height] hover:h-1">
+                  <span
+                    className="absolute top-0 left-0 block h-full rounded-full bg-white"
+                    style={{ width: `${playbackProgress}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </>
+      ) : null}
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-12 bg-linear-to-t from-black/72 via-black/40 to-transparent px-5 pt-16 pb-14">
+        {item.authorId && routes && isActive ? (
+          <Link
+            href={`/user-info/${item.authorId}`}
+            data-feed-nav-block
+            className="pointer-events-auto mb-2 inline-block"
+          >
+            <Typography as="span" variant="h2" className="text-white drop-shadow">
+              @{item.userName || "KIMTV"}
+            </Typography>
+          </Link>
+        ) : (
+          <Typography as="span" variant="h2" className="mb-2 inline-block text-white drop-shadow">
+            @{item.userName || "KIMTV"}
+          </Typography>
+        )}
+        {routes && isActive && newsId ? (
+          <Link
+            href={routes.video.article(String(newsId))}
+            data-feed-nav-block
+            className="pointer-events-auto block w-full text-left"
+          >
+            <Typography
+              as="p"
+              variant="h6"
+              className="line-clamp-3 leading-snug text-white/95 drop-shadow"
+            >
+              {item.title}
+            </Typography>
+          </Link>
+        ) : (
+          <Typography
+            as="p"
+            variant="h6"
+            className="line-clamp-2 leading-snug text-white/95 drop-shadow"
+          >
+            {item.title}
+          </Typography>
+        )}
       </div>
     </div>
   )
@@ -190,6 +363,8 @@ export function HighlightsFeed({
   // ── Wheel / swipe debounce ───────────────────────────────────────────────────
   const navLocked = useRef(false)
   const suppressTapAfterDrag = useRef(false)
+  const userWantsPausedRef = useRef(false)
+  const onPlayerTapRef = useRef<() => void>(() => {})
   const pendingSnapDirection = useRef<0 | 1 | -1>(0)
   const isStackAnimatingRef = useRef(false)
   const [dragOffsetY, setDragOffsetY] = useState(0)
@@ -253,7 +428,6 @@ export function HighlightsFeed({
   // ── Derived ──────────────────────────────────────────────────────────────────
   const currentItem = videos[currentIndex] ?? null
   const newsId = resolveNewsId(currentItem)
-  const coverUrl = currentItem?.coverUrl ?? ""
 
   const isLiked = (() => {
     if (!currentItem) return false
@@ -352,19 +526,32 @@ export function HighlightsFeed({
     }
   }, [videos.length])
 
-  // ── Reset playback on index/menu change ──────────────────────────────────────
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  // ── Reset playback on video/menu change ──────────────────────────────────────
+  useLayoutEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- reset UI when active video changes */
+    userWantsPausedRef.current = false
     setIsPaused(false)
     setIsEnded(false)
     setShowPauseHint(false)
-    setVideoReady(false)
     setPlaybackProgress(0)
-    setDragOffsetY(0)
     closeDrawer("comment")
     if (pauseHintTimer.current) clearTimeout(pauseHintTimer.current)
+
+    const p = playerRef.current
+    if (p) {
+      const dur = p.getDuration()
+      if (Number.isFinite(dur) && dur > 0) {
+        setVideoReady(true)
+        p.setMuted(isMuted)
+        setIsPaused(false)
+        void p.play()
+        return
+      }
+    }
+    setVideoReady(false)
+    /* eslint-enable react-hooks/set-state-in-effect */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex, activeMenu])
+  }, [newsId, activeMenu])
 
   // ── Keyboard nav ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -551,6 +738,7 @@ export function HighlightsFeed({
       currentY: 0,
       axis: null as "x" | "y" | null,
       moved: false,
+      startTarget: null as EventTarget | null,
     }
 
     const resetDragState = () => {
@@ -558,6 +746,7 @@ export function HighlightsFeed({
       dragState.pointerId = -1
       dragState.axis = null
       dragState.moved = false
+      dragState.startTarget = null
     }
 
     const onPointerDown = (e: PointerEvent) => {
@@ -572,8 +761,7 @@ export function HighlightsFeed({
       dragState.currentY = e.clientY
       dragState.axis = null
       dragState.moved = false
-      gestureRef.current.setDragOffsetY(0)
-      el.setPointerCapture(e.pointerId)
+      dragState.startTarget = e.target
     }
 
     const onPointerMove = (e: PointerEvent) => {
@@ -585,6 +773,10 @@ export function HighlightsFeed({
       if (!dragState.axis) {
         if (Math.abs(dy) < 8 && Math.abs(dx) < 8) return
         dragState.axis = Math.abs(dy) >= Math.abs(dx) ? "y" : "x"
+        if (dragState.axis === "y") {
+          el.setPointerCapture(e.pointerId)
+          gestureRef.current.setDragOffsetY(gestureRef.current.clampDragOffset(dy))
+        }
       }
       if (dragState.axis !== "y") return
 
@@ -606,6 +798,7 @@ export function HighlightsFeed({
       const offsetY = gestureRef.current.clampDragOffset(endY - dragState.startY)
       const moved = dragState.moved
       const axis = dragState.axis
+      const startTarget = dragState.startTarget
       resetDragState()
 
       if (moved) {
@@ -613,6 +806,13 @@ export function HighlightsFeed({
         setTimeout(() => {
           suppressTapAfterDrag.current = false
         }, 400)
+      } else if (
+        !suppressTapAfterDrag.current &&
+        startTarget instanceof HTMLElement &&
+        !gestureRef.current.shouldIgnoreNavGesture(startTarget) &&
+        startTarget.closest("[data-feed-tap-zone]")
+      ) {
+        onPlayerTapRef.current()
       }
 
       if (axis === "y") {
@@ -647,7 +847,9 @@ export function HighlightsFeed({
 
   // ── Playback controls ─────────────────────────────────────────────────────────
   function pauseVideo() {
-    playerRef.current?.pause()
+    userWantsPausedRef.current = true
+    const p = playerRef.current
+    p?.pause()
     setIsPaused(true)
     setShowPauseHint(true)
     if (pauseHintTimer.current) clearTimeout(pauseHintTimer.current)
@@ -657,14 +859,15 @@ export function HighlightsFeed({
   function resumeVideo() {
     const p = playerRef.current
     if (!p) return
+    userWantsPausedRef.current = false
     const dur = p.getDuration()
     const cur = p.getCurrentTime()
     if (dur > 0 && cur >= dur - 0.1) p.seek(0)
     p.setMuted(isMuted)
-    p.play()
     setIsPaused(false)
     setIsEnded(false)
     setShowPauseHint(false)
+    void p.play()
   }
 
   function togglePlayPause() {
@@ -698,6 +901,8 @@ export function HighlightsFeed({
       }
     }, 300)
   }
+
+  onPlayerTapRef.current = onPlayerTap
 
   // ── Progress bar ──────────────────────────────────────────────────────────────
   function seekToX(clientX: number, trackEl: HTMLElement) {
@@ -916,196 +1121,68 @@ export function HighlightsFeed({
                   }}
                 >
                   {prevItem ? (
-                    <FeedPreviewSlide item={prevItem} width={playerWidth} height={stageHeight} />
+                    <FeedStackSlide
+                      key={resolveNewsId(prevItem)}
+                      item={prevItem}
+                      width={playerWidth}
+                      height={stageHeight}
+                      isActive={false}
+                    />
                   ) : null}
 
-                  <div
-                    className="relative shrink-0 overflow-hidden rounded bg-black"
-                    style={{ width: playerWidth, height: stageHeight }}
-                  >
-                    {/* Cover */}
-                    {coverUrl && !videoReady && (
-                      <Img
-                        src={coverUrl}
-                        alt={currentItem?.title ?? ""}
-                        fill
-                        objectFit="contain"
-                        unoptimized
-                        sizes="100vw"
-                        wrapperClassName="absolute inset-0 z-2"
-                      />
-                    )}
-
-                    {/* Video */}
-                    {currentItem?.videoUrl && (
-                      <VideoFeedPlayer
-                        key={`player-${newsId}-${currentIndex}`}
-                        ref={playerRef}
-                        url={currentItem.videoUrl}
-                        poster={coverUrl}
-                        muted={isMuted}
-                        volume={0.8}
-                        autoplay
-                        onReady={() => setVideoReady(true)}
-                        onPlay={() => {
-                          setVideoReady(true)
-                          setIsPaused(false)
-                          setIsEnded(false)
-                        }}
-                        onPause={() => setIsPaused(true)}
-                        onEnded={() => {
-                          setIsEnded(true)
-                          setIsPaused(true)
-                          setPlaybackProgress(100)
-                        }}
-                        onTimeUpdate={(cur, dur) => {
-                          if (isDragging.current || !dur) return
-                          setPlaybackProgress(Math.round((cur / dur) * 100))
-                        }}
-                        className="absolute inset-0 z-1"
-                      />
-                    )}
-
-                    {/* Tap overlay — div như KIMTV-PC .tiktok-player__tap (không dùng button) */}
-                    <div
-                      aria-hidden="true"
-                      className={cn(
-                        "absolute inset-0 z-14 cursor-pointer",
-                        isEnded && "pointer-events-none"
-                      )}
-                      onClick={onPlayerTap}
+                  {currentItem ? (
+                    <FeedStackSlide
+                      key={newsId}
+                      item={currentItem}
+                      width={playerWidth}
+                      height={stageHeight}
+                      isActive
+                      playerRef={playerRef}
+                      isMuted={isMuted}
+                      videoReady={videoReady}
+                      isPaused={isPaused}
+                      isEnded={isEnded}
+                      showPauseHint={showPauseHint}
+                      showHeartBurst={showHeartBurst}
+                      playbackProgress={playbackProgress}
+                      newsId={newsId}
+                      routes={routes}
+                      t={t}
+                      onReady={() => setVideoReady(true)}
+                      onPlay={() => {
+                        setVideoReady(true)
+                        if (!userWantsPausedRef.current) setIsPaused(false)
+                        setIsEnded(false)
+                      }}
+                      onPause={() => {
+                        userWantsPausedRef.current = true
+                        setIsPaused(true)
+                      }}
+                      onEnded={() => {
+                        userWantsPausedRef.current = true
+                        setIsEnded(true)
+                        setIsPaused(true)
+                        setPlaybackProgress(100)
+                      }}
+                      onTimeUpdate={(cur, dur) => {
+                        if (isDragging.current || !dur) return
+                        setPlaybackProgress(Math.round((cur / dur) * 100))
+                      }}
+                      onToggleMute={toggleMute}
+                      onResume={resumeVideo}
+                      onProgressMouseDown={onProgressMouseDown}
                     />
-
-                    {/* Mute btn */}
-                    {currentItem?.videoUrl && (
-                      <Button
-                        type="button"
-                        data-feed-nav-block
-                        className="absolute top-4 left-4 z-20 h-12 w-12 rounded-full border-0 bg-black/35 p-0 text-white hover:bg-black/50"
-                        onClick={toggleMute}
-                        aria-label={isMuted ? t("video.actions.unmute") : t("video.actions.mute")}
-                      >
-                        {isMuted ? (
-                          <VolumeX className="size-[22px] text-white" strokeWidth={2} />
-                        ) : (
-                          <Volume2 className="size-[22px] text-white" strokeWidth={2} />
-                        )}
-                      </Button>
-                    )}
-
-                    {/* Pause hint */}
-                    {showPauseHint && (
-                      <div className="pointer-events-none absolute inset-0 z-18 flex animate-[feedPauseHint_0.5s_ease_forwards] items-center justify-center">
-                        <div className="flex h-18 w-18 items-center justify-center rounded-full border-2 border-white/85 bg-black/28 backdrop-blur-[10px]">
-                          <Pause className="size-11 text-white" strokeWidth={2} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Play / Replay — overlay trong suốt để vẫn vuốt được khi pause */}
-                    {((isPaused && !isEnded) || isEnded) && (
-                      <div className="pointer-events-none absolute inset-0 z-18 flex items-center justify-center">
-                        <Button
-                          type="button"
-                          data-feed-nav-block
-                          className="pointer-events-auto h-18 w-18 rounded-full border-0 bg-transparent p-0 hover:bg-transparent"
-                          onClick={resumeVideo}
-                          aria-label={isEnded ? t("video.actions.replay") : t("video.actions.play")}
-                        >
-                          <span className="flex h-18 w-18 items-center justify-center rounded-full border-2 border-white/92 bg-black/28 backdrop-blur-[10px] transition-transform hover:scale-105">
-                            {isEnded ? (
-                              <RotateCcw className="size-9 text-white" strokeWidth={2} />
-                            ) : (
-                              <Play className="size-11 fill-white text-white" strokeWidth={2} />
-                            )}
-                          </span>
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Heart burst */}
-                    {showHeartBurst && (
-                      <div className="pointer-events-none absolute inset-0 z-18 flex animate-[heartPop_0.7s_ease_forwards] items-center justify-center text-[#fe2c55]">
-                        <Heart
-                          className="size-24 fill-[#fe2c55] text-[#fe2c55]"
-                          strokeWidth={1.8}
-                        />
-                      </div>
-                    )}
-
-                    {/* Progress bar */}
-                    {currentItem?.videoUrl && (
-                      <div
-                        className="absolute right-0 bottom-5 left-0 z-22 px-2"
-                        data-feed-nav-block
-                      >
-                        {currentItem.durationMillis ? (
-                          <Typography
-                            as="p"
-                            variant="caption"
-                            className="mb-1.5 px-1 text-right font-semibold text-white/95"
-                            style={{ textShadow: "0 1px 4px rgba(0,0,0,.7)" }}
-                          >
-                            {formatDuration(Number(currentItem.durationMillis))}
-                          </Typography>
-                        ) : null}
-                        <div
-                          className="feed-progress cursor-pointer"
-                          onMouseDown={onProgressMouseDown}
-                        >
-                          <div className="feed-progress__track relative h-[3px] w-full rounded-full bg-white/25 transition-[height] hover:h-1">
-                            <span
-                              className="absolute top-0 left-0 block h-full rounded-full bg-white"
-                              style={{
-                                width: `${playbackProgress}%`,
-                                transition: isDragging.current ? "none" : "width 0.15s linear",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Meta (user + title) */}
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-12 bg-linear-to-t from-black/72 via-black/40 to-transparent px-5 pt-16 pb-14">
-                      {currentItem?.authorId ? (
-                        <Link
-                          href={`/user-info/${currentItem.authorId}`}
-                          data-feed-nav-block
-                          className="pointer-events-auto mb-2 inline-block"
-                        >
-                          <Typography as="span" variant="h2" className="text-white drop-shadow">
-                            @{currentItem.userName || "KIMTV"}
-                          </Typography>
-                        </Link>
-                      ) : (
-                        <Typography
-                          as="span"
-                          variant="h2"
-                          className="mb-2 inline-block text-white drop-shadow"
-                        >
-                          @{currentItem?.userName || "KIMTV"}
-                        </Typography>
-                      )}
-                      <Link
-                        href={routes.video.article(String(newsId))}
-                        data-feed-nav-block
-                        className="pointer-events-auto block w-full text-left"
-                      >
-                        <Typography
-                          as="p"
-                          variant="h6"
-                          className="line-clamp-3 leading-snug text-white/95 drop-shadow"
-                        >
-                          {currentItem?.title}
-                        </Typography>
-                      </Link>
-                    </div>
-                  </div>
+                  ) : null}
 
                   {showNextSlide ? (
                     nextItem ? (
-                      <FeedPreviewSlide item={nextItem} width={playerWidth} height={stageHeight} />
+                      <FeedStackSlide
+                        key={resolveNewsId(nextItem)}
+                        item={nextItem}
+                        width={playerWidth}
+                        height={stageHeight}
+                        isActive={false}
+                      />
                     ) : (
                       <div
                         className="relative shrink-0 overflow-hidden rounded bg-black"

@@ -22,6 +22,8 @@ export interface VideoFeedPlayerProps {
   muted?: boolean
   volume?: number
   autoplay?: boolean
+  /** Khi false, player pause và preload — dùng cho slide prev/next trong feed stack. */
+  active?: boolean
   onReady?: () => void
   onPlay?: () => void
   onPause?: () => void
@@ -48,6 +50,7 @@ export const VideoFeedPlayer = forwardRef<VideoFeedPlayerHandle, VideoFeedPlayer
       muted = false,
       volume = 0.8,
       autoplay = true,
+      active,
       onReady,
       onPlay,
       onPause,
@@ -63,9 +66,25 @@ export const VideoFeedPlayer = forwardRef<VideoFeedPlayerHandle, VideoFeedPlayer
     const playerRef = useRef<XgPlayer>(null)
     const mutedRef = useRef(muted)
     const volumeRef = useRef(volume)
+    const activeRef = useRef(active ?? autoplay)
+    const hasPlayedRef = useRef(false)
+    const userPausedRef = useRef(false)
+    const onReadyRef = useRef(onReady)
+    const onPlayRef = useRef(onPlay)
+    const onPauseRef = useRef(onPause)
+    const onEndedRef = useRef(onEnded)
+    const onTimeUpdateRef = useRef(onTimeUpdate)
+    const onErrorRef = useRef(onError)
 
     mutedRef.current = muted
     volumeRef.current = volume
+    activeRef.current = active ?? autoplay
+    onReadyRef.current = onReady
+    onPlayRef.current = onPlay
+    onPauseRef.current = onPause
+    onEndedRef.current = onEnded
+    onTimeUpdateRef.current = onTimeUpdate
+    onErrorRef.current = onError
 
     function getVideoEl(): HTMLVideoElement | null {
       const p = playerRef.current
@@ -75,16 +94,21 @@ export const VideoFeedPlayer = forwardRef<VideoFeedPlayerHandle, VideoFeedPlayer
 
     useImperativeHandle(ref, () => ({
       play: () => {
+        userPausedRef.current = false
         const p = playerRef.current
         if (!p) return
         const v = getVideoEl()
         if (v) {
           v.muted = mutedRef.current
           v.volume = mutedRef.current ? 0 : volumeRef.current
+          void v.play?.()
         }
         return p.play?.()
       },
       pause: () => {
+        userPausedRef.current = true
+        const v = getVideoEl()
+        v?.pause?.()
         playerRef.current?.pause?.()
       },
       setMuted: (m: boolean, vol?: number) => {
@@ -110,7 +134,20 @@ export const VideoFeedPlayer = forwardRef<VideoFeedPlayerHandle, VideoFeedPlayer
     }))
 
     useEffect(() => {
+      const p = playerRef.current
+      if (!p) return
+      const shouldPlay = activeRef.current && !userPausedRef.current
+      if (shouldPlay) {
+        void p.play?.()
+      } else {
+        p.pause?.()
+      }
+    }, [active])
+
+    useEffect(() => {
       let destroyed = false
+      hasPlayedRef.current = false
+      userPausedRef.current = false
 
       async function initPlayer() {
         if (!url) return
@@ -168,25 +205,29 @@ export const VideoFeedPlayer = forwardRef<VideoFeedPlayerHandle, VideoFeedPlayer
             v.style.width = "100%"
             v.style.height = "100%"
           }
-          onReady?.()
+          onReadyRef.current?.()
+          if (activeRef.current && !userPausedRef.current) {
+            void p.play?.()
+          }
         })
         p.on("playing", () => {
-          if (!destroyed) onPlay?.()
+          hasPlayedRef.current = true
+          if (!destroyed) onPlayRef.current?.()
         })
         p.on("pause", () => {
-          if (!destroyed) onPause?.()
+          if (!destroyed && hasPlayedRef.current) onPauseRef.current?.()
         })
         p.on("ended", () => {
-          if (!destroyed) onEnded?.()
+          if (!destroyed) onEndedRef.current?.()
         })
         p.on("error", (err: unknown) => {
-          if (!destroyed) onError?.(err)
+          if (!destroyed) onErrorRef.current?.(err)
         })
         p.on("timeupdate", () => {
-          if (destroyed || !onTimeUpdate) return
+          if (destroyed || !onTimeUpdateRef.current) return
           const v = getVideoEl()
           if (!v) return
-          onTimeUpdate(v.currentTime ?? 0, v.duration ?? 0)
+          onTimeUpdateRef.current(v.currentTime ?? 0, v.duration ?? 0)
         })
         p.on("autoplay_was_prevented", () => {
           if (destroyed) return
