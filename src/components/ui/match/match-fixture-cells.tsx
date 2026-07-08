@@ -9,7 +9,7 @@ import type { MatchInterface } from "@/models/match.models"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
-import icHomeVs from "@assets/icons/home/ic-home-vs.svg"
+import imgVs from "@assets/images/common/img-vs.png"
 
 /* ── Score badge ────────────────────────────────────────────── */
 export function ScoreBadge({ match }: { match: MatchInterface }) {
@@ -19,7 +19,14 @@ export function ScoreBadge({ match }: { match: MatchInterface }) {
   if (isUpcoming) {
     return (
       <div className="flex h-9 w-full items-center justify-center">
-        <Img src={icHomeVs} alt="VS" width={30} height={30} objectFit="contain" />
+        <Img
+          src={imgVs}
+          alt="VS"
+          width={32}
+          height={32}
+          objectFit="contain"
+          className="[animation:scaleBreath_2s_ease-in-out_infinite]"
+        />
       </div>
     )
   }

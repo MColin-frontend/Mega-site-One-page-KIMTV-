@@ -4,9 +4,10 @@ import footer from "./vi/footer.json"
 import header from "./vi/header.json"
 import home from "./vi/home.json"
 import news from "./vi/news.json"
+import schedule from "./vi/schedule.json"
 import video from "./vi/video.json"
 
-const vi = { common, header, footer, home, news, chat, video }
+const vi = { common, header, footer, home, news, schedule, chat, video }
 
 export default vi
 
@@ -180,6 +181,10 @@ export interface Dictionary {
       setManager: string
     }
     loginToChat: string
+  }
+  schedule: {
+    pageTitle: string
+    subtitle: string
   }
   video: {
     title: string

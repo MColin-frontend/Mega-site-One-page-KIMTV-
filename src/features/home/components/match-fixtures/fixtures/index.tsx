@@ -2,37 +2,22 @@
 
 import dynamic from "next/dynamic"
 
-import { formatDateParam, parseDateParam } from "@/lib/date"
 import { useLeagues } from "@/hooks/tanstack/use-leagues"
-import { useRouter } from "@/hooks/useRouter"
+import { useFixturesFilter } from "@/hooks/use-fixtures-filter"
 
-import {
-  MATCH_FIXTURES_PARAMS,
-  MATCH_STATUS_TAB,
-  type MatchStatusTabValue,
-} from "@/constants/component/home.constants"
-
+import { FixtureListSkeleton } from "@/components/ui/match/fixture-list"
 import { buildLeagueGroupsFromApi } from "@/components/ui/select/league-select"
 
 import HeroFixtures from "./hero-banner"
-import { FixturesListSkeleton } from "./skeleton"
 
 const FixturesList = dynamic(() => import("./fixtures"), {
-  loading: () => <FixturesListSkeleton />,
+  loading: () => <FixtureListSkeleton />,
 })
 
 function Fixtures() {
-  const { getParam, setParams } = useRouter()
-
-  const pickedDate = parseDateParam(getParam(MATCH_FIXTURES_PARAMS.PICKED_DATE)) ?? new Date()
-  const selectedLeagues = (getParam(MATCH_FIXTURES_PARAMS.LEAGUES) ?? "")
-    .split(",")
-    .filter(Boolean)
-    .map(Number)
-  const statusFilter = (getParam(MATCH_FIXTURES_PARAMS.STATUS) ??
-    MATCH_STATUS_TAB.ALL) as MatchStatusTabValue
-
+  const filter = useFixturesFilter()
   const { data: leaguesData } = useLeagues()
+
   const hotLeagues = (leaguesData?.hotLeagus ?? []).map((l) => ({
     id: l.leagueId,
     name: l.name,
@@ -56,34 +41,12 @@ function Fixtures() {
       <HeroFixtures
         groups={groups}
         hotLeagues={hotLeagues}
-        pickedDate={pickedDate}
-        statusFilter={statusFilter}
-        selectedLeagues={selectedLeagues}
-        onPickedDateChange={(d) =>
-          setParams(
-            { [MATCH_FIXTURES_PARAMS.PICKED_DATE]: d ? formatDateParam(d) : null },
-            { scroll: false }
-          )
-        }
-        onStatusChange={(val) => {
-          const isLive = val === MATCH_STATUS_TAB.LIVE
-          const isFinished = val === MATCH_STATUS_TAB.FINISHED
-          setParams(
-            {
-              [MATCH_FIXTURES_PARAMS.STATUS]: val === MATCH_STATUS_TAB.ALL ? null : val,
-              ...(isLive || (isFinished && pickedDate > new Date())
-                ? { [MATCH_FIXTURES_PARAMS.PICKED_DATE]: null }
-                : {}),
-            },
-            { scroll: false }
-          )
-        }}
-        onLeagueChange={(value) =>
-          setParams(
-            { [MATCH_FIXTURES_PARAMS.LEAGUES]: value.length ? value.join(",") : null },
-            { scroll: false }
-          )
-        }
+        pickedDate={filter.pickedDate}
+        statusFilter={filter.status}
+        selectedLeagues={filter.leagueIds}
+        onPickedDateChange={filter.setPickedDate}
+        onStatusChange={(val) => filter.setStatus(val as Parameters<typeof filter.setStatus>[0])}
+        onLeagueChange={filter.setLeagueIds}
       />
       <FixturesList />
     </section>
