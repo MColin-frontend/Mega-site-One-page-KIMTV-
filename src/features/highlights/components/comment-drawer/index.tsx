@@ -26,7 +26,6 @@ import {
   postComment,
 } from "@/features/highlights/api/highlights.api"
 import { resolveIsLiked } from "@/features/highlights/highlights.utils"
-import { NEWS_PANEL_STYLE } from "@/features/news/components/shared"
 import { Button } from "@/components/ui/button"
 import { Empty } from "@/components/ui/empty"
 import { MessageInput } from "@/components/ui/message-input"
@@ -265,10 +264,7 @@ export function CommentDrawer({
         <Drawer.Backdrop className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]" />
 
         <Drawer.Viewport className="fixed inset-0 z-50 flex justify-end">
-          <Drawer.Popup
-            className="card-glow flex h-full w-full max-w-[550px] flex-col shadow-2xl transition-transform duration-300 ease-out outline-none data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full"
-            style={NEWS_PANEL_STYLE}
-          >
+          <Drawer.Popup className="card-glow panel-news flex h-full w-full max-w-[550px] flex-col shadow-2xl transition-transform duration-300 ease-out outline-none data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full">
             {/* Header */}
             <header className="shrink-0 px-5 pt-5 pb-4">
               <div className="flex items-center justify-between">

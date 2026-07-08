@@ -75,11 +75,11 @@ function getApiConfig(
 
 async function fetchLatestNewsAction(): Promise<NewsItem | null> {
   try {
-    const res = await getRequest<LatestNewsResult>(
+    const data = await getRequest<LatestNewsResult>(
       `${HOME_API.NEWS_LATEST}?tabType=0&type=new&pageIndex=1`
     )
-    if (!res.success || !res.data) return null
-    return res.data.records?.[0] ?? null
+    if (!data) return null
+    return data.records?.[0] ?? null
   } catch (err) {
     console.error("fetchLatestNewsAction error:", err)
     return null
@@ -88,11 +88,11 @@ async function fetchLatestNewsAction(): Promise<NewsItem | null> {
 
 async function fetchLatestNewsListAction(limit = 5): Promise<NewsItem[]> {
   try {
-    const res = await getRequest<LatestNewsResult>(
+    const data = await getRequest<LatestNewsResult>(
       `${HOME_API.NEWS_LATEST}?tabType=0&type=new&pageIndex=1`
     )
-    if (!res.success || !res.data) return []
-    return (res.data.records ?? []).slice(0, limit)
+    if (!data) return []
+    return (data.records ?? []).slice(0, limit)
   } catch (err) {
     console.error("fetchLatestNewsListAction error:", err)
     return []
@@ -101,9 +101,11 @@ async function fetchLatestNewsListAction(limit = 5): Promise<NewsItem[]> {
 
 async function fetchFeaturedNewsAction(gameIds = FOOTBALL_GAME_ID): Promise<NewsItem[]> {
   try {
-    const res = await getRequest<FeaturedNewsResult>(`${HOME_API.NEWS_FEATURED}?gameIds=${gameIds}`)
-    if (!res.success || !res.data) return []
-    return res.data.news ?? []
+    const data = await getRequest<FeaturedNewsResult>(
+      `${HOME_API.NEWS_FEATURED}?gameIds=${gameIds}`
+    )
+    if (!data) return []
+    return data.news ?? []
   } catch (err) {
     console.error("fetchFeaturedNewsAction error:", err)
     return []
@@ -123,10 +125,10 @@ function getEndpointByDate(date: string | null): string {
 
 async function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
   try {
-    const res = await postRequest<unknown[]>(HOME_API.MATCH_SCHEDULE, { gameId: [] })
-    if (!res.success || !Array.isArray(res.data)) return []
+    const data = await postRequest<unknown[]>(HOME_API.MATCH_SCHEDULE, { gameId: [] })
+    if (!Array.isArray(data)) return []
 
-    return res.data
+    return data
       .map((raw) => {
         const m = raw as Record<string, unknown>
         const liveUrls = (m.liveUrls as { liveUrl?: string; liveUrlFlv?: string }[] | null) ?? []
@@ -182,9 +184,9 @@ async function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
 
 async function fetchPopularNewsAction(gameIds = FOOTBALL_GAME_ID): Promise<NewsItem[]> {
   try {
-    const res = await getRequest<PopularNewsResult>(`${HOME_API.NEWS_POPULAR}?gameIds=${gameIds}`)
-    if (!res.success || !res.data) return []
-    return res.data.videos ?? []
+    const data = await getRequest<PopularNewsResult>(`${HOME_API.NEWS_POPULAR}?gameIds=${gameIds}`)
+    if (!data) return []
+    return data.videos ?? []
   } catch (err) {
     console.error("fetchPopularNewsAction error:", err)
     return []

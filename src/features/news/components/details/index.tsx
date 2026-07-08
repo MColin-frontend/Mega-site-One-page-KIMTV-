@@ -13,7 +13,6 @@ import { Breadcrumb } from "@/components/ui/breadcrumb"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
-import { NEWS_PANEL_STYLE } from "../shared"
 import { CommentSection } from "./comment-section"
 import { FollowButton } from "./follow-button"
 
@@ -149,10 +148,7 @@ export async function NewsArticlePage({ slug }: { slug: string }) {
           <div className="flex flex-col gap-4">
             {/* Tin nổi bật */}
             {hotData.news.length > 0 && (
-              <div
-                className="card-glow rounded-12 flex flex-col gap-3 p-4"
-                style={NEWS_PANEL_STYLE}
-              >
+              <div className="card-glow rounded-12 panel-news flex flex-col gap-3 p-4">
                 <Typography variant="h2" className="text-white">
                   {t("news.popular")}
                 </Typography>
@@ -191,10 +187,7 @@ export async function NewsArticlePage({ slug }: { slug: string }) {
 
             {/* Video nổi bật */}
             {hotData.videos.length > 0 && (
-              <div
-                className="card-glow rounded-12 flex flex-col gap-3 p-4"
-                style={NEWS_PANEL_STYLE}
-              >
+              <div className="card-glow rounded-12 panel-news flex flex-col gap-3 p-4">
                 <Typography variant="h2" className="text-white">
                   {t("news.hotVideos")}
                 </Typography>

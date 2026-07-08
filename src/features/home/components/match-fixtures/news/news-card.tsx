@@ -17,16 +17,15 @@ export function NewsCard({ item, href }: NewsCardProps) {
       href={href}
       className="group hover:bg-blue/[0.05] -mx-2 flex cursor-pointer flex-col gap-2 rounded-lg px-2 py-1 transition-colors lg:flex-row lg:gap-3"
     >
-      <div className="rounded-8 shrink-0">
-        <Img
-          src={item.coverUrl}
-          alt={item.title}
-          width={160}
-          height={110}
-          rounded="8"
-          className="h-[200px] w-full object-cover lg:h-[110px] lg:w-[160px]"
-        />
-      </div>
+      <Img
+        src={item.coverUrl}
+        alt={item.title}
+        fill
+        objectFit="cover"
+        rounded="8"
+        sizes="(max-width: 1024px) 100vw, 160px"
+        wrapperClassName="aspect-[16/9] w-full shrink-0 lg:aspect-auto lg:h-[110px] lg:w-[160px]"
+      />
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <Typography
           variant="body"

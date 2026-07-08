@@ -116,7 +116,7 @@ function handleJavaToast<T>(
     if (opts.isMessageSuccess && opts.messageSuccess) toast.success(opts.messageSuccess)
     return (envelope?.result ?? null) as T | null
   }
-  if (opts.isMessageError) {
+  if (opts.isMessageError !== false) {
     const errMsg = opts.messageError ?? getJavaErrorMessage(envelope) ?? "Yêu cầu thất bại"
     toast.error(errMsg)
   }

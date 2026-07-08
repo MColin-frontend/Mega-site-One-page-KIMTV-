@@ -27,7 +27,7 @@ export async function exchangeIdTokenAction(
     }
   }
 
-  const res = await getRequest<LoginInfoResult>("/login/v2/get-login-info", {
+  const data = await getRequest<LoginInfoResult>("/login/v2/get-login-info", {
     params: {
       isFrom: "pc",
       token: idToken,
@@ -37,14 +37,14 @@ export async function exchangeIdTokenAction(
     },
   })
 
-  if (res.success && res.data?.token) {
-    return { status: "success", result: res.data }
+  if (data?.token) {
+    return { status: "success", result: data }
   }
 
   return {
     status: "error",
     result: { token: "", user: {} },
-    errorCode: res.errorCode ?? null,
-    errorMsg: res.message ?? "Authentication failed",
+    errorCode: null,
+    errorMsg: "Authentication failed",
   }
 }

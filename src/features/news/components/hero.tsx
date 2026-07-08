@@ -58,7 +58,7 @@ export function NewsHeroCarousel({ items }: { items: NewsItem[] }) {
           alt={activeItem.title}
           fill
           priority
-          objectFit="cover"
+          objectFit="fill"
           sizes="(max-width: 768px) 100vw, 1440px"
           wrapperClassName="absolute inset-0"
           className="transition-opacity duration-500"
@@ -129,7 +129,7 @@ export function NewsHeroCarousel({ items }: { items: NewsItem[] }) {
                   src={item.coverUrl}
                   alt={item.title}
                   fill
-                  objectFit="cover"
+                  objectFit="fill"
                   sizes="(max-width: 768px) 50vw, 360px"
                   wrapperClassName="absolute inset-0"
                   className="transition-transform duration-300 group-hover:scale-105"

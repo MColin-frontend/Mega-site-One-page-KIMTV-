@@ -1,9 +1,9 @@
-import { NewsPanelPropsInterface } from "@/features/news/news.models"
+import type { NewsPanelProps } from "@/features/news/news.models"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
 import { NewsItemRow } from "./item"
-import { NEWS_PANEL_STYLE, NewsMetaRow, NewsPanelHeader } from "./shared"
+import { NewsMetaRow, NewsPanelHeader } from "./shared"
 
 export function NewsLatestPanel({
   items,
@@ -12,14 +12,14 @@ export function NewsLatestPanel({
   viewAllLabel,
   categoryLabel,
   getHref,
-}: NewsPanelPropsInterface) {
+}: NewsPanelProps) {
   if (!items.length) return null
 
   const featured = items[0]
   const sideItems = items.slice(1)
 
   return (
-    <div className="card-glow rounded-12 flex flex-col gap-5 p-5" style={NEWS_PANEL_STYLE}>
+    <div className="card-glow rounded-12 panel-news flex flex-col gap-5 p-5">
       <NewsPanelHeader title={title} viewAllHref={viewAllHref} viewAllLabel={viewAllLabel} />
 
       {/* 2-column grid — items-stretch để 2 cột bằng nhau */}

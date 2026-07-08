@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { CommentRecordInterface } from "@/models"
 import { MessageCircle, X } from "lucide-react"
 
-import { javaGet, javaPost } from "@/server/services/client-request"
 import { useAuth } from "@/hooks/use-auth"
 
 import { useTranslation } from "@/i18n"
@@ -17,6 +16,7 @@ import {
   CommentLoadMoreSkeleton,
   CommentPendingSkeleton,
 } from "@/features/highlights/components/skeleton"
+import { PAGE_SIZE_COMMENT as PAGE_SIZE } from "@/features/highlights/highlights.constants"
 import {
   buildPendingPlaceholder,
   collectKnownCommentIds,
@@ -28,73 +28,22 @@ import {
   resolveIsLiked,
   resolvePostedCommentId,
 } from "@/features/highlights/highlights.utils"
+import {
+  fetchCommentList,
+  fetchDeleteComment,
+  handleLikeComment,
+  handlePostComment,
+} from "@/features/news/news.api"
+import {
+  extractRecords,
+  ncidNum,
+  normalizePostedRecord,
+  resolveProfileId,
+} from "@/features/news/news.constants"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { MessageInput } from "@/components/ui/message-input"
-import { toast } from "@/components/ui/toast"
 import { Typography } from "@/components/ui/typography"
-
-import { NEWS_PANEL_STYLE } from "../shared"
-
-const PAGE_SIZE = 100
-
-function extractRecords(raw: unknown): unknown[] {
-  if (Array.isArray(raw)) return raw
-  if (raw && typeof raw === "object") {
-    const obj = raw as Record<string, unknown>
-    if (Array.isArray(obj.records)) return obj.records
-    if (Array.isArray(obj.list)) return obj.list
-    if (Array.isArray(obj.data)) return obj.data
-  }
-  return []
-}
-
-function ncidNum(id: string | number | undefined) {
-  return Number(id ?? 0)
-}
-
-function resolveProfileId(item: NewsComment): string {
-  const raw = item as unknown as Record<string, unknown>
-  const candidates = [raw.operatorId, raw.userId, item.userSourceId]
-  for (const id of candidates) {
-    if (id == null || id === "") continue
-    const normalized = String(id).trim()
-    if (!normalized || normalized === "0") continue
-    return normalized
-  }
-  return ""
-}
-
-function normalizePostedRecord(
-  result: unknown,
-  content: string,
-  replyUserName: string,
-  loginUserId: string,
-  user: { name?: string; avatar?: string }
-): NewsComment | null {
-  const postedId = resolvePostedCommentId(result)
-  const payload =
-    result && typeof result === "object" && !Array.isArray(result)
-      ? (result as Record<string, unknown>)
-      : {}
-
-  const normalized = normalizeCommentList([
-    {
-      ncid: postedId ?? payload.ncid ?? payload.commentId ?? payload.id,
-      content: payload.content ?? content,
-      userName: payload.userName ?? user.name ?? "",
-      avatar: payload.avatar ?? user.avatar ?? "",
-      publishTime: payload.publishTime ?? payload.createTime ?? Math.floor(Date.now() / 1000),
-      likeCount: Number(payload.likeCount) || 0,
-      isLike: false,
-      userSourceId: payload.userSourceId ?? payload.operatorId ?? loginUserId,
-      replyUserName: replyUserName || payload.replyUserName || "",
-      children: [],
-    },
-  ])
-
-  return (normalized[0] as NewsComment | undefined) ?? null
-}
 
 interface CommentSectionProps {
   newsId: string | number
@@ -141,24 +90,22 @@ export function CommentSection({
   )
 
   const fetchPage = useCallback(
-    async (page: number): Promise<NewsComment[]> => {
-      const result = await javaGet<unknown>("/news/news-comment", {
-        params: {
-          newsId: String(newsId),
-          pageIndex: page,
-          pageSize: PAGE_SIZE,
-          commentType: newsType,
-          loginUserId,
-        },
+    (page: number): Promise<NewsComment[]> => {
+      return fetchCommentList({
+        newsId: String(newsId),
+        pageIndex: page,
+        pageSize: PAGE_SIZE,
+        commentType: newsType,
+        loginUserId,
+      }).then((result) => {
+        return normalizeCommentList(extractRecords(result)) as NewsComment[]
       })
-      if (result == null) return []
-      return normalizeCommentList(extractRecords(result)) as NewsComment[]
     },
     [newsId, newsType, loginUserId]
   )
 
   const loadComments = useCallback(
-    async (reset: boolean, { silent = false }: { silent?: boolean } = {}) => {
+    (reset: boolean, { silent = false }: { silent?: boolean } = {}): Promise<void> => {
       if (reset) {
         if (!silent) {
           setLoading(true)
@@ -166,31 +113,30 @@ export function CommentSection({
           setHasMore(false)
         }
         pageRef.current = 0
-        try {
-          const list = await fetchPage(0)
-          setComments(list)
-          pageRef.current = 1
-          setHasMore(list.length >= PAGE_SIZE)
-        } catch {
-          if (!silent) setHasMore(false)
-        } finally {
-          setLoading(false)
-          setLoadingMore(false)
-        }
-        return
+        return fetchPage(0)
+          .then((list) => {
+            setComments(list)
+            pageRef.current = 1
+            setHasMore(list.length >= PAGE_SIZE)
+          })
+          .catch(() => {
+            if (!silent) setHasMore(false)
+          })
+          .finally(() => {
+            setLoading(false)
+            setLoadingMore(false)
+          })
       }
 
       setLoadingMore(true)
-      try {
-        const list = await fetchPage(pageRef.current)
-        setComments((prev) => [...prev, ...list])
-        pageRef.current += 1
-        setHasMore(list.length >= PAGE_SIZE)
-      } catch {
-        setHasMore(false)
-      } finally {
-        setLoadingMore(false)
-      }
+      return fetchPage(pageRef.current)
+        .then((list) => {
+          setComments((prev) => [...prev, ...list])
+          pageRef.current += 1
+          setHasMore(list.length >= PAGE_SIZE)
+        })
+        .catch(() => setHasMore(false))
+        .finally(() => setLoadingMore(false))
     },
     [fetchPage]
   )
@@ -307,31 +253,30 @@ export function CommentSection({
     emitTotal((n) => n + 1)
     setSubmitting(true)
 
-    try {
-      const result = await javaPost<unknown>("/news/comment-news", {
+    return handlePostComment(
+      {
         commentType: newsType,
         content,
         mainNewsId: Number(newsId),
         topFloorId: 0,
         userSourceId: loginUserId,
-      })
-
-      if (result != null) {
-        const hydrated = await hydratePending(clientKey, content, result, knownIds)
-        if (!hydrated) await loadComments(true, { silent: true })
-        toast.success(t("video.comment.postSuccess"))
-      } else {
+      },
+      { messageSuccess: t("video.comment.postSuccess"), messageError: t("video.comment.postError") }
+    )
+      .then((result) => {
+        if (result != null) {
+          return hydratePending(clientKey, content, result, knownIds).then((hydrated) => {
+            if (!hydrated) return loadComments(true, { silent: true })
+          })
+        }
         rollbackPending(clientKey)
         setCommentText(content)
-        toast.error(t("video.comment.postError"))
-      }
-    } catch {
-      rollbackPending(clientKey)
-      setCommentText(content)
-      toast.error(t("video.comment.postError"))
-    } finally {
-      setSubmitting(false)
-    }
+      })
+      .catch(() => {
+        rollbackPending(clientKey)
+        setCommentText(content)
+      })
+      .finally(() => setSubmitting(false))
   }
 
   async function submitReply(content: string) {
@@ -361,8 +306,8 @@ export function CommentSection({
     emitTotal((n) => n + 1)
     setReplySubmitting(true)
 
-    try {
-      const result = await javaPost<unknown>("/news/comment-news", {
+    return handlePostComment(
+      {
         commentType: newsType,
         content,
         mainNewsId: Number(newsId),
@@ -370,73 +315,70 @@ export function CommentSection({
         replyToCommentId: ncidNum(replyTo.ncid),
         replyToUserSourceId: replyTo.userSourceId,
         userSourceId: loginUserId,
-      })
-
-      if (result != null) {
-        const hydrated = await hydratePending(
-          clientKey,
-          content,
-          result,
-          knownIds,
-          parentNcid,
-          replyUserName
-        )
-        if (!hydrated) await loadComments(true, { silent: true })
-        toast.success(t("video.comment.replySuccess"))
-      } else {
+      },
+      {
+        messageSuccess: t("video.comment.replySuccess"),
+        messageError: t("video.comment.postError"),
+      }
+    )
+      .then((result) => {
+        if (result != null) {
+          return hydratePending(
+            clientKey,
+            content,
+            result,
+            knownIds,
+            parentNcid,
+            replyUserName
+          ).then((hydrated) => {
+            if (!hydrated) return loadComments(true, { silent: true })
+          })
+        }
         rollbackPending(clientKey)
         setReplyText(content)
-        toast.error(t("video.comment.postError"))
-      }
-    } catch {
-      rollbackPending(clientKey)
-      setReplyText(content)
-      toast.error(t("video.comment.postError"))
-    } finally {
-      setReplySubmitting(false)
-    }
+      })
+      .catch(() => {
+        rollbackPending(clientKey)
+        setReplyText(content)
+      })
+      .finally(() => setReplySubmitting(false))
   }
 
   function handleCommentSubmit() {
     const content = commentText.trim()
     if (!content) return
     setCommentText("")
-    void submitComment(content)
+    submitComment(content)
   }
 
   function handleReplySubmit() {
     const content = replyText.trim()
     if (!content) return
     setReplyText("")
-    void submitReply(content)
+    submitReply(content)
   }
 
-  async function deleteComment(item: NewsComment) {
+  function handleDeleteComment(item: NewsComment) {
     if (!item.ncid) return
-    try {
-      const result = await javaGet<unknown>("/news/remove-comment", {
-        params: { commentId: String(item.ncid), loginUserId },
-      })
-      if (result !== null) {
-        emitTotal((n) => Math.max(0, n - 1))
-        const id = ncidNum(item.ncid)
-        setComments((prev) => {
-          let removed = false
-          const next = prev.map((c) => {
-            const filtered = (c.children ?? []).filter((r) => ncidNum(r.ncid) !== id)
-            if (filtered.length !== (c.children ?? []).length) {
-              removed = true
-              return { ...c, children: filtered }
-            }
-            return c
-          })
-          return removed ? next : next.filter((c) => ncidNum(c.ncid) !== id)
+    const id = ncidNum(item.ncid)
+    return fetchDeleteComment(String(item.ncid), loginUserId, {
+      messageSuccess: t("video.comment.deleteSuccess"),
+    }).then((result) => {
+      if (result === null) return
+      emitTotal((n) => Math.max(0, n - 1))
+      setComments((prev) => {
+        let removed = false
+        const next = prev.map((c) => {
+          const filtered = (c.children ?? []).filter((r) => ncidNum(r.ncid) !== id)
+          if (filtered.length !== (c.children ?? []).length) {
+            removed = true
+            return { ...c, children: filtered }
+          }
+          return c
         })
-        toast.success(t("video.comment.deleteSuccess"))
-      }
-    } catch {
-      // ignore
-    }
+        return removed ? next : next.filter((c) => ncidNum(c.ncid) !== id)
+      })
+    })
   }
 
   function handleLike(item: NewsComment, parentNcid?: string | number) {
@@ -466,9 +408,7 @@ export function CommentSection({
       setComments((prev) => prev.map((c) => (String(c.ncid) === id ? updateItem(c) : c)))
     }
 
-    javaGet<unknown>("/news/user-like", {
-      params: { flag: "2", isLike: String(isLike), typeId: id, loginUserId },
-    })
+    handleLikeComment({ typeId: id, isLike, loginUserId })
       .then((result) => {
         if (result === null) {
           const rollbackItem = (c: NewsComment): NewsComment =>
@@ -534,7 +474,7 @@ export function CommentSection({
         isLoggedIn={isLoggedIn}
         isOwn={isOwn(item)}
         onReply={parentComment ? () => openReply(parentComment, item) : () => openReply(item)}
-        onDelete={() => void deleteComment(item)}
+        onDelete={() => handleDeleteComment(item)}
         replyLabel={t("video.comment.reply")}
         deleteLabel={t("video.comment.delete")}
       />
@@ -542,7 +482,7 @@ export function CommentSection({
   }
 
   return (
-    <div className="card-glow rounded-12 flex flex-col gap-0 p-4" style={NEWS_PANEL_STYLE}>
+    <div className="card-glow rounded-12 panel-news flex flex-col gap-0 p-4">
       <div className="flex items-center gap-2 pb-3">
         <MessageCircle className="size-5 text-white/60" />
         <Typography variant="h2" className="text-white">
@@ -611,7 +551,7 @@ export function CommentSection({
           <div className="flex justify-center pt-3">
             <button
               type="button"
-              onClick={() => void loadComments(false)}
+              onClick={() => loadComments(false)}
               className="font-600 flex items-center gap-1.5 rounded-full bg-[rgba(255,210,32,0.1)] px-4 py-1.5 text-[13px] text-[#ffd220] transition-colors hover:bg-[rgba(255,210,32,0.18)]"
             >
               {t("news.comment.viewMore")}

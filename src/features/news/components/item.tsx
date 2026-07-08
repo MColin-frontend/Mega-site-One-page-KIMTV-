@@ -2,13 +2,21 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
-import { NewsItemRowPropsInterface } from "@/features/news/news.models"
+import type { NewsItem } from "@/models/home.models"
+
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
 import { NewsMetaRow } from "./shared"
 
-export function NewsItemRow({ item, href, categoryLabel, className }: NewsItemRowPropsInterface) {
+interface NewsItemRowProps {
+  item: NewsItem
+  href: string
+  categoryLabel: string
+  className?: string
+}
+
+export function NewsItemRow({ item, href, categoryLabel, className }: NewsItemRowProps) {
   return (
     <Link
       href={href}
