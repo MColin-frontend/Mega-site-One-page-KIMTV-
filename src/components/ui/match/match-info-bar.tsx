@@ -25,7 +25,6 @@ import { Typography } from "@/components/ui/typography"
 import imgStadiumBg from "@assets/images/common/img-no-source.png"
 import imgVs from "@assets/images/common/img-vs.png"
 
-import { MatchLiveBadge } from "./match-live-badge"
 import { MatchLiveIndicator } from "./match-live-indicator"
 import { MatchPeriodBadge } from "./match-period-badge"
 
@@ -120,15 +119,7 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
     awayLogo,
     homeScore,
     awayScore,
-    gameTime,
-    state,
     gameId,
-    homeCornerKick,
-    awayCornerKick,
-    homeYellowCard,
-    awayYellowCard,
-    homeRedCard,
-    awayRedCard,
     anchorRoomVos,
   } = match
 
@@ -168,7 +159,7 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
     <div
       onClick={handleClick}
       className={cn(
-        "rounded-b-12 relative flex shrink-0 cursor-pointer flex-col gap-3 overflow-hidden border-t p-2 transition-opacity hover:opacity-95 max-lg:gap-2 max-sm:gap-1.5 max-sm:p-1.5",
+        "rounded-b-12 relative flex shrink-0 cursor-pointer flex-col gap-3 overflow-hidden p-2 transition-opacity hover:opacity-95 max-lg:gap-2 max-sm:gap-1.5 max-sm:p-1.5",
         className
       )}
     >
@@ -231,8 +222,8 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
       {/* Content above bg */}
       <div className="relative z-[2] flex flex-col gap-1 max-lg:gap-2">
         {/* Row 1: live + time + share — ẩn trên mobile */}
-        <div className="flex w-full items-center justify-between max-sm:-my-1 max-sm:origin-left max-sm:scale-75">
-          <div className="flex items-center gap-2">
+        <div className="flex w-full items-center justify-between max-sm:-my-1 max-sm:origin-left">
+          <div className="flex items-center gap-2 max-sm:scale-75">
             {isLive && <MatchLiveIndicator />}
             {isFinished && (
               <Typography as="span" variant="caption" weight="600" className="text-muted">
@@ -240,10 +231,10 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
               </Typography>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 max-sm:scale-75">
             {isLive && (
               <div className="flex items-center gap-1.5">
-                <MatchPeriodBadge label={periodLabel} />
+                <MatchPeriodBadge label={periodLabel} className="sm:hidden" />
                 {displayMinute != null && (
                   <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5">
                     <Typography
@@ -347,16 +338,11 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
 
         {/* Row 3: stats + anchors */}
         {showStats && (
-          <div
-            className={cn(
-              "flex items-center gap-3",
-              anchors?.length ? "justify-between" : "justify-center"
-            )}
-          >
-            <div className="rounded-8 flex items-center gap-1 bg-black/40 px-2 py-1 backdrop-blur-2xl">
+          <div className="flex items-center justify-center gap-3">
+            <div className="rounded-8 flex items-center gap-1 bg-white/10 px-2 py-1 backdrop-blur-2xl">
               {stats.map((s, i) => (
                 <div key={i} className="flex items-center">
-                  {i > 0 && <div className="mr-1 h-3 w-px shrink-0 bg-white/20" />}
+                  {i > 0 && <div className="mr-1 h-3 w-px shrink-0 bg-white/30" />}
                   <div className="flex w-[70px] flex-col items-center gap-0.5">
                     <div className="flex items-center gap-0.5">
                       <Img src={s.icon} alt={s.alt} width={12} height={12} objectFit="contain" />
@@ -369,7 +355,7 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
                         {s.value}
                       </Typography>
                     </div>
-                    <Typography as="span" size="10" className="text-white/50">
+                    <Typography as="span" size="10" className="text-white/80">
                       {s.label}
                     </Typography>
                   </div>
@@ -406,7 +392,7 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
 
         {/* Row 4: league + time */}
         <div className="flex items-center justify-between px-0.5 py-1">
-          <div className="flex min-w-0 items-center gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
             {leagueLogo ? (
               <Img
                 src={leagueLogo}
@@ -419,7 +405,12 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
             ) : (
               <Trophy className="text-gold size-3.5 shrink-0" />
             )}
-            <Typography as="span" variant="caption" weight="500" className="truncate text-white/90">
+            <Typography
+              as="span"
+              variant="caption"
+              weight="500"
+              className="max-w-[195px] min-w-0 truncate text-white/90"
+            >
               {leagueName}
             </Typography>
           </div>

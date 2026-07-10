@@ -5,7 +5,12 @@
   "empty": "No data available",
   "live-page": {
     "live-section": "Live Now",
-    "upcoming-section": "Upcoming"
+    "upcoming-section": "Upcoming",
+    "finished-section": "Finished",
+    "filter-all": "All",
+    "filter-hot": "Featured",
+    "filter-live": "Live",
+    "filter-tv": "TV"
   },
   "match-card": {
     "hours": "Hours",

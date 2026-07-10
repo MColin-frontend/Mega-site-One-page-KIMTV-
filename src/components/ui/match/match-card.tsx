@@ -6,6 +6,7 @@ import { isEmpty } from "lodash"
 import { Calendar, Trophy, Users } from "lucide-react"
 
 import { formatFootballGameTime, formatMatchDate, formatMatchTime } from "@/lib/date"
+import { LIVE_MATCH_TYPE } from "@/lib/match.utils"
 import { cn, formatViewers } from "@/lib/utils"
 import { useCountdown } from "@/hooks/use-countdown"
 import { useLiveNavigate } from "@/hooks/use-live-navigate"
@@ -33,7 +34,7 @@ import { Typography } from "../typography"
 import { MatchLiveIndicator } from "./match-live-indicator"
 import { MatchPeriodBadge } from "./match-period-badge"
 
-type MatchCardType = "upcoming" | "live" | "finished"
+type MatchCardType = (typeof LIVE_MATCH_TYPE)[keyof typeof LIVE_MATCH_TYPE]
 
 interface MatchCardProps {
   match?: MatchInterface
@@ -87,7 +88,12 @@ function MatchCardSkeleton({ className }: { className?: string }) {
 
 /* ── Main Component ──────────────────────────────────────── */
 
-export function MatchCard({ match, isLoading, matchType = "live", className }: MatchCardProps) {
+export function MatchCard({
+  match,
+  isLoading,
+  matchType = LIVE_MATCH_TYPE.LIVE,
+  className,
+}: MatchCardProps) {
   const { t } = useTranslation()
   const navigateToLive = useLiveNavigate()
   const countdown = useCountdown(match?.startTime)
@@ -128,7 +134,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
     <div
       onClick={handleClick}
       className={cn(
-        "card-match-bg rounded-12 relative w-full cursor-pointer overflow-hidden transition-all",
+        "card-match-bg rounded-12 relative h-full w-full cursor-pointer overflow-hidden transition-all",
         "hover:shadow-card-hover shadow-none",
         className
       )}
@@ -191,19 +197,14 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
         </>
       )}
 
-      <div className="relative z-10 flex min-h-[300px] flex-col justify-between gap-2 p-3.5">
+      <div className="relative z-10 flex h-full min-h-[300px] flex-col justify-between gap-2 p-3.5">
         {/* Row 1: LIVE badge | time (right) */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {isLive && <MatchLiveIndicator />}
-            {isFinished && (
-              <Typography as="span" variant="caption" weight="600" className="text-muted">
-                {t("common.match-card.finished")}
-              </Typography>
-            )}
+        <div className="flex items-center justify-between max-sm:-my-1 max-sm:origin-left">
+          <div className="flex items-center gap-2 max-sm:scale-75">
+            {isLive && <MatchLiveIndicator label={firstAnchor ? "Stream" : "LIVE"} />}
           </div>
           {isLive && displayMinute != null && (
-            <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5">
+            <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5 max-sm:scale-75">
               <Typography
                 as="span"
                 variant="label"
@@ -255,15 +256,25 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                 </Typography>
               </div>
               {/* Name */}
-              <Typography as="span" variant="caption" weight="700" className="truncate text-white">
-                {firstAnchor.userName}
-              </Typography>
+              <Tooltip>
+                <TooltipTrigger className="block min-w-0 overflow-hidden">
+                  <Typography
+                    as="span"
+                    variant="caption"
+                    weight="700"
+                    className="truncate text-white"
+                  >
+                    {firstAnchor.userName}
+                  </Typography>
+                </TooltipTrigger>
+                <TooltipContent>{firstAnchor.userName}</TooltipContent>
+              </Tooltip>
               {/* Viewers */}
               {firstAnchor.popularity != null && firstAnchor.popularity > 0 && (
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger className="block min-w-0 overflow-hidden">
                     <div className="flex w-fit items-center gap-1">
-                      <Users className="size-3 text-white/50" />
+                      <Users className="size-3 text-white/80" />
                       <Typography
                         as="span"
                         variant="caption"
@@ -288,29 +299,34 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
         <div className="flex flex-1 items-center justify-between gap-2">
           {/* Home */}
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[60px] shrink-0 items-center justify-center">
+            <div className="flex size-[80px] shrink-0 items-center justify-center">
               <Img
                 src={match.homeLogo}
                 alt={match.homeName ?? ""}
-                width={60}
-                height={60}
+                width={80}
+                height={80}
                 objectFit="contain"
               />
             </div>
-            <Typography
-              as="span"
-              variant="label"
-              weight="500"
-              className="line-clamp-1 w-full text-center text-white"
-            >
-              {match.homeName}
-            </Typography>
+            <Tooltip>
+              <TooltipTrigger className="block min-w-0 overflow-hidden">
+                <Typography
+                  as="span"
+                  variant="label"
+                  weight="500"
+                  className="line-clamp-1 w-full text-center text-white"
+                >
+                  {match.homeName}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>{match.homeName}</TooltipContent>
+            </Tooltip>
           </div>
 
           {/* Score */}
           <div className="flex basis-1/5 flex-col items-center gap-0.5">
             {isUpcoming ? (
-              <Img src={imgVs} alt="VS" width={48} height={48} objectFit="contain" />
+              <Img src={imgVs} alt="VS" width={72} height={72} objectFit="contain" />
             ) : (
               <>
                 <div className="flex items-center gap-0.5">
@@ -339,7 +355,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                     {match.awayScore ?? 0}
                   </Typography>
                 </div>
-                {isLive && <MatchPeriodBadge label={periodLabel} />}
+                {isLive && <MatchPeriodBadge label={periodLabel} className="max-sm:scale-75" />}
                 {isFinished && (
                   <div className="rounded-4 border-gold/30 bg-gold/10 shadow-gold-glow border px-1.5 py-px">
                     <Typography
@@ -358,23 +374,28 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
 
           {/* Away */}
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[60px] shrink-0 items-center justify-center">
+            <div className="flex size-[80px] shrink-0 items-center justify-center">
               <Img
                 src={match.awayLogo}
                 alt={match.awayName ?? ""}
-                width={60}
-                height={60}
+                width={80}
+                height={80}
                 objectFit="contain"
               />
             </div>
-            <Typography
-              as="span"
-              variant="label"
-              weight="500"
-              className="line-clamp-1 w-full text-center text-white"
-            >
-              {match.awayName}
-            </Typography>
+            <Tooltip>
+              <TooltipTrigger className="block min-w-0 overflow-hidden">
+                <Typography
+                  as="span"
+                  variant="label"
+                  weight="500"
+                  className="line-clamp-1 w-full text-center text-white"
+                >
+                  {match.awayName}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>{match.awayName}</TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
@@ -427,7 +448,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
                       {s.value}
                     </Typography>
                   </div>
-                  <Typography as="span" size="10" className="text-white/50">
+                  <Typography as="span" size="12" weight="500" className="text-white">
                     {s.label}
                   </Typography>
                 </div>
@@ -438,7 +459,7 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
 
         {/* Row 5: Bottom bar — league + time */}
         <div className="flex items-center justify-between px-0.5 py-1">
-          <div className="flex min-w-0 items-center gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
             {match.leagueLogo ? (
               <Img
                 src={match.leagueLogo}
@@ -451,13 +472,23 @@ export function MatchCard({ match, isLoading, matchType = "live", className }: M
             ) : (
               <Trophy className="text-gold size-3.5 shrink-0" />
             )}
-            <Typography as="span" variant="caption" weight="500" className="truncate text-white/90">
-              {match.leagueName}
-            </Typography>
+            <Tooltip>
+              <TooltipTrigger className="block max-w-[120px] min-w-0 overflow-hidden">
+                <Typography
+                  as="span"
+                  variant="caption"
+                  weight="500"
+                  className="block truncate text-white/90"
+                >
+                  {match.leagueName}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>{match.leagueName}</TooltipContent>
+            </Tooltip>
           </div>
           {match.startTime && (
             <div className="flex shrink-0 items-center gap-1">
-              <Calendar className="size-3 shrink-0 text-white/50" />
+              <Calendar className="size-3 shrink-0 text-white/80" />
               <Typography
                 as="span"
                 variant="caption"

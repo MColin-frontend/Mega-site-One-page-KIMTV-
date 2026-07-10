@@ -4,7 +4,7 @@ export const getRoutes = (locale: LocaleType) => ({
   home: `/${locale}`,
   schedule: localePath(locale, "lich-thi-dau"),
   liveScore: localePath(locale, "ti-so-truc-tuyen"),
-  liveSchedule: localePath(locale, "live-schedule"),
+  liveSchedule: localePath(locale, "lich-truc-tiep"),
   results: localePath(locale, "ket-qua"),
   standings: localePath(locale, "bxh"),
   news: {
