@@ -4,6 +4,7 @@ import { isEmpty } from "lodash"
 
 import { formatKickOff } from "@/lib/date"
 import { cn } from "@/lib/utils"
+import { useLiveNavigate } from "@/hooks/use-live-navigate"
 
 import { useTranslation } from "@/i18n/use-translation"
 import { SKELETON_BG } from "@/constants/common.constants"
@@ -112,13 +113,21 @@ export function FixtureListSkeleton() {
 /* ── FixtureRow ─────────────────────────────────────────────────── */
 
 export function FixtureRow({ match }: { match: MatchInterface }) {
+  const navigateToLive = useLiveNavigate()
+
   const isStarted =
     match.status === MatchStatusEnum.LIVE || match.status === MatchStatusEnum.FINISHED
+  const isLive = match.status === MatchStatusEnum.LIVE
+
+  function handleClick() {
+    navigateToLive(match.matchId, match.gameId)
+  }
 
   return (
     <>
       {/* Desktop */}
       <div
+        onClick={handleClick}
         className={cn(
           FIXTURE_ROW_CLASS,
           "rounded-10 fixture-row-bg mb-1.5 border border-white/8 py-3 last:mb-0",
@@ -218,6 +227,7 @@ export function FixtureRow({ match }: { match: MatchInterface }) {
 
       {/* Mobile */}
       <div
+        onClick={handleClick}
         className={cn(
           "rounded-10 fixture-row-bg mb-1.5 border border-white/8 px-3 py-2.5",
           "cursor-pointer transition-colors hover:bg-white/[0.06]",

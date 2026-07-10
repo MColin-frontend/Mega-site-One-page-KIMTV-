@@ -3,11 +3,32 @@
   "today": "Today",
   "tomorrow": "Tomorrow",
   "empty": "No data available",
+  "live-page": {
+    "live-section": "Live Now",
+    "upcoming-section": "Upcoming"
+  },
   "match-card": {
     "hours": "Hours",
     "minutes": "Mins",
     "seconds": "Secs",
     "finished": "Finished",
-    "watch-preview": "Preview"
+    "watch-preview": "Preview",
+    "blv-label": "Commentator",
+    "watching": "watching",
+    "watching-tooltip": "people watching",
+    "period": {
+      "h1": "1st Half",
+      "ht": "Half Time",
+      "h2": "2nd Half",
+      "et": "Extra Time",
+      "pen": "Penalties",
+      "live": "Live"
+    },
+    "stats": {
+      "shots": "Shots",
+      "yellowCard": "Yellow",
+      "redCard": "Red",
+      "corner": "Corners"
+    }
   }
 }

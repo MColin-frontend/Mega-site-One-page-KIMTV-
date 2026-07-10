@@ -54,3 +54,8 @@ export function formatDuration(ms: number): string {
   const sec = totalSec % 60
   return `${min}:${String(sec).padStart(2, "0")}`
 }
+
+export function formatViewers(n: number | null | undefined): string {
+  if (!n) return "0"
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
+}
