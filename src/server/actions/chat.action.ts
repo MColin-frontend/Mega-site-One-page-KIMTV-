@@ -1,8 +1,29 @@
 "use server"
 
-import { getRequest } from "@/server/services/request"
+import { getRequest, postRequest } from "@/server/services/request"
 
 import type { ChatMessage } from "@/components/ui/chat"
+
+export type ChatOperateType =
+  | "PIN_MESSAGE"
+  | "UNPIN_MESSAGE"
+  | "DELETE_MESSAGE"
+  | "REPORT"
+  | "ALL_PLATFORMS"
+  | "ROOM_PLATFORMS"
+  | "HOUSING_MANAGEMENT"
+
+export async function chatroomOperateAction(params: {
+  operateType: ChatOperateType
+  userId?: string | number
+  chatroomId?: string | number
+  gameId?: number
+  messageId?: string | number
+  reportType?: string
+  operate?: boolean
+}): Promise<void> {
+  await postRequest("/chatroom/operate", params)
+}
 
 const CHAT_PAGE_SIZE = 50
 

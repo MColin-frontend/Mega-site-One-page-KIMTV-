@@ -11,8 +11,8 @@
   "welcome": "đã vào phòng",
   "pinLabel": "Ghim",
   "role": {
-    "streamer": "Streamer",
-    "admin": "Admin"
+    "streamer": "Chủ phòng",
+    "admin": "Quản trị"
   },
   "report": {
     "title": "Phát biểu",
@@ -34,5 +34,7 @@
     "unpin": "Bỏ ghim",
     "setManager": "Đặt làm quản lý"
   },
-  "loginToChat": "Đăng nhập để chat"
+  "loginToChat": "Đăng nhập để chat",
+  "emptyMessage": "Tin nhắn không được để trống",
+  "cancel": "Hủy"
 }

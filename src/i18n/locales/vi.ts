@@ -17,12 +17,33 @@ export interface Dictionary {
     today: string
     tomorrow: string
     empty: string
+    "live-page": {
+      "live-section": string
+      "upcoming-section": string
+    }
     "match-card": {
       hours: string
       minutes: string
       seconds: string
       finished: string
       "watch-preview": string
+      "blv-label": string
+      watching: string
+      "watching-tooltip": string
+      period: {
+        h1: string
+        ht: string
+        h2: string
+        et: string
+        pen: string
+        live: string
+      }
+      stats: {
+        shots: string
+        yellowCard: string
+        redCard: string
+        corner: string
+      }
     }
   }
   header: {
@@ -181,6 +202,8 @@ export interface Dictionary {
       setManager: string
     }
     loginToChat: string
+    emptyMessage: string
+    cancel: string
   }
   schedule: {
     pageTitle: string
@@ -189,6 +212,7 @@ export interface Dictionary {
   }
   video: {
     title: string
+    noSource: { title: string; description: string }
     menu: { featured: string; latest: string; trending: string; news: string; promotion: string }
     actions: {
       like: string

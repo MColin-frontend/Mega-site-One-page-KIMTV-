@@ -11,8 +11,8 @@
   "welcome": "joined the room",
   "pinLabel": "Pinned",
   "role": {
-    "streamer": "Streamer",
-    "admin": "Admin"
+    "streamer": "Host",
+    "admin": "Moderator"
   },
   "report": {
     "title": "Said",
@@ -34,5 +34,7 @@
     "unpin": "Unpin",
     "setManager": "Set as moderator"
   },
-  "loginToChat": "Login to chat"
+  "loginToChat": "Login to chat",
+  "emptyMessage": "Message cannot be empty",
+  "cancel": "Cancel"
 }

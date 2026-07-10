@@ -22,6 +22,8 @@ export const getRoutes = (locale: LocaleType) => ({
   },
   inviteFriend: localePath(locale, "moi-ban"),
   userInfo: (userId: string | number) => `/user-info/${userId}`,
+  live: (matchId: string | number, gameId: number) =>
+    `${localePath(locale, "truc-tiep", String(matchId))}?game_id=${gameId}`,
 })
 
 export type Routes = ReturnType<typeof getRoutes>

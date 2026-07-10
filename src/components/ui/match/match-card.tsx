@@ -1,27 +1,37 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { isEmpty } from "lodash"
+import "react"
 
-import { formatFootballGameTime } from "@/lib/date"
-import { cn } from "@/lib/utils"
+import { isEmpty } from "lodash"
+import { Calendar, Trophy, Users } from "lucide-react"
+
+import { formatFootballGameTime, formatMatchDate, formatMatchTime } from "@/lib/date"
+import { cn, formatViewers } from "@/lib/utils"
+import { useCountdown } from "@/hooks/use-countdown"
+import { useLiveNavigate } from "@/hooks/use-live-navigate"
 import { useFakeGameMinute } from "@/hooks/useFakeGameMinute"
 
 import { useTranslation } from "@/i18n"
 import { MATCH_HALF_LABEL } from "@/constants/common.constants"
-import { MATCH_STAT_CONFIG } from "@/constants/ui/ui-match.constants"
+import {
+  COUNTDOWN_I18N_KEYS,
+  MATCH_CARD_I18N_KEYS,
+  MATCH_HALF_LABEL_I18N_KEY,
+  MATCH_STAT_CONFIG,
+} from "@/constants/component/match-card.constants"
 import { MatchFootballStateEnum, MatchStatusEnum } from "@/enums/match.enum"
 import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
 
+import icMic from "@assets/icons/match/ic-mic.svg"
+import imgStadiumBg from "@assets/images/common/img-stadium-bg.png"
 import imgVs from "@assets/images/common/img-vs.png"
 
-import { AvatarWithTooltip } from "../avatar"
-import { GlowCard } from "../glow-card"
 import { Img } from "../image"
 import { Skeleton } from "../skeleton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
 import { Typography } from "../typography"
-import { MatchLiveBadge } from "./match-live-badge"
+import { MatchLiveIndicator } from "./match-live-indicator"
+import { MatchPeriodBadge } from "./match-period-badge"
 
 type MatchCardType = "upcoming" | "live" | "finished"
 
@@ -32,382 +42,436 @@ interface MatchCardProps {
   className?: string
 }
 
-function MatchCardSkeleton({
-  className,
-  matchType = "live",
-}: {
-  className?: string
-  matchType?: MatchCardType
-}) {
-  return (
-    <div
-      className={cn("card-glow rounded-12 relative h-[280px] w-full overflow-hidden", className)}
-      style={{
-        background: [
-          "radial-gradient(ellipse at 20% 0%, rgba(74,140,255,0.13) 0%, transparent 55%)",
-          "radial-gradient(ellipse at 80% 100%, rgba(30,80,180,0.11) 0%, transparent 50%)",
-          "#0b1422",
-        ].join(", "),
-      }}
-    >
-      <div className="flex h-full flex-col justify-between p-4">
-        {/* League row */}
-        <div className="flex items-center gap-1.5">
-          <Skeleton className="size-4 shrink-0 rounded-full" />
-          <Skeleton className="h-3 w-32" />
-        </div>
+/* ── Skeleton ─────────────────────────────────────────────── */
 
-        {/* Teams row */}
+function MatchCardSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("card-glow rounded-12 relative w-full overflow-hidden", className)}>
+      <div className="flex flex-col gap-3 p-3.5">
+        {/* Row 1: LIVE + time */}
+        <div className="flex items-center justify-between">
+          <Skeleton className="rounded-6 h-6 w-14" />
+          <Skeleton className="rounded-4 h-5 w-12" />
+        </div>
+        {/* Row 2: BLV */}
+        <div className="flex min-h-[52px] items-center gap-2">
+          <Skeleton className="size-10 shrink-0 rounded-full" />
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-4 w-20 rounded-full" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        </div>
+        {/* Row 3: Teams + Score */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex basis-2/5 flex-col items-center gap-2">
-            <Skeleton className="size-[52px] rounded-full" />
+            <Skeleton className="size-[60px] rounded-full" />
             <Skeleton className="h-3 w-16" />
           </div>
-          <Skeleton className="rounded-4 h-8 w-8" />
+          <div className="flex basis-1/5 flex-col items-center gap-1">
+            <Skeleton className="h-10 w-20" />
+            <Skeleton className="rounded-4 h-4 w-14" />
+          </div>
           <div className="flex basis-2/5 flex-col items-center gap-2">
-            <Skeleton className="size-[52px] rounded-full" />
+            <Skeleton className="size-[60px] rounded-full" />
             <Skeleton className="h-3 w-16" />
           </div>
         </div>
-
-        {/* Date + badge */}
-        <div className="flex flex-col items-center gap-2">
-          <Skeleton className="h-3 w-28" />
-          {matchType === "upcoming" && (
-            <div className="flex items-center gap-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <Skeleton className="h-6 w-8" />
-                  <Skeleton className="h-2 w-6" />
-                </div>
-              ))}
-            </div>
-          )}
-          {matchType === "live" && <Skeleton className="h-3 w-24" />}
-          {matchType === "finished" && <Skeleton className="h-3 w-20" />}
-        </div>
-
-        {/* Footer: upcoming = button, live/finished = stats */}
-        {matchType === "upcoming" ? (
-          <Skeleton className="rounded-8 h-9 w-full" />
-        ) : (
-          <div className="flex items-center justify-center gap-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-1">
-                <Skeleton className="rounded-2 size-3.5" />
-                <Skeleton className="h-3 w-8" />
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Row 4: Stats */}
+        <Skeleton className="rounded-8 h-10 w-full" />
+        {/* Row 5: Bottom */}
+        <Skeleton className="rounded-4 h-6 w-full" />
       </div>
     </div>
   )
 }
 
-function useCountdown(startTime: number | null | undefined) {
-  const [countdown, setCountdown] = useState({ hours: 0, minutes: 0, seconds: 0 })
-
-  useEffect(() => {
-    if (!startTime) return
-    const update = () => {
-      const diff = startTime * 1000 - Date.now()
-      if (diff <= 0) {
-        setCountdown({ hours: 0, minutes: 0, seconds: 0 })
-        return
-      }
-      const total = Math.floor(diff / 1000)
-      setCountdown({
-        hours: Math.floor(total / 3600),
-        minutes: Math.floor((total % 3600) / 60),
-        seconds: total % 60,
-      })
-    }
-    update()
-    const id = setInterval(update, 1000)
-    return () => clearInterval(id)
-  }, [startTime])
-
-  return countdown
-}
-
-function formatMatchDate(ts: number) {
-  const d = new Date(ts * 1000)
-  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`
-}
-
-function formatMatchTime(ts: number) {
-  return new Date(ts * 1000).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
-}
+/* ── Main Component ──────────────────────────────────────── */
 
 export function MatchCard({ match, isLoading, matchType = "live", className }: MatchCardProps) {
   const { t } = useTranslation()
+  const navigateToLive = useLiveNavigate()
   const countdown = useCountdown(match?.startTime)
 
-  if (isLoading || !match) return <MatchCardSkeleton className={className} matchType={matchType} />
+  function handleClick() {
+    if (!match?.matchId || !match?.gameId) return
+    navigateToLive(match.matchId, match.gameId)
+  }
+
+  if (isLoading || !match) return <MatchCardSkeleton className={className} />
 
   const isUpcoming =
     match.status === MatchStatusEnum.UPCOMING || match.status === MatchStatusEnum.UNKNOWN
   const isFinished = match.status === MatchStatusEnum.FINISHED
   const isLive = !isFinished && (!!match.isLive || match.status === MatchStatusEnum.LIVE)
   const halfLabel = MATCH_HALF_LABEL[match.state as MatchFootballStateEnum] ?? "LIVE"
+  const periodI18nKey = MATCH_HALF_LABEL_I18N_KEY[halfLabel]
+  const periodLabel = periodI18nKey ? t(periodI18nKey as Parameters<typeof t>[0]) : halfLabel
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const displayMinute = useFakeGameMinute(match.gameTime, isLive)
   const anchors: AnchorRoomVo[] = match.anchorRoomVos ?? []
-  const menuCols = match.menu.slice(0, 3)
-  const hasFooter = !isUpcoming && (menuCols.some(Boolean) || !isEmpty(anchors))
+  const firstAnchor = anchors[0] ?? null
+  const thumbnail = firstAnchor?.cover ?? match.animationUrl ?? null
 
-  const statsData = [
-    { home: match.homeCornerKick, away: match.awayCornerKick },
-    { home: match.homeRedCard, away: match.awayRedCard },
-    { home: match.homeYellowCard, away: match.awayYellowCard },
+  const statValues = [
+    0,
+    (match.homeYellowCard ?? 0) + (match.awayYellowCard ?? 0),
+    (match.homeRedCard ?? 0) + (match.awayRedCard ?? 0),
+    (match.homeCornerKick ?? 0) + (match.awayCornerKick ?? 0),
   ]
+  const stats = MATCH_STAT_CONFIG.map((cfg, i) => ({
+    ...cfg,
+    label: t(cfg.labelKey as Parameters<typeof t>[0]),
+    value: statValues[i],
+  }))
 
   return (
-    <GlowCard
+    <div
+      onClick={handleClick}
       className={cn(
-        "card-glow rounded-12 h-[280px] w-full cursor-pointer transition-all",
+        "card-match-bg rounded-12 relative w-full cursor-pointer overflow-hidden transition-all",
+        "hover:shadow-card-hover shadow-none",
         className
       )}
-      style={{
-        background: [
-          "radial-gradient(ellipse at 20% 0%, rgba(74,140,255,0.13) 0%, transparent 55%)",
-          "radial-gradient(ellipse at 80% 100%, rgba(30,80,180,0.11) 0%, transparent 50%)",
-          "#0b1422",
-        ].join(", "),
-      }}
     >
-      {/* Home team glow — lấy màu từ logo đội nhà */}
-      {match.homeLogo && (
-        <div
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url(${match.homeLogo})`,
-            backgroundSize: "180px",
-            backgroundPosition: "-20px center",
-            backgroundRepeat: "no-repeat",
-            filter: "blur(60px) saturate(1.8)",
-            opacity: 0.12,
-            transform: "scale(1.6)",
-          }}
-        />
-      )}
-      {/* Away team glow — lấy màu từ logo đội khách */}
-      {match.awayLogo && (
-        <div
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url(${match.awayLogo})`,
-            backgroundSize: "180px",
-            backgroundPosition: "calc(100% + 20px) center",
-            backgroundRepeat: "no-repeat",
-            filter: "blur(60px) saturate(1.8)",
-            opacity: 0.09,
-            transform: "scale(1.6)",
-          }}
-        />
-      )}
-      {/* Overlay để tránh quá chói */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[1]"
-        style={{
-          background: "linear-gradient(180deg, rgba(12,21,38,0.1) 0%, rgba(12,21,38,0.65) 100%)",
-        }}
-      />
-
-      <div className="relative z-10 flex h-full flex-col justify-between p-4">
-        {/* League */}
-        <div className="flex items-center gap-1.5">
-          <Img
-            src={match.leagueLogo}
-            alt={match.leagueName ?? ""}
-            width={20}
-            height={20}
-            objectFit="contain"
+      {thumbnail ? (
+        <>
+          {/* Thumbnail image bg */}
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              backgroundImage: `url(${thumbnail})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center top",
+            }}
           />
-          <Tooltip>
-            <TooltipTrigger className="max-w-[250px] min-w-0 overflow-hidden">
-              <Typography variant="body-sm" className="text-muted block truncate text-left">
-                {match.leagueName}
+          {/* Gradient: rõ trên, mờ dần xuống dưới */}
+          <div className="card-thumbnail-overlay pointer-events-none absolute inset-0 z-[1]" />
+        </>
+      ) : (
+        <>
+          {/* Fallback: stadium bg */}
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              backgroundImage: `url(${imgStadiumBg.src})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          {/* Team logo glow overlay */}
+          {match.homeLogo && (
+            <div
+              className="pointer-events-none absolute inset-0 z-0"
+              style={{
+                backgroundImage: `url(${match.homeLogo})`,
+                backgroundSize: "160px",
+                backgroundPosition: "-10px center",
+                backgroundRepeat: "no-repeat",
+                filter: "blur(55px) saturate(2)",
+                opacity: 0.13,
+                transform: "scale(1.6)",
+              }}
+            />
+          )}
+          {match.awayLogo && (
+            <div
+              className="pointer-events-none absolute inset-0 z-0"
+              style={{
+                backgroundImage: `url(${match.awayLogo})`,
+                backgroundSize: "160px",
+                backgroundPosition: "calc(100% + 10px) center",
+                backgroundRepeat: "no-repeat",
+                filter: "blur(55px) saturate(2)",
+                opacity: 0.1,
+                transform: "scale(1.6)",
+              }}
+            />
+          )}
+          <div className="card-stadium-overlay pointer-events-none absolute inset-0 z-[1]" />
+        </>
+      )}
+
+      <div className="relative z-10 flex min-h-[300px] flex-col justify-between gap-2 p-3.5">
+        {/* Row 1: LIVE badge | time (right) */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {isLive && <MatchLiveIndicator />}
+            {isFinished && (
+              <Typography as="span" variant="caption" weight="600" className="text-muted">
+                {t("common.match-card.finished")}
               </Typography>
-            </TooltipTrigger>
-            <TooltipContent>{match.leagueName}</TooltipContent>
-          </Tooltip>
+            )}
+          </div>
+          {isLive && displayMinute != null && (
+            <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5">
+              <Typography
+                as="span"
+                variant="label"
+                weight="700"
+                className="text-gold drop-shadow-gold"
+              >
+                {formatFootballGameTime(displayMinute)}
+                <span className="animate-blink">&apos;</span>
+              </Typography>
+            </div>
+          )}
         </div>
 
-        {/* Teams */}
-        <div className="flex items-center justify-between gap-4">
+        {/* Row 2: BLV info */}
+        {isLive && firstAnchor && (
+          <div className="mt-1 flex items-center gap-1.5">
+            {/* Avatar với mic icon overlay */}
+            {firstAnchor.userAvatar && (
+              <div className="relative shrink-0">
+                <Img
+                  src={firstAnchor.userAvatar}
+                  alt=""
+                  width={32}
+                  height={32}
+                  objectFit="cover"
+                  rounded="full"
+                  className="ring-live-green ring-1"
+                />
+                {/* Mic badge */}
+                <div className="bg-live-green-bg shadow-white-soft absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full">
+                  <Img src={icMic} alt="mic" width={14} height={14} objectFit="contain" />
+                </div>
+              </div>
+            )}
+
+            {/* Text info */}
+            <div className="flex min-w-0 flex-col gap-0.5">
+              {/* Label badge */}
+              <div className="border-live-green/60 bg-live-green-bg shadow-live-green-sm flex w-fit items-center gap-1 rounded-full border px-1.5 py-px backdrop-blur-2xl">
+                <Img src={icMic} alt="mic" width={8} height={8} objectFit="contain" />
+                <Typography
+                  as="span"
+                  size="10"
+                  weight="600"
+                  className="text-live-green leading-none uppercase"
+                  style={{ fontSize: "8px" }}
+                >
+                  {t(MATCH_CARD_I18N_KEYS.blvLabel)}
+                </Typography>
+              </div>
+              {/* Name */}
+              <Typography as="span" variant="caption" weight="700" className="truncate text-white">
+                {firstAnchor.userName}
+              </Typography>
+              {/* Viewers */}
+              {firstAnchor.popularity != null && firstAnchor.popularity > 0 && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="flex w-fit items-center gap-1">
+                      <Users className="size-3 text-white/50" />
+                      <Typography
+                        as="span"
+                        variant="caption"
+                        weight="500"
+                        className="text-white/60 tabular-nums"
+                      >
+                        {formatViewers(firstAnchor.popularity)} {t(MATCH_CARD_I18N_KEYS.watching)}
+                      </Typography>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {firstAnchor.popularity.toLocaleString("vi-VN")}{" "}
+                    {t(MATCH_CARD_I18N_KEYS.watchingTooltip)}
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Row 3: Teams + Score */}
+        <div className="flex flex-1 items-center justify-between gap-2">
+          {/* Home */}
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[52px] shrink-0 items-center justify-center">
+            <div className="flex size-[60px] shrink-0 items-center justify-center">
               <Img
                 src={match.homeLogo}
                 alt={match.homeName ?? ""}
-                width={52}
-                height={52}
+                width={60}
+                height={60}
                 objectFit="contain"
               />
             </div>
-            <Tooltip>
-              <TooltipTrigger className="block w-full">
-                <Typography variant="body-sm" className="line-clamp-1 text-center text-white">
-                  {match.homeName}
-                </Typography>
-              </TooltipTrigger>
-              <TooltipContent>{match.homeName}</TooltipContent>
-            </Tooltip>
+            <Typography
+              as="span"
+              variant="label"
+              weight="500"
+              className="line-clamp-1 w-full text-center text-white"
+            >
+              {match.homeName}
+            </Typography>
           </div>
 
-          <div className="flex basis-1/5 items-center justify-center">
+          {/* Score */}
+          <div className="flex basis-1/5 flex-col items-center gap-0.5">
             {isUpcoming ? (
-              <Img src={imgVs} alt="VS" width={60} height={60} objectFit="contain" />
+              <Img src={imgVs} alt="VS" width={48} height={48} objectFit="contain" />
             ) : (
-              <div className="flex items-center gap-1">
-                <Typography variant="h4" weight="700" className="text-white tabular-nums">
-                  {match.homeScore ?? 0}
-                </Typography>
-                <Typography variant="h5" className="text-muted">
-                  :
-                </Typography>
-                <Typography variant="h4" weight="700" className="text-white tabular-nums">
-                  {match.awayScore ?? 0}
-                </Typography>
-              </div>
-            )}
-          </div>
-
-          <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[52px] shrink-0 items-center justify-center">
-              <Img
-                src={match.awayLogo}
-                alt={match.awayName ?? ""}
-                width={52}
-                height={52}
-                objectFit="contain"
-              />
-            </div>
-            <Tooltip>
-              <TooltipTrigger className="block w-full">
-                <Typography variant="body-sm" className="line-clamp-1 text-center text-white">
-                  {match.awayName}
-                </Typography>
-              </TooltipTrigger>
-              <TooltipContent>{match.awayName}</TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-
-        {/* Date/time */}
-        {!isUpcoming && match.startTime && (
-          <>
-            <Typography variant="body" className="text-muted text-center">
-              {formatMatchDate(match.startTime)} • {formatMatchTime(match.startTime)}
-            </Typography>
-            {isLive && (
-              <MatchLiveBadge
-                halfLabel={halfLabel}
-                displayMinute={formatFootballGameTime(displayMinute)}
-              />
-            )}
-            {isFinished && (
-              <div className="flex justify-center">
-                <Typography
-                  variant="label"
-                  weight="600"
-                  className="text-gold drop-shadow-[0_0_6px_rgba(245,197,24,0.7)] [text-shadow:0_0_8px_rgba(245,197,24,0.6),0_0_20px_rgba(245,197,24,0.25)]"
-                >
-                  {t("common.match-card.finished")}
-                </Typography>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Upcoming: date + countdown + button */}
-        {isUpcoming && match.startTime && (
-          <>
-            <Typography variant="body" className="text-center text-white/80">
-              {formatMatchDate(match.startTime)} • {formatMatchTime(match.startTime)}
-            </Typography>
-
-            <div className="flex items-center justify-center gap-2">
-              {[
-                { value: countdown.hours, label: t("common.match-card.hours") },
-                { value: countdown.minutes, label: t("common.match-card.minutes") },
-                { value: countdown.seconds, label: t("common.match-card.seconds") },
-              ].map(({ value, label }, i) => (
-                <div key={label} className="flex items-start gap-2">
-                  <div className="flex flex-col items-center">
+              <>
+                <div className="flex items-center gap-0.5">
+                  <Typography
+                    as="span"
+                    size="60"
+                    weight="700"
+                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
+                  >
+                    {match.homeScore ?? 0}
+                  </Typography>
+                  <Typography
+                    as="span"
+                    size="30"
+                    weight="500"
+                    className="text-gold/60 px-0.5 leading-100"
+                  >
+                    :
+                  </Typography>
+                  <Typography
+                    as="span"
+                    size="60"
+                    weight="700"
+                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
+                  >
+                    {match.awayScore ?? 0}
+                  </Typography>
+                </div>
+                {isLive && <MatchPeriodBadge label={periodLabel} />}
+                {isFinished && (
+                  <div className="rounded-4 border-gold/30 bg-gold/10 shadow-gold-glow border px-1.5 py-px">
                     <Typography
-                      variant="h5"
-                      weight="700"
-                      className="leading-100 text-white tabular-nums"
+                      as="span"
+                      variant="caption"
+                      weight="600"
+                      className="text-gold drop-shadow-gold-sm"
                     >
-                      {String(value).padStart(2, "0")}
-                    </Typography>
-                    <Typography as="span" size="10" className="text-muted mt-0.5">
-                      {label}
-                    </Typography>
-                  </div>
-                  {i < 2 && (
-                    <Typography variant="h5" weight="700" className="text-muted leading-100">
-                      :
-                    </Typography>
-                  )}
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Live/Finished footer stats */}
-        {hasFooter && (
-          <div
-            className={cn(
-              "flex items-center gap-2",
-              isEmpty(anchors) ? "justify-center" : "justify-between"
-            )}
-          >
-            <div className="flex items-center gap-2">
-              {MATCH_STAT_CONFIG?.map((stat, i) => (
-                <div key={i} className="flex items-center gap-1">
-                  <Img src={stat.icon} alt={stat.alt} width={14} height={14} objectFit="contain" />
-                  <Typography variant="body" weight="500" className="text-white/80">
-                    {statsData[i].home ?? 0}
-                  </Typography>
-                  <Typography variant="body" className="text-muted">
-                    -
-                  </Typography>
-                  <Typography variant="body" weight="500" className="text-white/80">
-                    {statsData[i].away ?? 0}
-                  </Typography>
-                </div>
-              ))}
-            </div>
-
-            {!isEmpty(anchors) && (
-              <div className="ml-auto flex items-center">
-                {anchors.slice(0, 3).map((anchor, i) => (
-                  <AvatarWithTooltip
-                    key={i}
-                    src={anchor.userAvatar}
-                    name={anchor.userName}
-                    size={26}
-                    index={i}
-                    overlap={6}
-                  />
-                ))}
-                {anchors.length > 3 && (
-                  <div className="relative -ml-1.5 flex size-[26px] items-center justify-center rounded-full bg-white/10 ring-2 ring-[#0c1526]">
-                    <Typography as="span" size="10" weight="600" className="text-muted">
-                      +{anchors.length - 3}
+                      {t(MATCH_CARD_I18N_KEYS.finished)}
                     </Typography>
                   </div>
                 )}
-              </div>
+              </>
             )}
           </div>
+
+          {/* Away */}
+          <div className="flex basis-2/5 flex-col items-center gap-1.5">
+            <div className="flex size-[60px] shrink-0 items-center justify-center">
+              <Img
+                src={match.awayLogo}
+                alt={match.awayName ?? ""}
+                width={60}
+                height={60}
+                objectFit="contain"
+              />
+            </div>
+            <Typography
+              as="span"
+              variant="label"
+              weight="500"
+              className="line-clamp-1 w-full text-center text-white"
+            >
+              {match.awayName}
+            </Typography>
+          </div>
+        </div>
+
+        {/* Row 4: Countdown (upcoming) */}
+        {isUpcoming && (
+          <div className="flex items-center justify-center gap-3">
+            {[
+              { value: countdown.hours, label: t(COUNTDOWN_I18N_KEYS.hours) },
+              { value: countdown.minutes, label: t(COUNTDOWN_I18N_KEYS.minutes) },
+              { value: countdown.seconds, label: t(COUNTDOWN_I18N_KEYS.seconds) },
+            ].map(({ value, label }, i) => (
+              <div key={label} className="flex items-start gap-2">
+                <div className="flex flex-col items-center">
+                  <Typography
+                    variant="h3"
+                    weight="700"
+                    className="text-gold drop-shadow-gold-score leading-100 tabular-nums"
+                  >
+                    {String(value).padStart(2, "0")}
+                  </Typography>
+                  <Typography as="span" size="12" className="text-muted mt-1">
+                    {label}
+                  </Typography>
+                </div>
+                {i < 2 && (
+                  <Typography variant="h3" weight="700" className="text-gold/60 leading-100">
+                    :
+                  </Typography>
+                )}
+              </div>
+            ))}
+          </div>
         )}
+
+        {/* Row 4: Stats (live/finished) */}
+        {!isUpcoming && (
+          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.02] px-2 py-1.5 backdrop-blur-[80px]">
+            {stats.map((s, i) => (
+              <div key={i} className="flex flex-1 items-center">
+                {i > 0 && <div className="h-4 w-px shrink-0 bg-white/20" />}
+                <div className="flex flex-1 flex-col items-center gap-0.5">
+                  <div className="flex items-center gap-0.5">
+                    <Img src={s.icon} alt={s.alt} width={16} height={16} objectFit="contain" />
+                    <Typography
+                      as="span"
+                      variant="body-sm"
+                      weight="700"
+                      className="text-white tabular-nums"
+                    >
+                      {s.value}
+                    </Typography>
+                  </div>
+                  <Typography as="span" size="10" className="text-white/50">
+                    {s.label}
+                  </Typography>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Row 5: Bottom bar — league + time */}
+        <div className="flex items-center justify-between px-0.5 py-1">
+          <div className="flex min-w-0 items-center gap-1.5">
+            {match.leagueLogo ? (
+              <Img
+                src={match.leagueLogo}
+                alt=""
+                width={20}
+                height={20}
+                objectFit="contain"
+                className="shrink-0"
+              />
+            ) : (
+              <Trophy className="text-gold size-3.5 shrink-0" />
+            )}
+            <Typography as="span" variant="caption" weight="500" className="truncate text-white/90">
+              {match.leagueName}
+            </Typography>
+          </div>
+          {match.startTime && (
+            <div className="flex shrink-0 items-center gap-1">
+              <Calendar className="size-3 shrink-0 text-white/50" />
+              <Typography
+                as="span"
+                variant="caption"
+                weight="500"
+                className="text-white/70 tabular-nums"
+              >
+                {formatMatchTime(match.startTime)}
+                <span className="mx-1 inline-block h-2.5 w-px bg-white/30 align-middle" />
+                {formatMatchDate(match.startTime)}
+              </Typography>
+            </div>
+          )}
+        </div>
       </div>
-    </GlowCard>
+    </div>
   )
 }

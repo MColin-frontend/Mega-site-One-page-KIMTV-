@@ -7,9 +7,15 @@ import type { SimplePlayer } from "xgplayer"
 import { cn } from "@/lib/utils"
 import { useAdPlacements } from "@/hooks/tanstack/use-ad-placements"
 
+import { useTranslation } from "@/i18n"
+
+import { Img } from "@/components/ui/image"
+import { Typography } from "@/components/ui/typography"
+
 import "xgplayer/dist/index.min.css"
 
 import icLiveSmall from "@/assets/images/common/ic-live-small.gif"
+import imgNoSource from "@/assets/images/common/img-no-source.png"
 
 const AdBanner = dynamic(() => import("@/components/ui/ad-banner").then((m) => m.AdBanner), {
   ssr: false,
@@ -71,6 +77,7 @@ export function VideoPlayer({
   const mountId = id ?? `xgp-${generatedId.replace(/[^a-z0-9]/gi, "")}`
   const playerRef = useRef<SimplePlayer | null>(null)
 
+  const { t } = useTranslation()
   const { data: ads } = useAdPlacements()
   const playerOverlay = ads?.playerOverlay || []
 
@@ -180,9 +187,39 @@ export function VideoPlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, sources?.map((s) => s.url).join(",")])
 
+  const hasSource = !!(url ?? sources?.[0]?.url)
+
   return (
-    <div className={cn("relative h-full w-full rounded-lg bg-black", className)}>
-      <div id={mountId} className="h-full w-full overflow-hidden rounded-[inherit]" />
+    <div
+      className={cn(
+        "panel-news rounded-8 relative min-h-0 flex-1 overflow-hidden max-lg:aspect-video max-lg:flex-none",
+        className
+      )}
+    >
+      {!hasSource && (
+        <div>
+          <div
+            className="absolute inset-0 z-0 opacity-30"
+            style={{
+              backgroundImage: `url(${imgNoSource.src})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+            <div className="rounded-12 border-gold/20 border bg-black/50 px-8 py-5 backdrop-blur-md">
+              <Typography variant="body" weight="700" className="text-gold drop-shadow-gold">
+                {t("video.noSource.title")}
+              </Typography>
+              <Typography variant="caption" className="text-gold/50 mt-1.5 block">
+                {t("video.noSource.description")}
+              </Typography>
+            </div>
+          </div>
+        </div>
+      )}
+      <div id={mountId} className="relative z-10 h-full w-full overflow-hidden rounded-[inherit]" />
 
       {/* Vị trí 0: full overlay phủ toàn video */}
       <AdBanner

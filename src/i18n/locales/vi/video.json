@@ -40,6 +40,10 @@
     "deleteSuccess": "Đã xóa bình luận",
     "deleteError": "Xóa bình luận thất bại"
   },
+  "noSource": {
+    "title": "Hiện không có trận đấu diễn ra",
+    "description": "Vui lòng quay lại sau"
+  },
   "empty": "Không có video nào",
   "loadMore": "Đang tải...",
   "seo": {

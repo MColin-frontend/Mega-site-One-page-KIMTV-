@@ -84,3 +84,12 @@ export function formatDuration(ms: number): string {
   const m = Math.floor(s / 60)
   return `${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`
 }
+
+export function formatMatchDate(ts: number): string {
+  const d = new Date(ts * 1000)
+  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`
+}
+
+export function formatMatchTime(ts: number): string {
+  return new Date(ts * 1000).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
+}

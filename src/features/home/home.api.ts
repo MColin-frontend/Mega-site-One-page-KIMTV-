@@ -80,14 +80,10 @@ function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
             id: m.matchId as number,
             chatroomId: m.matchId as number,
             gameId: (m.gameId as number) ?? 0,
-            homeTeam: {
-              name: (m.homeName as string) ?? "",
-              logo: (m.homeLogo as string) ?? "",
-            },
-            awayTeam: {
-              name: (m.awayName as string) ?? "",
-              logo: (m.awayLogo as string) ?? "",
-            },
+            homeName: (m.homeName as string) ?? "",
+            homeLogo: (m.homeLogo as string) ?? "",
+            awayName: (m.awayName as string) ?? "",
+            awayLogo: (m.awayLogo as string) ?? "",
             homeScore: (m.homeScore as number) ?? undefined,
             awayScore: (m.awayScore as number) ?? undefined,
             period: (m.gameTime as number) ?? undefined,

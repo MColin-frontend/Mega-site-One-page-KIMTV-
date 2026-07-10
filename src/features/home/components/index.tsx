@@ -12,7 +12,7 @@ export async function HomePage() {
   const liveMatches = await fetchLiveMatchesAction()
 
   return (
-    <div className="relative container flex flex-col gap-10 py-10 max-lg:gap-6 max-lg:py-6 max-md:gap-4 max-md:py-4">
+    <div className="relative container flex flex-col gap-10 max-lg:gap-6 max-md:gap-4">
       {liveMatches.length > 0 && (
         <ScrollReveal variant="scale" duration={700} threshold={0.04}>
           <Suspense>

@@ -16,7 +16,7 @@ export const env = {
 
   // WebSocket chat — biến `NEXT_PUBLIC_` được INLINE lúc `next build`
   // → phải truyền qua Docker build-arg (xem Dockerfile / workflow).
-  // prod: wss://ws.kimtv.org | dev: wss://ws-dev.kimtv.org
+  // prod: wss://ws.kimtv.net | dev: wss://ws-dev.kimtv.net
   wsBaseUrl: process.env.NEXT_PUBLIC_WS_BASE_URL ?? "",
 } as const
 
