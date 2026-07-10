@@ -7,7 +7,23 @@ import type { ApiConfig } from "@/models/home.models"
 
 export const MATCH_API = {
   LIVE: "/v2/match/get-pc-game-match-by-condition",
+  LIVE_SEARCH: "/v3/search/game-match-live",
   LIST: "/sports-match-h5/list",
+} as const
+
+export const LIVE_MATCH_TYPE = {
+  LIVE: "live",
+  UPCOMING: "upcoming",
+  FINISHED: "finished",
+} as const
+
+export const HTTP_METHOD = {
+  GET: "GET",
+  POST: "POST",
+} as const
+
+export const MATCH_QUERY_PARAMS = {
+  ALL_GAMES: { gameId: [] },
 } as const
 
 const H5_OPTION: Partial<Record<MatchStatusTabValue, number>> = {
@@ -24,7 +40,7 @@ export function buildMatchApiConfig(
   if (status === MATCH_STATUS_TAB.LIVE) {
     return {
       endpoint: MATCH_API.LIVE,
-      method: "POST",
+      method: HTTP_METHOD.POST,
       params: { gameId: [] },
       paginate: false,
     }

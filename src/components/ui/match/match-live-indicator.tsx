@@ -1,6 +1,10 @@
 "use client"
 
-export function MatchLiveIndicator() {
+interface MatchLiveIndicatorProps {
+  label?: string
+}
+
+export function MatchLiveIndicator({ label = "LIVE" }: MatchLiveIndicatorProps) {
   return (
     <div className="relative flex items-center gap-1.5 overflow-visible">
       <div className="pointer-events-none absolute inset-0 -z-10 scale-150 animate-pulse rounded-full bg-red-600/40 blur-md" />
@@ -16,7 +20,7 @@ export function MatchLiveIndicator() {
           />
           <span className="shadow-white-dot relative inline-flex size-2.5 rounded-full bg-white" />
         </span>
-        <span className="text-12 font-800 tracking-widest text-white uppercase">LIVE</span>
+        <span className="text-12 font-800 tracking-widest text-white uppercase">{label}</span>
       </div>
     </div>
   )

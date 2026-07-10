@@ -20,6 +20,11 @@ export interface Dictionary {
     "live-page": {
       "live-section": string
       "upcoming-section": string
+      "finished-section": string
+      "filter-all": string
+      "filter-hot": string
+      "filter-live": string
+      "filter-tv": string
     }
     "match-card": {
       hours: string

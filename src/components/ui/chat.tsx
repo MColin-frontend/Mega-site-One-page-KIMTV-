@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { RefreshCw, X } from "lucide-react"
+import { RefreshCw } from "lucide-react"
 import { z } from "zod"
 
 import {
@@ -22,14 +22,11 @@ import { useTranslation } from "@/i18n"
 import { env } from "@/config/env"
 import { HERO_VIDEO_PARAMS } from "@/constants/component/home.constants"
 import {
-  CHAT_ADMIN_BTN,
   CHAT_CLASSES,
   CHAT_CONNECTION_STATUS,
   CHAT_INPUT_HEIGHT,
   CHAT_MESSAGE_TYPE,
   CHAT_MSG_PADDING,
-  CHAT_POPUP_WIDTH,
-  CHAT_REPORT_BTN_WIDTH,
   CHAT_SCROLLBAR_STYLE,
   CHAT_SOCIAL_NAMES,
   CHAT_SYMBOLS,

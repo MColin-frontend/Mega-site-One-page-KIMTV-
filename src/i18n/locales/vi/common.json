@@ -5,7 +5,12 @@
   "empty": "Không có dữ liệu",
   "live-page": {
     "live-section": "Đang diễn ra",
-    "upcoming-section": "Sắp diễn ra"
+    "upcoming-section": "Sắp diễn ra",
+    "finished-section": "Đã kết thúc",
+    "filter-all": "Tất cả",
+    "filter-hot": "Nổi bật",
+    "filter-live": "Trực tiếp",
+    "filter-tv": "Truyền hình"
   },
   "match-card": {
     "hours": "Giờ",

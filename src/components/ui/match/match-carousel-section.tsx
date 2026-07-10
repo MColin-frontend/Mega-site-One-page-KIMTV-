@@ -1,5 +1,7 @@
 "use client"
 
+import { HTTP_METHOD, LIVE_MATCH_TYPE, MATCH_QUERY_PARAMS } from "@/lib/match.utils"
+
 import { useTranslation } from "@/i18n"
 import type { MatchInterface } from "@/models/match.models"
 
@@ -14,17 +16,17 @@ import { MatchCard } from "./match-card"
 interface MatchCarouselSectionProps {
   title: string
   endpoint: string
-  method?: "GET" | "POST"
+  method?: (typeof HTTP_METHOD)[keyof typeof HTTP_METHOD]
   params?: Record<string, unknown>
-  matchType?: "live" | "upcoming" | "finished"
+  matchType?: (typeof LIVE_MATCH_TYPE)[keyof typeof LIVE_MATCH_TYPE]
 }
 
 export function MatchCarouselSection({
   title,
   endpoint,
-  method = "POST",
-  params = { gameId: [] },
-  matchType = "live",
+  method = HTTP_METHOD.POST,
+  params = MATCH_QUERY_PARAMS.ALL_GAMES,
+  matchType = LIVE_MATCH_TYPE.LIVE,
 }: MatchCarouselSectionProps) {
   const { t } = useTranslation()
 

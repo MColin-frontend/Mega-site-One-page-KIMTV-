@@ -187,7 +187,7 @@ export default function CarouselInfinity<T>({
         className={`overflow-x-hidden overflow-y-visible${viewportClassName ? ` ${viewportClassName}` : ""}`}
         ref={emblaRef}
       >
-        <div className="-ml-4 flex">
+        <div className="-ml-4 flex items-stretch">
           {(Array.isArray(items) ? items : []).map((item, index) => (
             <div
               key={keyExtractor ? keyExtractor(item, index) : index}

@@ -1,0 +1,552 @@
+"use client"
+
+import { Calendar, Trophy, Users } from "lucide-react"
+
+import { formatFootballGameTime, formatMatchDate, formatMatchTime } from "@/lib/date"
+import { cn, formatViewers } from "@/lib/utils"
+import { useLiveNavigate } from "@/hooks/use-live-navigate"
+
+import { useTranslation } from "@/i18n"
+import { MATCH_HALF_LABEL } from "@/constants/common.constants"
+import {
+  MATCH_CARD_I18N_KEYS,
+  MATCH_HALF_LABEL_I18N_KEY,
+} from "@/constants/component/match-card.constants"
+import { MatchFootballStateEnum, MatchStatusEnum } from "@/enums/match.enum"
+
+import { Img } from "@/components/ui/image"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Typography } from "@/components/ui/typography"
+
+import icCornerFlag from "@assets/icons/match/ic-corner-flag.svg"
+import icFootball from "@assets/icons/match/ic-football.png"
+import icMic from "@assets/icons/match/ic-mic.svg"
+import icRedCardV2 from "@assets/icons/match/ic-red-card-v2.svg"
+import icYellowCardV2 from "@assets/icons/match/ic-yellow-card-v2.svg"
+import imgStadiumBg from "@assets/images/common/img-stadium-bg.png"
+import imgVs from "@assets/images/common/img-vs.png"
+
+import { MatchPeriodBadge } from "./match-period-badge"
+
+/* ── Type ─────────────────────────────────────────────────── */
+
+export interface LiveSearchMatchInterface {
+  matchId: number
+  gameId: number
+  homeName: string | null
+  awayName: string | null
+  homeLogo: string | null
+  awayLogo: string | null
+  homeScore: number
+  awayScore: number
+  leagueName: string | null
+  leagueLogo: string | null
+  liveImage: string | null
+  liveUrl: string | null
+  liveUrlFlv: string | null
+  gameTime: number | null
+  state: number | null
+  status: number | null
+  onlineNum: number | null
+  homeCornerKick: number | null
+  awayCornerKick: number | null
+  homeYellowCard: number | null
+  awayYellowCard: number | null
+  homeRedCard: number | null
+  awayRedCard: number | null
+  startTime: number | null
+  language: string | null
+  seriesName: string | null
+  isLive: boolean | null
+  anchor: boolean
+  anchorName: string | null
+  anchorAvatar: string | null
+  anchorTitle: string | null
+  hotValue: number | null
+}
+
+/* ── Skeleton ─────────────────────────────────────────────── */
+
+export function MatchCardThumbnailSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("card-glow rounded-12 relative w-full overflow-hidden", className)}>
+      <Skeleton className="aspect-video w-full" />
+      <div className="flex flex-col gap-2 p-3">
+        {/* BLV row */}
+        <div className="flex items-center gap-1.5">
+          <Skeleton className="size-7 shrink-0 rounded-full" />
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-2.5 w-12 rounded-full" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+        {/* Teams */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex basis-2/5 flex-col items-center gap-1.5">
+            <Skeleton className="size-10 rounded-full" />
+            <Skeleton className="h-3 w-14" />
+          </div>
+          <div className="flex basis-1/5 flex-col items-center gap-1">
+            <Skeleton className="h-8 w-16" />
+          </div>
+          <div className="flex basis-2/5 flex-col items-center gap-1.5">
+            <Skeleton className="size-10 rounded-full" />
+            <Skeleton className="h-3 w-14" />
+          </div>
+        </div>
+        {/* Stats */}
+        <Skeleton className="rounded-8 h-8 w-full" />
+        {/* League */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="size-4 rounded-full" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+          <Skeleton className="h-3 w-16" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Stat item ────────────────────────────────────────────── */
+
+function StatItem({
+  icon,
+  alt,
+  value,
+  label,
+}: {
+  icon: string
+  alt: string
+  value: number
+  label: string
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center gap-0.5">
+      <div className="flex items-center gap-0.5">
+        <Img src={icon} alt={alt} width={16} height={16} objectFit="contain" />
+        <Typography as="span" variant="body-sm" weight="700" className="text-white tabular-nums">
+          {value}
+        </Typography>
+      </div>
+      <Typography as="span" size="12" weight="500" className="text-white">
+        {label}
+      </Typography>
+    </div>
+  )
+}
+
+/* ── Main card ────────────────────────────────────────────── */
+
+export function MatchCardThumbnail({
+  match,
+  className,
+}: {
+  match: LiveSearchMatchInterface
+  className?: string
+}) {
+  const { t } = useTranslation()
+  const navigateToLive = useLiveNavigate()
+
+  const isLive =
+    match.isLive === true ||
+    match.status === MatchStatusEnum.LIVE ||
+    (match.status === 2 &&
+      match.state !== MatchFootballStateEnum.NOT_STARTED &&
+      match.state !== MatchFootballStateEnum.END)
+
+  const isUpcoming =
+    match.status === MatchStatusEnum.UPCOMING ||
+    match.status === MatchStatusEnum.UNKNOWN ||
+    match.state === MatchFootballStateEnum.NOT_STARTED
+
+  const isFinished =
+    match.status === MatchStatusEnum.FINISHED || match.state === MatchFootballStateEnum.END
+
+  const halfLabel = MATCH_HALF_LABEL[match.state as MatchFootballStateEnum] ?? "LIVE"
+  const periodI18nKey = MATCH_HALF_LABEL_I18N_KEY[halfLabel]
+  const periodLabel = periodI18nKey ? t(periodI18nKey as Parameters<typeof t>[0]) : halfLabel
+
+  function handleClick() {
+    if (!isLive || !match.matchId || !match.gameId) return
+    navigateToLive(match.matchId, match.gameId)
+  }
+
+  const hasAnchor = match.anchor && match.anchorName
+
+  return (
+    <div
+      onClick={handleClick}
+      className={cn(
+        "card-match-bg rounded-12 relative w-full overflow-hidden transition-all",
+        isLive ? "hover:shadow-card-hover cursor-pointer" : "cursor-default",
+        "shadow-none",
+        className
+      )}
+    >
+      {/* ── Background: thumbnail toàn card ── */}
+      {match.liveImage ? (
+        <>
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              backgroundImage: `url(${match.liveImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center top",
+            }}
+          />
+          <div className="card-thumbnail-overlay pointer-events-none absolute inset-0 z-[1]" />
+          <div className="pointer-events-none absolute inset-0 z-[1] bg-black/15" />
+          <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-black/25 to-black/75" />
+        </>
+      ) : (
+        <>
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              backgroundImage: `url(${imgStadiumBg.src})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          {match.homeLogo && (
+            <div
+              className="pointer-events-none absolute inset-0 z-0"
+              style={{
+                backgroundImage: `url(${match.homeLogo})`,
+                backgroundSize: "160px",
+                backgroundPosition: "-10px center",
+                backgroundRepeat: "no-repeat",
+                filter: "blur(55px) saturate(2)",
+                opacity: 0.13,
+                transform: "scale(1.6)",
+              }}
+            />
+          )}
+          {match.awayLogo && (
+            <div
+              className="pointer-events-none absolute inset-0 z-0"
+              style={{
+                backgroundImage: `url(${match.awayLogo})`,
+                backgroundSize: "160px",
+                backgroundPosition: "calc(100% + 10px) center",
+                backgroundRepeat: "no-repeat",
+                filter: "blur(55px) saturate(2)",
+                opacity: 0.1,
+                transform: "scale(1.6)",
+              }}
+            />
+          )}
+          <div className="card-stadium-overlay pointer-events-none absolute inset-0 z-[1]" />
+          <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-black/40 to-black/90" />
+        </>
+      )}
+
+      {/* ── Content overlay ── */}
+      <div className="relative z-[3] flex min-h-[360px] flex-col justify-between gap-2 p-3.5">
+        {/* Row 1: LIVE | HD + viewers */}
+        <div className="flex items-start justify-between max-sm:-my-1 max-sm:origin-left max-sm:scale-75">
+          <div className="flex items-center gap-1.5">
+            {isLive && (
+              <>
+                <div className="relative flex items-center gap-1.5 overflow-visible">
+                  <div className="pointer-events-none absolute inset-0 -z-10 scale-150 animate-pulse rounded-full bg-red-600/40 blur-md" />
+                  <div className="rounded-6 shadow-live-red relative flex h-[30px] items-center gap-1.5 bg-red-600 px-2.5">
+                    <span className="relative flex size-2.5 shrink-0">
+                      <span
+                        className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"
+                        style={{ animationDuration: "0.8s" }}
+                      />
+                      <span
+                        className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-40"
+                        style={{ animationDuration: "1.2s", animationDelay: "0.2s" }}
+                      />
+                      <span className="shadow-white-dot relative inline-flex size-2.5 rounded-full bg-white" />
+                    </span>
+                    <span className="text-12 font-800 tracking-widest text-white uppercase">
+                      {hasAnchor ? "Stream" : "LIVE"}
+                    </span>
+                  </div>
+                </div>
+                {match.gameTime != null && (
+                  <div className="rounded-4 border-gold/50 bg-gold/20 flex h-[30px] items-center border px-1.5 shadow-[0_0_12px_rgba(245,197,24,0.5),0_2px_8px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+                    <Typography variant="label" weight="700" className="text-gold drop-shadow-gold">
+                      {formatFootballGameTime(match.gameTime)}
+                      <span className="animate-blink">&apos;</span>
+                    </Typography>
+                  </div>
+                )}
+              </>
+            )}
+            {isFinished && (
+              <div className="rounded-4 border-gold/50 bg-gold/20 border px-1.5 py-px shadow-[0_0_10px_rgba(245,197,24,0.4),0_2px_6px_rgba(0,0,0,0.5)] backdrop-blur-sm">
+                <Typography size="10" weight="600" className="text-gold drop-shadow-gold-sm">
+                  {t(MATCH_CARD_I18N_KEYS.finished as Parameters<typeof t>[0])}
+                </Typography>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5">
+            {match.language && (
+              <div className="rounded-4 border-gold/50 bg-gold/20 flex h-[30px] items-center border px-2 shadow-[0_0_16px_rgba(245,197,24,0.6),0_2px_8px_rgba(0,0,0,0.6)] backdrop-blur-md">
+                <Typography
+                  size="14"
+                  weight="800"
+                  className="text-gold drop-shadow-gold leading-none uppercase"
+                >
+                  {match.language}
+                </Typography>
+              </div>
+            )}
+            {(match.onlineNum ?? 0) > 0 && (
+              <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md">
+                <Users className="size-3.5 text-white/80" />
+                <Typography size="14" weight="500" className="leading-none text-white tabular-nums">
+                  {formatViewers(match.onlineNum)}
+                </Typography>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Row 2: BLV | minute */}
+        <div className="flex items-center justify-between">
+          {hasAnchor ? (
+            <div className="flex items-center gap-2.5">
+              {match.anchorAvatar && (
+                <div className="relative shrink-0">
+                  <Img
+                    src={match.anchorAvatar}
+                    alt=""
+                    width={52}
+                    height={52}
+                    objectFit="cover"
+                    rounded="full"
+                    className="ring-live-green shadow-[0_0_16px_rgba(0,0,0,0.9),0_0_8px_rgba(0,200,100,0.3)] ring-2"
+                  />
+                  <div className="bg-live-green-bg shadow-live-green-glow absolute -right-1.5 -bottom-1.5 flex size-7 items-center justify-center rounded-full">
+                    <Img src={icMic} alt="mic" width={28} height={28} objectFit="contain" />
+                  </div>
+                </div>
+              )}
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <div className="border-live-green/70 bg-live-green-bg shadow-live-green-glow flex w-fit items-center gap-1 rounded-full border px-2 py-0.5 backdrop-blur-2xl">
+                  <Img src={icMic} alt="mic" width={11} height={11} objectFit="contain" />
+                  <Typography
+                    as="span"
+                    size="10"
+                    weight="700"
+                    className="text-live-green drop-shadow-live-green leading-none uppercase"
+                  >
+                    {t(MATCH_CARD_I18N_KEYS.blvLabel as Parameters<typeof t>[0])}
+                  </Typography>
+                </div>
+                <Tooltip>
+                  <TooltipTrigger className="block min-w-0 overflow-hidden">
+                    <Typography
+                      as="span"
+                      variant="label"
+                      weight="700"
+                      className="truncate text-white drop-shadow-[0_0_12px_rgba(0,0,0,1),0_2px_16px_rgba(0,0,0,1),0_0_4px_rgba(0,0,0,1)]"
+                    >
+                      {match.anchorName}
+                    </Typography>
+                  </TooltipTrigger>
+                  <TooltipContent>{match.anchorName}</TooltipContent>
+                </Tooltip>
+              </div>
+            </div>
+          ) : (
+            <div />
+          )}
+        </div>
+
+        {/* Row 3: Teams + Score */}
+        <div className="flex flex-1 items-center justify-between gap-2">
+          <div className="flex basis-2/5 flex-col items-center gap-1.5">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+              <Img
+                src={match.homeLogo}
+                alt={match.homeName ?? ""}
+                width={80}
+                height={80}
+                objectFit="contain"
+              />
+            </div>
+            <Tooltip>
+              <TooltipTrigger className="block min-w-0 overflow-hidden">
+                <Typography
+                  as="span"
+                  variant="label"
+                  weight="500"
+                  className="line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
+                >
+                  {match.homeName}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>{match.homeName}</TooltipContent>
+            </Tooltip>
+          </div>
+
+          <div className="flex basis-1/5 flex-col items-center gap-0.5">
+            {isUpcoming ? (
+              <Img
+                src={imgVs}
+                alt="VS"
+                width={72}
+                height={72}
+                objectFit="contain"
+                className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+              />
+            ) : (
+              <>
+                <div className="flex items-center gap-0.5">
+                  <Typography
+                    as="span"
+                    size="72"
+                    weight="700"
+                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
+                  >
+                    {match.homeScore ?? 0}
+                  </Typography>
+                  <Typography
+                    as="span"
+                    size="30"
+                    weight="500"
+                    className="text-gold/60 px-0.5 leading-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
+                  >
+                    :
+                  </Typography>
+                  <Typography
+                    as="span"
+                    size="72"
+                    weight="700"
+                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
+                  >
+                    {match.awayScore ?? 0}
+                  </Typography>
+                </div>
+                {isLive && <MatchPeriodBadge label={periodLabel} />}
+              </>
+            )}
+          </div>
+
+          <div className="flex basis-2/5 flex-col items-center gap-1.5">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+              <Img
+                src={match.awayLogo}
+                alt={match.awayName ?? ""}
+                width={80}
+                height={80}
+                objectFit="contain"
+              />
+            </div>
+            <Tooltip>
+              <TooltipTrigger className="block min-w-0 overflow-hidden">
+                <Typography
+                  as="span"
+                  variant="label"
+                  weight="500"
+                  className="line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
+                >
+                  {match.awayName}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>{match.awayName}</TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
+
+        {/* Row 4: Stats bar */}
+        {!isUpcoming && (
+          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/10 px-2 py-1.5 backdrop-blur-2xl">
+            {[
+              {
+                icon: icFootball,
+                alt: "ball",
+                value: 0,
+                labelKey: "common.match-card.stats.shots",
+              },
+              {
+                icon: icYellowCardV2,
+                alt: "yellow",
+                value: (match.homeYellowCard ?? 0) + (match.awayYellowCard ?? 0),
+                labelKey: "common.match-card.stats.yellowCard",
+              },
+              {
+                icon: icRedCardV2,
+                alt: "red",
+                value: (match.homeRedCard ?? 0) + (match.awayRedCard ?? 0),
+                labelKey: "common.match-card.stats.redCard",
+              },
+              {
+                icon: icCornerFlag,
+                alt: "corner",
+                value: (match.homeCornerKick ?? 0) + (match.awayCornerKick ?? 0),
+                labelKey: "common.match-card.stats.corner",
+              },
+            ].map((s, i) => (
+              <div key={s.alt} className="flex flex-1 items-center">
+                {i > 0 && <div className="h-4 w-px shrink-0 bg-white/20" />}
+                <StatItem
+                  icon={s.icon}
+                  alt={s.alt}
+                  value={s.value}
+                  label={t(s.labelKey as Parameters<typeof t>[0])}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Row 5: League + time */}
+        <div className="flex items-center justify-between px-0.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
+            {match.leagueLogo ? (
+              <Img
+                src={match.leagueLogo}
+                alt=""
+                width={16}
+                height={16}
+                objectFit="contain"
+                className="shrink-0"
+              />
+            ) : (
+              <Trophy className="text-gold size-3.5 shrink-0" />
+            )}
+            <Tooltip>
+              <TooltipTrigger className="block min-w-0 overflow-hidden">
+                <Typography
+                  as="span"
+                  variant="caption"
+                  weight="500"
+                  className="min-w-0 truncate text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
+                >
+                  {match.leagueName}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>{match.leagueName}</TooltipContent>
+            </Tooltip>
+          </div>
+          {match.startTime && (
+            <div className="flex shrink-0 items-center gap-1">
+              <Calendar className="size-3 shrink-0 text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]" />
+              <Typography
+                as="span"
+                variant="caption"
+                weight="500"
+                className="text-white/90 tabular-nums drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
+              >
+                {formatMatchTime(match.startTime)}
+                <span className="mx-1 inline-block h-2.5 w-px bg-white/30 align-middle" />
+                {formatMatchDate(match.startTime)}
+              </Typography>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

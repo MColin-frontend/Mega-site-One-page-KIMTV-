@@ -30,7 +30,7 @@ export function LivePage({ match }: LivePageProps) {
   return (
     <div className="container flex flex-col gap-6">
       {/* Video + chat */}
-      <div className="flex h-[min(90vh,1080px)] gap-4 max-lg:h-auto max-lg:flex-col">
+      <div className="flex h-[min(90vh,900px)] gap-4 max-lg:h-auto max-lg:flex-col">
         <div className="card-glow rounded-12 flex min-w-0 flex-1 flex-col overflow-hidden">
           <LiveVideoPlayer liveUrls={liveUrls} />
           {match && (
