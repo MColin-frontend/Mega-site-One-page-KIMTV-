@@ -4,10 +4,11 @@ import footer from "./vi/footer.json"
 import header from "./vi/header.json"
 import home from "./vi/home.json"
 import news from "./vi/news.json"
+import profile from "./vi/profile.json"
 import schedule from "./vi/schedule.json"
 import video from "./vi/video.json"
 
-const vi = { common, header, footer, home, news, schedule, chat, video }
+const vi = { common, header, footer, home, news, schedule, chat, video, profile }
 
 export default vi
 
@@ -251,5 +252,28 @@ export interface Dictionary {
     empty: string
     loadMore: string
     seo: { title: string; description: string }
+  }
+  profile: {
+    pageTitle: string
+    subtitle: string
+    loginPrompt: string
+    loginButton: string
+    emptyTab: string
+    nav: { profile: string; myNews: string; favorites: string; following: string; settings: string }
+    info: {
+      title: string
+      editProfile: string
+      phone: string
+      email: string
+      password: string
+      change: string
+      save: string
+      cancel: string
+      saving: string
+      saveSuccess: string
+      saveError: string
+    }
+    preferences: { title: string; addMore: string }
+    security: { title: string; changeLink: string; changePassword: string }
   }
 }

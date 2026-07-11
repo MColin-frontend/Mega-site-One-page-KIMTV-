@@ -16,6 +16,7 @@ export const getRoutes = (locale: LocaleType) => ({
     article: (slug: string) => localePath(locale, "video", slug),
   },
   data: localePath(locale, "du-lieu"),
+  profile: localePath(locale, "ho-so"),
   auth: {
     login: localePath(locale, "dang-nhap"),
     register: localePath(locale, "dang-ky"),

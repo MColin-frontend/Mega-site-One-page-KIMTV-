@@ -1,0 +1,7 @@
+export enum ProfileSidebarTabEnum {
+  PROFILE = "PROFILE",
+  MY_NEWS = "MY_NEWS",
+  FAVORITES = "FAVORITES",
+  FOLLOWING = "FOLLOWING",
+  SETTINGS = "SETTINGS",
+}

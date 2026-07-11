@@ -27,7 +27,8 @@ interface AvatarDropdownProps {
 }
 
 function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
+  const routes = getRoutes(locale)
   const { state, open, close, toggle, setOpen } = useDisclosure("dropdown", "confirm")
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -107,7 +108,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
           {HEADER_DROPDOWN_ITEMS.map((item) => (
             <Link
               key={item.key}
-              href={item.href}
+              href={item.getHref(routes)}
               className="group flex items-center gap-2.5 px-3.5 py-2.5 transition-colors hover:bg-white/5"
             >
               <item.icon className={cn("size-4 shrink-0 transition-colors", item.iconColor)} />
