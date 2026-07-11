@@ -9,13 +9,14 @@ import { useAdPlacements } from "@/hooks/tanstack/use-ad-placements"
 
 import { useTranslation } from "@/i18n"
 
-import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
 import "xgplayer/dist/index.min.css"
 
 import icLiveSmall from "@/assets/images/common/ic-live-small.gif"
 import imgNoSource from "@/assets/images/common/img-no-source.png"
+
+const videoBanner = "/videos/video-banner.mp4"
 
 const AdBanner = dynamic(() => import("@/components/ui/ad-banner").then((m) => m.AdBanner), {
   ssr: false,
@@ -210,10 +211,10 @@ export function VideoPlayer({
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
             <div className="rounded-12 border-gold/20 border bg-black/50 px-8 py-5 backdrop-blur-md">
               <Typography variant="body" weight="700" className="text-gold drop-shadow-gold">
-                {t("video.noSource.title")}
+                {t("video.no-source.title")}
               </Typography>
               <Typography variant="caption" className="text-gold/50 mt-1.5 block">
-                {t("video.noSource.description")}
+                {t("video.no-source.description")}
               </Typography>
             </div>
           </div>
@@ -225,7 +226,7 @@ export function VideoPlayer({
       <AdBanner
         src={playerOverlay?.[0]?.mediaPc || null}
         href={playerOverlay?.[0]?.jumpUrl || null}
-        fallback="/videos/video-banner.mp4"
+        fallback={videoBanner}
         className="absolute bottom-0 left-0 z-10 w-full"
         skeletonClassName="aspect-[1200/58]"
       />

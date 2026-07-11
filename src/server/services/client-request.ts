@@ -5,9 +5,8 @@
 
 import axios, { type AxiosRequestConfig } from "axios"
 
+import type { ApiEnvelopeInterface } from "@/server/request.models"
 import { getTokenFromCookie } from "@/lib/auth-cookie"
-
-import type { ApiEnvelopeInterface } from "@/models/request.models"
 
 import { toast } from "@/components/ui/toast"
 

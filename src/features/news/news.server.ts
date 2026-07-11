@@ -4,12 +4,13 @@ import { getRequest } from "@/server/services/request"
 import { getServerLoginUserId } from "@/lib/auth-server"
 
 import { FOOTBALL_GAME_ID } from "@/constants/component/home.constants"
+
 import type {
   HotNewsResultInterface,
   NewsArticleDetail,
   NewsItem,
   PopularNewsResult,
-} from "@/models/home.models"
+} from "@/features/news/news.models"
 
 const NEWS_API = {
   ARTICLE: "/news/news-article",

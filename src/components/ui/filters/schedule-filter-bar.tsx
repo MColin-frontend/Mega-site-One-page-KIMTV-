@@ -3,9 +3,8 @@
 import { useLeagues } from "@/hooks/tanstack/use-leagues"
 import { useFixturesFilter } from "@/hooks/use-fixtures-filter"
 
+import { ScheduleFilter } from "@/components/ui/filters/schedule-filter"
 import { buildLeagueGroupsFromApi } from "@/components/ui/select/league-select"
-
-import { ScheduleFilter } from "./schedule-filter"
 
 export function ScheduleFilterBar() {
   const filter = useFixturesFilter()

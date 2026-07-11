@@ -6,14 +6,12 @@ import { useTranslation } from "@/i18n"
 import type { MatchInterface } from "@/models/match.models"
 
 import CarouselInfinityApi from "@/components/ui/carousel/carousel-infinity-api"
-import { Img } from "@/components/ui/image"
+import { Empty } from "@/components/ui/empty"
 import { Typography } from "@/components/ui/typography"
-
-import imgEmpty from "@assets/images/common/img-empty.png"
 
 import { MatchCard } from "./match-card"
 
-interface MatchCarouselSectionProps {
+interface MatchCarouselProps {
   title: string
   endpoint: string
   method?: (typeof HTTP_METHOD)[keyof typeof HTTP_METHOD]
@@ -21,13 +19,13 @@ interface MatchCarouselSectionProps {
   matchType?: (typeof LIVE_MATCH_TYPE)[keyof typeof LIVE_MATCH_TYPE]
 }
 
-export function MatchCarouselSection({
+export function MatchCarousel({
   title,
   endpoint,
   method = HTTP_METHOD.POST,
   params = MATCH_QUERY_PARAMS.ALL_GAMES,
   matchType = LIVE_MATCH_TYPE.LIVE,
-}: MatchCarouselSectionProps) {
+}: MatchCarouselProps) {
   const { t } = useTranslation()
 
   return (
@@ -41,14 +39,7 @@ export function MatchCarouselSection({
         renderItem={(match, _, isLoading) => (
           <MatchCard match={match} isLoading={isLoading} matchType={matchType} />
         )}
-        renderEmpty={() => (
-          <div className="flex flex-col items-center justify-center gap-3 py-8">
-            <Img src={imgEmpty.src} alt="" width={120} height={120} objectFit="contain" />
-            <Typography variant="body-sm" className="text-primary">
-              {t("common.empty")}
-            </Typography>
-          </div>
-        )}
+        renderEmpty={() => <Empty tip={t("common.empty")} />}
         slideClassName="basis-[350px] max-sm:basis-full"
       />
     </section>

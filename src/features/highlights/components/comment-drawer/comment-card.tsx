@@ -1,10 +1,10 @@
 import Link from "next/link"
-import type { CommentRecordInterface } from "@/models"
 import { Heart } from "lucide-react"
 
 import { formatTimestamp } from "@/lib/date"
 import { cn } from "@/lib/utils"
 
+import type { CommentRecordInterface } from "@/features/highlights/highlight.models"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 

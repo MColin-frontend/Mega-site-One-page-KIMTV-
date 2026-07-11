@@ -7,13 +7,11 @@ import { cn } from "@/lib/utils"
 import { useLiveNavigate } from "@/hooks/use-live-navigate"
 
 import { useTranslation } from "@/i18n/use-translation"
-import { SKELETON_BG } from "@/constants/common.constants"
 import { MatchStatusEnum } from "@/enums/match.enum"
 import type { MatchInterface } from "@/models/match.models"
 
 import { Img } from "@/components/ui/image"
 import { Pagination } from "@/components/ui/pagination"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
@@ -22,15 +20,10 @@ import icRedCard from "@assets/icons/match/ic-red-card.svg"
 import icYellowCard from "@assets/icons/match/ic-yellow-card.svg"
 import imgEmpty from "@assets/images/common/img-empty.png"
 
-import { FixtureStatus, ScoreBadge, StatCell } from "./match-fixture-cells"
+import { FixtureStatus, ScoreBadge, StatCell } from "./parts/match-fixture-cells"
+import { FIXTURE_ROW_CLASS, FixtureListSkeleton } from "./skeleton"
 
-/* ── Constants ──────────────────────────────────────────────────── */
-
-export const FIXTURE_ROW_CLASS =
-  "grid items-center gap-x-3 px-3 xl:gap-x-8 xl:px-4 " +
-  "grid-cols-[8rem_1fr_4.5rem_5rem_3rem_3rem_3rem] xl:grid-cols-[11rem_1fr_5rem_5.5rem_3.5rem_3.5rem_3.5rem]"
-
-/* ── Types ──────────────────────────────────────────────────────── */
+export { FIXTURE_ROW_CLASS, FixtureListSkeleton }
 
 export interface MatchGroupInterface {
   key: string
@@ -57,67 +50,11 @@ export function groupMatches(matches: MatchInterface[]): MatchGroupInterface[] {
   return Array.from(map.values())
 }
 
-/* ── Skeleton ───────────────────────────────────────────────────── */
-
-function FixtureRowSkeleton() {
-  return (
-    <div
-      className={cn(
-        FIXTURE_ROW_CLASS,
-        "rounded-10 mb-1.5 border border-white/8 bg-white/[0.04] py-3"
-      )}
-    >
-      <div className="flex items-center gap-2">
-        <Skeleton className={cn("rounded-6 size-9 shrink-0", SKELETON_BG)} />
-        <Skeleton className={cn("h-3.5 w-20", SKELETON_BG)} />
-      </div>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <Skeleton className={cn("size-[30px] shrink-0 rounded-full", SKELETON_BG)} />
-          <Skeleton className={cn("h-3.5 w-32", SKELETON_BG)} />
-        </div>
-        <div className="flex items-center gap-2">
-          <Skeleton className={cn("size-[30px] shrink-0 rounded-full", SKELETON_BG)} />
-          <Skeleton className={cn("h-3.5 w-28", SKELETON_BG)} />
-        </div>
-      </div>
-      <div className="flex flex-col items-center gap-1">
-        <Skeleton className={cn("h-3.5 w-10", SKELETON_BG)} />
-        <Skeleton className={cn("h-3.5 w-12", SKELETON_BG)} />
-      </div>
-      <div className="flex justify-center">
-        <Skeleton className={cn("h-3.5 w-10", SKELETON_BG)} />
-      </div>
-      <Skeleton className={cn("mx-auto h-3 w-8", SKELETON_BG)} />
-      <Skeleton className={cn("mx-auto h-3 w-8", SKELETON_BG)} />
-      <Skeleton className={cn("mx-auto h-3 w-8", SKELETON_BG)} />
-    </div>
-  )
-}
-
-export function FixtureListSkeleton() {
-  return (
-    <div className="rounded-12 overflow-hidden">
-      <div className={cn(FIXTURE_ROW_CLASS, "py-2.5 max-md:hidden")}>
-        {Array.from({ length: 7 }).map((_, i) => (
-          <Skeleton key={i} className={cn("mx-auto h-3 w-14", SKELETON_BG)} />
-        ))}
-      </div>
-      {Array.from({ length: 15 }).map((_, i) => (
-        <FixtureRowSkeleton key={i} />
-      ))}
-    </div>
-  )
-}
-
-/* ── FixtureRow ─────────────────────────────────────────────────── */
-
 export function FixtureRow({ match }: { match: MatchInterface }) {
   const navigateToLive = useLiveNavigate()
 
   const isStarted =
     match.status === MatchStatusEnum.LIVE || match.status === MatchStatusEnum.FINISHED
-  const isLive = match.status === MatchStatusEnum.LIVE
 
   function handleClick() {
     navigateToLive(match.matchId, match.gameId)
@@ -344,17 +281,15 @@ export function FixtureRow({ match }: { match: MatchInterface }) {
   )
 }
 
-/* ── TableHeader ────────────────────────────────────────────────── */
-
 export function FixtureTableHeader() {
   const { t } = useTranslation()
   return (
     <div className={cn(FIXTURE_ROW_CLASS, "py-3 max-sm:hidden")}>
       <Typography as="span" variant="body-sm" weight="500" color="foreground/60">
-        {t("home.fixtures.league")}
+        {t("match.fixture.league")}
       </Typography>
       <Typography as="span" variant="body-sm" weight="500" color="foreground/60">
-        {t("home.fixtures.match")}
+        {t("match.fixture.match")}
       </Typography>
       <Typography
         as="span"
@@ -363,7 +298,7 @@ export function FixtureTableHeader() {
         color="foreground/60"
         className="text-center"
       >
-        {t("home.fixtures.time")}
+        {t("match.fixture.time")}
       </Typography>
       <Typography
         as="span"
@@ -372,12 +307,12 @@ export function FixtureTableHeader() {
         color="foreground/60"
         className="text-center"
       >
-        {t("home.fixtures.score")}
+        {t("match.fixture.score")}
       </Typography>
       <span className="flex justify-center">
         <Img
           src={icCornerKick}
-          alt={t("home.fixtures.cornerKick")}
+          alt={t("match.fixture.corner-kick")}
           width={14}
           height={14}
           objectFit="contain"
@@ -386,7 +321,7 @@ export function FixtureTableHeader() {
       <span className="flex justify-center">
         <Img
           src={icYellowCard}
-          alt={t("home.fixtures.yellowCard")}
+          alt={t("match.fixture.yellow-card")}
           width={14}
           height={14}
           objectFit="contain"
@@ -395,7 +330,7 @@ export function FixtureTableHeader() {
       <span className="flex justify-center">
         <Img
           src={icRedCard}
-          alt={t("home.fixtures.redCard")}
+          alt={t("match.fixture.red-card")}
           width={14}
           height={14}
           objectFit="contain"
@@ -404,8 +339,6 @@ export function FixtureTableHeader() {
     </div>
   )
 }
-
-/* ── FixtureList ────────────────────────────────────────────────── */
 
 interface FixtureListProps {
   groups: MatchGroupInterface[]
@@ -434,13 +367,13 @@ export function FixtureList({
         <div className="flex flex-col items-center justify-center gap-3 py-16">
           <Img
             src={imgEmpty.src}
-            alt={t("home.fixtures.empty")}
+            alt={t("match.fixture.empty")}
             width={120}
             height={120}
             objectFit="contain"
           />
           <Typography variant="body-sm" color="foreground/40">
-            {t("home.fixtures.empty")}
+            {t("match.fixture.empty")}
           </Typography>
         </div>
       ) : (

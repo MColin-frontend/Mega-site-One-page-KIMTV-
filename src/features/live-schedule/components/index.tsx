@@ -5,7 +5,7 @@ import { Suspense } from "react"
 import { useTranslation } from "@/i18n"
 
 import { LIVE_SECTION_CONFIG } from "@/features/live/live.constants"
-import { MatchCarouselSection } from "@/components/ui/match/match-carousel-section"
+import { MatchCarousel } from "@/components/ui/match/match-carousel"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 import { LiveBanner } from "./live-banner"
@@ -26,7 +26,7 @@ export function LiveSchedulePage() {
           distance={32}
           threshold={0.06}
         >
-          <MatchCarouselSection
+          <MatchCarousel
             title={t(cfg.i18nKey as Parameters<typeof t>[0])}
             endpoint={cfg.endpoint}
             method={cfg.method}

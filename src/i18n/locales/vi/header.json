@@ -2,8 +2,8 @@
   "nav": {
     "home": "Trang chủ",
     "schedule": "Lịch thi đấu",
-    "liveScore": "Tỉ số trực tuyến",
-    "liveSchedule": "Lịch live",
+    "live-score": "Tỉ số trực tuyến",
+    "live-schedule": "Lịch live",
     "results": "Kết quả",
     "standings": "BXH",
     "news": "Tin tức",
@@ -40,7 +40,7 @@
       "cancel": "Hủy"
     }
   },
-  "mobileMenu": {
+  "mobile-menu": {
     "open": "Mở menu",
     "close": "Đóng menu"
   }

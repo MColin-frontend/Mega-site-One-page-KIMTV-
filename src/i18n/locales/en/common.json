@@ -11,29 +11,5 @@
     "filter-hot": "Featured",
     "filter-live": "Live",
     "filter-tv": "TV"
-  },
-  "match-card": {
-    "hours": "Hours",
-    "minutes": "Mins",
-    "seconds": "Secs",
-    "finished": "Finished",
-    "watch-preview": "Preview",
-    "blv-label": "Commentator",
-    "watching": "watching",
-    "watching-tooltip": "people watching",
-    "period": {
-      "h1": "1st Half",
-      "ht": "Half Time",
-      "h2": "2nd Half",
-      "et": "Extra Time",
-      "pen": "Penalties",
-      "live": "Live"
-    },
-    "stats": {
-      "shots": "Shots",
-      "yellowCard": "Yellow",
-      "redCard": "Red",
-      "corner": "Corners"
-    }
   }
 }

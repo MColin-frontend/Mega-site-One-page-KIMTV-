@@ -303,7 +303,7 @@ export function Header() {
 
             <button
               aria-label={
-                state.mobileMenu ? t("header.mobileMenu.close") : t("header.mobileMenu.open")
+                state.mobileMenu ? t("header.mobile-menu.close") : t("header.mobile-menu.open")
               }
               onClick={() => toggle("mobileMenu")}
               className="text-muted relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] shadow-[0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white lg:hidden"

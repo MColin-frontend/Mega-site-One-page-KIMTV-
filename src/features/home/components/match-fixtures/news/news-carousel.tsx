@@ -102,7 +102,6 @@ function NewsSection({
         slideClassName="basis-[280px]"
         autoPlayDelay={5000}
         stopAutoPlayOnInteraction={false}
-        showNavAlways
       />
     </div>
   )
@@ -117,14 +116,14 @@ export default function NewsMobileCarousel({ featured, latest, locale }: NewsCar
       <NewsSection
         title={t("news.title")}
         viewAllHref={newsIndexPath}
-        viewAllLabel={t("news.viewAll")}
+        viewAllLabel={t("news.view-all")}
         items={featured}
         locale={locale}
       />
       <NewsSection
         title={t("news.latest")}
         viewAllHref={newsIndexPath}
-        viewAllLabel={t("news.viewAll")}
+        viewAllLabel={t("news.view-all")}
         items={latest}
         locale={locale}
       />

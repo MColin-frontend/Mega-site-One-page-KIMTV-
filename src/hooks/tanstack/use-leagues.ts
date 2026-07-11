@@ -1,9 +1,10 @@
-import type { LeagueApiResult } from "@/models"
 import { useQuery } from "@tanstack/react-query"
 
 import { javaGet } from "@/server/services/client-request"
 
 import { QUERY_KEYS } from "@/constants/query-keys.constants"
+
+import type { LeagueApiResult } from "@/features/home/home.models"
 
 const LEAGUES_API = {
   MATCH_LEAGUES: "/league/v2/match-leagues",

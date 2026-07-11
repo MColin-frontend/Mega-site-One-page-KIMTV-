@@ -1,22 +1,11 @@
 import { getRequest } from "@/server/services/request"
 
 import { env } from "@/config/env"
+import { GAME_ABBR_TO_ID } from "@/constants/game.constants"
 
 import type { LiveMatchInterface, LivePageDataInterface } from "../live.models"
 
-export const GAME_ABBR_TO_ID: Record<string, number> = {
-  soccer: 202,
-  basketball: 201,
-  cricket: 210,
-  tennis: 211,
-  snooker: 204,
-  baseball: 213,
-  football: 217,
-  volleyball: 214,
-  "table-tennis": 216,
-  badminton: 215,
-  comprehensive: 200,
-} as const
+export { GAME_ABBR_TO_ID }
 
 export function getGameIdFromAbbr(abbr: string): number | null {
   return GAME_ABBR_TO_ID[abbr.toLowerCase()] ?? null

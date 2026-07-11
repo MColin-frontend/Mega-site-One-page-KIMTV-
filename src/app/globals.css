@@ -53,6 +53,20 @@
   --live-green-bg: rgba(22, 80, 40, 0.2);
   --danger: #ff6666;
   --gradient-gold: linear-gradient(135deg, #ffd75a, #f6c343);
+  --gradient-gold-radiant: linear-gradient(
+    180deg,
+    #c8872a 0%,
+    #eac367 12%,
+    #fee3aa 26%,
+    #fffbf0 36%,
+    #ffd97a 46%,
+    #f5c842 54%,
+    #fee3aa 64%,
+    #fff4d6 72%,
+    #e9b35e 84%,
+    #c8872a 93%,
+    #eebe7a 100%
+  );
   --gradient-button: linear-gradient(135deg, #ffd75a, #f5be33);
 
   /* ─── Input ─── */
@@ -454,6 +468,17 @@
 
 @utility bg-gradient-gold {
   background: var(--gradient-gold);
+}
+
+@utility bg-gradient-gold-radiant {
+  background: var(--gradient-gold-radiant);
+}
+
+@utility text-gradient-gold-radiant {
+  background: var(--gradient-gold-radiant);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 @utility bg-gradient-button {

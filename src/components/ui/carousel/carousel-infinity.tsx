@@ -21,7 +21,6 @@ interface CarouselInfinityProps<T> {
   /** Callback khi đang đi tới gần cuối danh sách — dùng cho infinite scroll */
   onReachEnd?: () => void
   reachEndThreshold?: number
-  showNavAlways?: boolean
   className?: string
   viewportClassName?: string
 }
@@ -48,7 +47,6 @@ export default function CarouselInfinity<T>({
   onApiReady,
   onReachEnd,
   reachEndThreshold = 2,
-  showNavAlways = false,
   className,
   viewportClassName,
 }: CarouselInfinityProps<T>) {
@@ -203,14 +201,14 @@ export default function CarouselInfinity<T>({
         onClick={scrollPrev}
         disabled={!canScrollPrev}
         variant="gold"
-        className={`absolute top-1/2 left-0 z-10 -translate-x-3 -translate-y-1/2 duration-200 ${showNavAlways ? "opacity-100" : "opacity-0 group-hover/carousel:opacity-100"}`}
+        className="absolute top-1/2 left-0 z-10 -translate-x-3 -translate-y-1/2 opacity-35 transition-[opacity,transform] duration-200 group-hover/carousel:-translate-x-4 group-hover/carousel:scale-110 group-hover/carousel:opacity-100"
       />
 
       <SlideNavNext
         onClick={scrollNext}
         disabled={!canScrollNext}
         variant="gold"
-        className={`absolute top-1/2 right-0 z-10 translate-x-3 -translate-y-1/2 duration-200 ${showNavAlways ? "opacity-100" : "opacity-0 group-hover/carousel:opacity-100"}`}
+        className="absolute top-1/2 right-0 z-10 translate-x-3 -translate-y-1/2 opacity-35 transition-[opacity,transform] duration-200 group-hover/carousel:translate-x-4 group-hover/carousel:scale-110 group-hover/carousel:opacity-100"
       />
     </div>
   )

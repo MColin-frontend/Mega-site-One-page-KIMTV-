@@ -1,16 +1,16 @@
 {
   "title": "Trending News",
-  "pageTitle": "News",
+  "page-title": "News",
   "latest": "Latest News",
   "popular": "Popular News",
   "category": "Football",
-  "viewAll": "View all",
+  "view-all": "View all",
   "empty": "No news",
   "subtitle": "Latest football news, fast and accurate",
-  "readMore": "Read more",
-  "backToList": "Back to news",
-  "publishedBy": "By",
-  "hotVideos": "Featured Videos",
+  "read-more": "Read more",
+  "back-to-list": "Back to news",
+  "published-by": "By",
+  "hot-videos": "Featured Videos",
   "author": {
     "follow": "Follow",
     "following": "Following"
@@ -22,7 +22,7 @@
     "delete": "Delete",
     "submit": "Post",
     "empty": "No comments yet",
-    "loginToComment": "Login to comment",
-    "viewMore": "View more"
+    "login-to-comment": "Login to comment",
+    "view-more": "View more"
   }
 }

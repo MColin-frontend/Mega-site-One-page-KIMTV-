@@ -5,8 +5,8 @@ import Link from "next/link"
 import { useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
 import { FOOTER_MENUS, FOOTER_SOCIALS } from "@/constants/component/layout.constants"
-import type { FooterMenuInterface, FooterSocialInterface } from "@/models/footer.models"
 
+import type { FooterMenuInterface, FooterSocialInterface } from "@/components/layout/layout.models"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 

@@ -7,8 +7,8 @@ import { Bookmark, ChevronDown, Search, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 import { useTranslation } from "@/i18n"
-import type { LeagueApiItem } from "@/models/home.models"
 
+import type { LeagueApiItem } from "@/features/home/home.models"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
@@ -179,7 +179,7 @@ export function LeagueSelect({
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder={t("home.league-select.searchPlaceholder")}
+                    placeholder={t("home.league-select.search-placeholder")}
                     className="text-12 font-400 placeholder:text-placeholder h-8 flex-1 bg-transparent text-white outline-none"
                   />
                   {search && (

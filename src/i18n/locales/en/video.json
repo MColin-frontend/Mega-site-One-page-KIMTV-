@@ -28,24 +28,24 @@
     "title": "Comments",
     "placeholder": "Write a comment...",
     "submit": "Post",
-    "loginPrompt": "Login to comment",
+    "login-prompt": "Login to comment",
     "empty": "No comments yet",
-    "loadMore": "Load more",
+    "load-more": "Load more",
     "posting": "Posting...",
     "reply": "Reply",
     "delete": "Delete",
-    "postSuccess": "Comment posted successfully",
-    "replySuccess": "Reply posted successfully",
-    "postError": "Failed to post comment, please try again",
-    "deleteSuccess": "Comment deleted",
-    "deleteError": "Failed to delete comment"
+    "post-success": "Comment posted successfully",
+    "reply-success": "Reply posted successfully",
+    "post-error": "Failed to post comment, please try again",
+    "delete-success": "Comment deleted",
+    "delete-error": "Failed to delete comment"
   },
-  "noSource": {
+  "no-source": {
     "title": "No matches available",
     "description": "Please check back later"
   },
   "empty": "No videos available",
-  "loadMore": "Loading...",
+  "load-more": "Loading...",
   "seo": {
     "title": "Sports Highlights - Latest Football Videos",
     "description": "Watch the latest football highlights and sports videos. Scroll like TikTok, updated constantly."

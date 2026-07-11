@@ -4,19 +4,6 @@
     "live": "Live",
     "finished": "Finished"
   },
-  "fixtures": {
-    "league": "League",
-    "match": "Match",
-    "time": "Time",
-    "homeTeam": "Home",
-    "score": "Score",
-    "awayTeam": "Away",
-    "ht": "HT",
-    "cornerKick": "Corner kick",
-    "yellowCard": "Yellow card",
-    "redCard": "Red card",
-    "empty": "No matches found"
-  },
   "hero": {
     "alt": "Get 100,000 VND when you join the experience"
   },
@@ -28,8 +15,8 @@
     "unit": "league(s)",
     "title": "Filter by league",
     "selected": "selected",
-    "clearAll": "Deselect all",
-    "searchPlaceholder": "Search leagues...",
+    "clear-all": "Deselect all",
+    "search-placeholder": "Search leagues...",
     "empty": "No leagues found",
     "favorites": "Favorites"
   }

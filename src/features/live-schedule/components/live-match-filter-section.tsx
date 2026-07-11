@@ -3,13 +3,11 @@
 import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 
-import { javaGet } from "@/server/services/client-request"
-import { MATCH_API } from "@/lib/match.utils"
 import { useRouter } from "@/hooks/useRouter"
 
 import { useTranslation } from "@/i18n"
-import { FOOTBALL_GAME_MONGO_ID } from "@/constants/component/home.constants"
 
+import { liveMatchesGridQueryOptions } from "@/features/live-schedule/live-schedule.api"
 import {
   LIVE_SCHEDULE_DEFAULT_TAB,
   LIVE_SCHEDULE_FILTER_OPTIONS,
@@ -17,12 +15,9 @@ import {
   type LiveScheduleTab,
 } from "@/features/live-schedule/live-schedule.constants"
 import CarouselInfinity from "@/components/ui/carousel/carousel-infinity"
-import { EmptyState } from "@/components/ui/empty-state"
-import {
-  LiveSearchMatchInterface,
-  MatchCardThumbnail,
-  MatchCardThumbnailSkeleton,
-} from "@/components/ui/match/match-card-thumbnail"
+import { Empty } from "@/components/ui/empty"
+import { MatchCardLive } from "@/components/ui/match/match-card-live"
+import { MatchCardLiveSkeleton } from "@/components/ui/match/skeleton"
 import { Select } from "@/components/ui/select/select"
 import { Typography } from "@/components/ui/typography"
 
@@ -46,14 +41,7 @@ export function LiveMatchFilterSection() {
     label: t(o.labelKey as Parameters<typeof t>[0]),
   }))
 
-  const { data: matches = [], isLoading } = useQuery({
-    queryKey: ["live-matches-grid", typeScreen],
-    queryFn: () =>
-      javaGet<LiveSearchMatchInterface[]>(MATCH_API.LIVE_SEARCH, {
-        params: { id: FOOTBALL_GAME_MONGO_ID, typeScreen },
-      }).then((d) => d ?? []),
-    staleTime: 30_000,
-  })
+  const { data: matches = [], isLoading } = useQuery(liveMatchesGridQueryOptions(typeScreen))
 
   const skeletonCount = 10
 
@@ -77,44 +65,44 @@ export function LiveMatchFilterSection() {
       {isLoading ? (
         <>
           {/* Mobile skeleton carousel */}
-          <div className="sm:hidden">
+          <div className="hidden max-sm:block">
             <div className="-ml-4 flex overflow-x-hidden">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="shrink-0 basis-[85vw] pl-4">
-                  <MatchCardThumbnailSkeleton />
+                  <MatchCardLiveSkeleton />
                 </div>
               ))}
             </div>
           </div>
           {/* Desktop skeleton grid */}
-          <div className="hidden grid-cols-2 gap-4 sm:grid lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-4 gap-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:hidden">
             {Array.from({ length: skeletonCount }).map((_, i) => (
-              <MatchCardThumbnailSkeleton key={i} />
+              <MatchCardLiveSkeleton key={i} />
             ))}
           </div>
         </>
       ) : matches.length > 0 ? (
         <>
           {/* Mobile carousel */}
-          <div className="sm:hidden">
+          <div className="hidden max-sm:block">
             <CarouselInfinity
               items={matches}
               renderItem={(match, i) => (
-                <MatchCardThumbnail key={`${match.matchId}-${i}`} match={match} />
+                <MatchCardLive key={`${match.matchId}-${i}`} match={match} />
               )}
               slideClassName="basis-[85vw]"
               keyExtractor={(m, i) => `${m.matchId}-${i}`}
             />
           </div>
           {/* Desktop grid */}
-          <div className="hidden grid-cols-2 gap-4 sm:grid lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-4 gap-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:hidden">
             {matches.map((match, i) => (
-              <MatchCardThumbnail key={`${match.matchId}-${i}`} match={match} />
+              <MatchCardLive key={`${match.matchId}-${i}`} match={match} />
             ))}
           </div>
         </>
       ) : (
-        <EmptyState label={t("common.empty")} />
+        <Empty tip={t("common.empty")} />
       )}
     </section>
   )

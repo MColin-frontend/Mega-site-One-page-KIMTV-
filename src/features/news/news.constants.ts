@@ -1,9 +1,8 @@
-import type { NewsComment } from "@/models/home.models"
-
 import {
   normalizeCommentList,
   resolvePostedCommentId,
 } from "@/features/highlights/highlights.utils"
+import type { NewsComment } from "@/features/news/news.models"
 
 function extractRecords(raw: unknown): unknown[] {
   if (Array.isArray(raw)) return raw

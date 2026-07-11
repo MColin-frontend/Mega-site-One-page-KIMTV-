@@ -3,12 +3,13 @@ import common from "./vi/common.json"
 import footer from "./vi/footer.json"
 import header from "./vi/header.json"
 import home from "./vi/home.json"
+import match from "./vi/match.json"
 import news from "./vi/news.json"
 import profile from "./vi/profile.json"
 import schedule from "./vi/schedule.json"
 import video from "./vi/video.json"
 
-const vi = { common, header, footer, home, news, schedule, chat, video, profile }
+const vi = { common, header, footer, home, match, news, schedule, chat, video, profile }
 
 export default vi
 
@@ -27,7 +28,9 @@ export interface Dictionary {
       "filter-live": string
       "filter-tv": string
     }
-    "match-card": {
+  }
+  match: {
+    card: {
       hours: string
       minutes: string
       seconds: string
@@ -46,18 +49,28 @@ export interface Dictionary {
       }
       stats: {
         shots: string
-        yellowCard: string
-        redCard: string
+        "yellow-card": string
+        "red-card": string
         corner: string
       }
+    }
+    fixture: {
+      league: string
+      match: string
+      time: string
+      score: string
+      "corner-kick": string
+      "yellow-card": string
+      "red-card": string
+      empty: string
     }
   }
   header: {
     nav: {
       home: string
       schedule: string
-      liveScore: string
-      liveSchedule: string
+      "live-score": string
+      "live-schedule": string
       results: string
       standings: string
       news: string
@@ -94,7 +107,7 @@ export interface Dictionary {
         cancel: string
       }
     }
-    mobileMenu: {
+    "mobile-menu": {
       open: string
       close: string
     }
@@ -116,19 +129,6 @@ export interface Dictionary {
       live: string
       finished: string
     }
-    fixtures: {
-      league: string
-      match: string
-      time: string
-      homeTeam: string
-      score: string
-      awayTeam: string
-      ht: string
-      cornerKick: string
-      yellowCard: string
-      redCard: string
-      empty: string
-    }
     hero: {
       alt: string
     }
@@ -140,25 +140,25 @@ export interface Dictionary {
       unit: string
       title: string
       selected: string
-      clearAll: string
-      searchPlaceholder: string
+      "clear-all": string
+      "search-placeholder": string
       empty: string
       favorites: string
     }
   }
   news: {
     title: string
-    pageTitle: string
+    "page-title": string
     latest: string
     popular: string
     category: string
-    viewAll: string
+    "view-all": string
     empty: string
     subtitle: string
-    readMore: string
-    backToList: string
-    publishedBy: string
-    hotVideos: string
+    "read-more": string
+    "back-to-list": string
+    "published-by": string
+    "hot-videos": string
     author: {
       follow: string
       following: string
@@ -170,8 +170,8 @@ export interface Dictionary {
       delete: string
       submit: string
       empty: string
-      loginToComment: string
-      viewMore: string
+      "login-to-comment": string
+      "view-more": string
     }
   }
   chat: {
@@ -180,12 +180,12 @@ export interface Dictionary {
     disconnected: string
     reconnecting: string
     reconnect: string
-    newMessages: string
+    "new-messages": string
     placeholder: string
     login: string
-    loginPrompt: string
+    "login-prompt": string
     welcome: string
-    pinLabel: string
+    "pin-label": string
     role: { streamer: string; admin: string }
     report: {
       title: string
@@ -200,25 +200,25 @@ export interface Dictionary {
       }
     }
     actions: {
-      banAll: string
-      banRoom: string
+      "ban-all": string
+      "ban-room": string
       delete: string
       pin: string
       unpin: string
-      setManager: string
+      "set-manager": string
     }
-    loginToChat: string
-    emptyMessage: string
+    "login-to-chat": string
+    "empty-message": string
     cancel: string
   }
   schedule: {
-    pageTitle: string
+    "page-title": string
     subtitle: string
-    latestNews: string
+    "latest-news": string
   }
   video: {
     title: string
-    noSource: { title: string; description: string }
+    "no-source": { title: string; description: string }
     menu: { featured: string; latest: string; trending: string; news: string; promotion: string }
     actions: {
       like: string
@@ -237,20 +237,20 @@ export interface Dictionary {
       title: string
       placeholder: string
       submit: string
-      loginPrompt: string
+      "login-prompt": string
       empty: string
-      loadMore: string
+      "load-more": string
       posting: string
       reply: string
       delete: string
-      postSuccess: string
-      replySuccess: string
-      postError: string
-      deleteSuccess: string
-      deleteError: string
+      "post-success": string
+      "reply-success": string
+      "post-error": string
+      "delete-success": string
+      "delete-error": string
     }
     empty: string
-    loadMore: string
+    "load-more": string
     seo: { title: string; description: string }
   }
   profile: {
