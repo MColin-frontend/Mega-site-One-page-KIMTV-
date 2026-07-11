@@ -2,7 +2,6 @@
 
 import "react"
 
-import { isEmpty } from "lodash"
 import { Calendar, Trophy, Users } from "lucide-react"
 
 import { formatFootballGameTime, formatMatchDate, formatMatchTime } from "@/lib/date"
@@ -28,11 +27,11 @@ import imgStadiumBg from "@assets/images/common/img-stadium-bg.png"
 import imgVs from "@assets/images/common/img-vs.png"
 
 import { Img } from "../image"
-import { Skeleton } from "../skeleton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
 import { Typography } from "../typography"
-import { MatchLiveIndicator } from "./match-live-indicator"
-import { MatchPeriodBadge } from "./match-period-badge"
+import { MatchLiveIndicator } from "./parts/match-live-indicator"
+import { MatchPeriodBadge } from "./parts/match-period-badge"
+import { MatchCardSkeleton } from "./skeleton"
 
 type MatchCardType = (typeof LIVE_MATCH_TYPE)[keyof typeof LIVE_MATCH_TYPE]
 
@@ -43,57 +42,9 @@ interface MatchCardProps {
   className?: string
 }
 
-/* ── Skeleton ─────────────────────────────────────────────── */
-
-function MatchCardSkeleton({ className }: { className?: string }) {
-  return (
-    <div className={cn("card-glow rounded-12 relative w-full overflow-hidden", className)}>
-      <div className="flex flex-col gap-3 p-3.5">
-        {/* Row 1: LIVE + time */}
-        <div className="flex items-center justify-between">
-          <Skeleton className="rounded-6 h-6 w-14" />
-          <Skeleton className="rounded-4 h-5 w-12" />
-        </div>
-        {/* Row 2: BLV */}
-        <div className="flex min-h-[52px] items-center gap-2">
-          <Skeleton className="size-10 shrink-0 rounded-full" />
-          <div className="flex flex-col gap-1.5">
-            <Skeleton className="h-4 w-20 rounded-full" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        </div>
-        {/* Row 3: Teams + Score */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex basis-2/5 flex-col items-center gap-2">
-            <Skeleton className="size-[60px] rounded-full" />
-            <Skeleton className="h-3 w-16" />
-          </div>
-          <div className="flex basis-1/5 flex-col items-center gap-1">
-            <Skeleton className="h-10 w-20" />
-            <Skeleton className="rounded-4 h-4 w-14" />
-          </div>
-          <div className="flex basis-2/5 flex-col items-center gap-2">
-            <Skeleton className="size-[60px] rounded-full" />
-            <Skeleton className="h-3 w-16" />
-          </div>
-        </div>
-        {/* Row 4: Stats */}
-        <Skeleton className="rounded-8 h-10 w-full" />
-        {/* Row 5: Bottom */}
-        <Skeleton className="rounded-4 h-6 w-full" />
-      </div>
-    </div>
-  )
-}
-
 /* ── Main Component ──────────────────────────────────────── */
 
-export function MatchCard({
-  match,
-  isLoading,
-  matchType = LIVE_MATCH_TYPE.LIVE,
-  className,
-}: MatchCardProps) {
+export function MatchCard({ match, isLoading, className }: MatchCardProps) {
   const { t } = useTranslation()
   const navigateToLive = useLiveNavigate()
   const countdown = useCountdown(match?.startTime)

@@ -10,7 +10,7 @@ import { MATCH_GOLD_GLOW_CLASS } from "@/constants/ui/ui-match.constants"
 import { MatchFootballStateEnum, MatchStatusEnum, MatchStatusLabelEnum } from "@/enums/match.enum"
 import type { MatchInterface } from "@/models/match.models"
 
-import { Typography } from "../typography"
+import { Typography } from "@/components/ui/typography"
 
 interface MatchStatusProps {
   match: Pick<MatchInterface, "isLive" | "status" | "state" | "gameTime" | "startTime">

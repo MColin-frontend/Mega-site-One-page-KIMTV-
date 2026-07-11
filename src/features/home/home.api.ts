@@ -4,16 +4,17 @@ import { MATCH_API } from "@/lib/match.utils"
 import { env } from "@/config/env"
 import { FOOTBALL_GAME_ID } from "@/constants/component/home.constants"
 import { DateRangeEnum } from "@/enums/common.enum"
+
+import type { LiveMatch } from "@/features/home/components/hero-video"
 import type {
   FeaturedNewsResult,
   LatestNewsResult,
   NewsItem,
   PopularNewsResult,
-} from "@/models/home.models"
+} from "@/features/news/news.models"
 
-import type { LiveMatch } from "@/features/home/components/hero-video"
-
-export type { ApiConfig, NewsItem, LeagueApiItem, LeagueApiResult } from "@/models/home.models"
+export type { ApiConfig, LeagueApiItem, LeagueApiResult } from "@/features/home/home.models"
+export type { NewsItem } from "@/features/news/news.models"
 
 export const HOME_API = {
   MATCH_LEAGUES: "/league/v2/match-leagues",

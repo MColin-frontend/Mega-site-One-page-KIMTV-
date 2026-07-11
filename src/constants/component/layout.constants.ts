@@ -3,8 +3,12 @@ import { CircleUser, Radio, Settings2 } from "lucide-react"
 
 import type { TranslationKey } from "@/i18n"
 import type { Routes } from "@/config/routes"
-import type { FooterMenuInterface, FooterSocialInterface } from "@/models/footer.models"
-import type { NavItemInterface } from "@/models/layout.models"
+
+import type {
+  FooterMenuInterface,
+  FooterSocialInterface,
+  NavI18nItemInterface,
+} from "@/components/layout/layout.models"
 
 import facebookIcon from "@assets/icons/layout/ic-facebook.svg"
 import telegramIcon from "@assets/icons/layout/ic-tele.svg"
@@ -43,10 +47,10 @@ export const HEADER_DROPDOWN_ITEMS: DropdownItemInterface[] = [
   },
 ]
 
-export const MAIN_NAV_ITEMS: NavItemInterface[] = [
+export const MAIN_NAV_ITEMS: NavI18nItemInterface[] = [
   { labelKey: "header.nav.home", getHref: (r) => r.home },
   { labelKey: "header.nav.schedule", getHref: (r) => r.schedule },
-  { labelKey: "header.nav.liveSchedule", getHref: (r) => r.liveSchedule },
+  { labelKey: "header.nav.live-schedule", getHref: (r) => r.liveSchedule },
   { labelKey: "header.nav.news", getHref: (r) => r.news.index },
   { labelKey: "header.nav.highlight", getHref: (r) => r.video.index },
 ]

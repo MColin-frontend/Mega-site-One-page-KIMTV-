@@ -150,7 +150,7 @@ export function HighlightsCarousel({ items }: HighlightsCarouselProps) {
           className="group/btn text-13 font-500 text-muted flex items-center gap-1 overflow-hidden pr-1 transition-colors hover:text-white"
         >
           <span className="transition-all duration-200 group-hover/btn:italic">
-            {t("news.viewAll")}
+            {t("news.view-all")}
           </span>
           <ArrowRight className="size-4 -translate-x-4 opacity-0 transition-all duration-200 group-hover/btn:translate-x-0 group-hover/btn:opacity-100" />
         </Link>

@@ -3,7 +3,8 @@ import {
   MATCH_STATUS_TAB,
   type MatchStatusTabValue,
 } from "@/constants/component/home.constants"
-import type { ApiConfig } from "@/models/home.models"
+
+import type { ApiConfig } from "@/features/home/home.models"
 
 export const MATCH_API = {
   LIVE: "/v2/match/get-pc-game-match-by-condition",

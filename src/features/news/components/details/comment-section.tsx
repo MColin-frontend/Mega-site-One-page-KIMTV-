@@ -1,14 +1,12 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import type { CommentRecordInterface } from "@/models"
 import { MessageCircle, X } from "lucide-react"
 
 import { useAuth } from "@/hooks/use-auth"
 
 import { useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
-import type { NewsComment } from "@/models/home.models"
 
 import { CommentCard } from "@/features/highlights/components/comment-drawer/comment-card"
 import {
@@ -16,6 +14,7 @@ import {
   CommentLoadMoreSkeleton,
   CommentPendingSkeleton,
 } from "@/features/highlights/components/skeleton"
+import type { CommentRecordInterface } from "@/features/highlights/highlight.models"
 import { PAGE_SIZE_COMMENT as PAGE_SIZE } from "@/features/highlights/highlights.constants"
 import {
   buildPendingPlaceholder,
@@ -40,8 +39,9 @@ import {
   normalizePostedRecord,
   resolveProfileId,
 } from "@/features/news/news.constants"
+import type { NewsComment } from "@/features/news/news.models"
 import { Button } from "@/components/ui/button"
-import { EmptyState } from "@/components/ui/empty-state"
+import { Empty } from "@/components/ui/empty"
 import { MessageInput } from "@/components/ui/message-input"
 import { Typography } from "@/components/ui/typography"
 
@@ -261,7 +261,10 @@ export function CommentSection({
         topFloorId: 0,
         userSourceId: loginUserId,
       },
-      { messageSuccess: t("video.comment.postSuccess"), messageError: t("video.comment.postError") }
+      {
+        messageSuccess: t("video.comment.post-success"),
+        messageError: t("video.comment.post-error"),
+      }
     )
       .then((result) => {
         if (result != null) {
@@ -317,8 +320,8 @@ export function CommentSection({
         userSourceId: loginUserId,
       },
       {
-        messageSuccess: t("video.comment.replySuccess"),
-        messageError: t("video.comment.postError"),
+        messageSuccess: t("video.comment.reply-success"),
+        messageError: t("video.comment.post-error"),
       }
     )
       .then((result) => {
@@ -362,7 +365,7 @@ export function CommentSection({
     if (!item.ncid) return
     const id = ncidNum(item.ncid)
     return fetchDeleteComment(String(item.ncid), loginUserId, {
-      messageSuccess: t("video.comment.deleteSuccess"),
+      messageSuccess: t("video.comment.delete-success"),
     }).then((result) => {
       if (result === null) return
       emitTotal((n) => Math.max(0, n - 1))
@@ -495,7 +498,7 @@ export function CommentSection({
         {loading && !comments.length ? (
           <CommentListSkeleton count={4} />
         ) : comments.length === 0 ? (
-          <EmptyState label={t("video.comment.empty")} />
+          <Empty tip={t("video.comment.empty")} />
         ) : (
           <div className="flex flex-col gap-1">
             {comments.map((c) => (
@@ -554,7 +557,7 @@ export function CommentSection({
               onClick={() => loadComments(false)}
               className="font-600 flex items-center gap-1.5 rounded-full bg-[rgba(255,210,32,0.1)] px-4 py-1.5 text-[13px] text-[#ffd220] transition-colors hover:bg-[rgba(255,210,32,0.18)]"
             >
-              {t("news.comment.viewMore")}
+              {t("news.comment.view-more")}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M6 9l6 6 6-6"
@@ -576,7 +579,7 @@ export function CommentSection({
             onChange={setCommentText}
             onSubmit={handleCommentSubmit}
             placeholder={
-              isLoggedIn ? t("video.comment.placeholder") : t("video.comment.loginPrompt")
+              isLoggedIn ? t("video.comment.placeholder") : t("video.comment.login-prompt")
             }
             loading={submitting}
           />

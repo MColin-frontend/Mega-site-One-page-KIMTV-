@@ -1,12 +1,13 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from "axios"
 
-import { assertServerEnv, env } from "@/config/env"
 import type {
   ApiEnvelopeInterface,
   NormalizedErrorInterface,
   RequestOptionsInterface,
   RequestResultInterface,
-} from "@/models/request.models"
+} from "@/server/request.models"
+
+import { assertServerEnv, env } from "@/config/env"
 
 import { toast } from "@/components/ui/toast"
 

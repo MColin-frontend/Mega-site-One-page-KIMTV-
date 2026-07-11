@@ -189,7 +189,7 @@ export async function NewsArticlePage({ slug }: { slug: string }) {
             {hotData.videos.length > 0 && (
               <div className="card-glow rounded-12 panel-news flex flex-col gap-3 p-4">
                 <Typography variant="h2" className="text-white">
-                  {t("news.hotVideos")}
+                  {t("news.hot-videos")}
                 </Typography>
                 <div className="flex flex-col gap-3">
                   {hotData.videos.map((item) => (

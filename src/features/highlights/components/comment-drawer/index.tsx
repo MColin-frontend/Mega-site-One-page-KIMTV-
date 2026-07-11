@@ -2,14 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import type {
-  CommentDrawerPropsInterface,
-  CommentFormInterface,
-  CommentItemInterface,
-  CommentParamsStateInterface,
-  CommentRecordInterface,
-  ReplyStateInterface,
-} from "@/models"
 import { Drawer } from "@base-ui/react/drawer"
 import { X } from "lucide-react"
 
@@ -25,6 +17,14 @@ import {
   likeComment,
   postComment,
 } from "@/features/highlights/api/highlights.api"
+import type {
+  CommentDrawerPropsInterface,
+  CommentFormInterface,
+  CommentItemInterface,
+  CommentParamsStateInterface,
+  CommentRecordInterface,
+  ReplyStateInterface,
+} from "@/features/highlights/highlight.models"
 import { resolveIsLiked } from "@/features/highlights/highlights.utils"
 import { Button } from "@/components/ui/button"
 import { Empty } from "@/components/ui/empty"
@@ -125,9 +125,9 @@ export function CommentDrawer({
       setParams,
       onCountChange,
       messageSuccess: t(
-        type === CommentType.REPLY ? "video.comment.replySuccess" : "video.comment.postSuccess"
+        type === CommentType.REPLY ? "video.comment.reply-success" : "video.comment.post-success"
       ),
-      messageError: t("video.comment.postError"),
+      messageError: t("video.comment.post-error"),
       parentNcid: type === CommentType.REPLY ? Number(parent!.ncid) : undefined,
       replyUserName: type === CommentType.REPLY ? (to?.userName ?? "") : undefined,
     })
@@ -153,8 +153,8 @@ export function CommentDrawer({
       setComments,
       setParams,
       onCountChange,
-      messageSuccess: t("video.comment.deleteSuccess"),
-      messageError: t("video.comment.deleteError"),
+      messageSuccess: t("video.comment.delete-success"),
+      messageError: t("video.comment.delete-error"),
     })
   }
 
@@ -365,7 +365,7 @@ export function CommentDrawer({
                       onClick={handleLoadMoreComments}
                       className="group/more text-gold/70 hover:text-gold mx-auto mt-1 mb-3 flex items-center gap-1.5 text-xs font-medium transition-all"
                     >
-                      {t("video.comment.loadMore")}
+                      {t("video.comment.load-more")}
                       <ChevronDown
                         size={12}
                         className="transition-transform duration-200 group-hover/more:translate-y-0.5"
@@ -386,7 +386,7 @@ export function CommentDrawer({
                     onChange={field.onChange}
                     onSubmit={handleMainSubmit((data) => handleSubmit(data, CommentType.COMMENT))}
                     placeholder={
-                      isLoggedIn ? t("video.comment.placeholder") : t("video.comment.loginPrompt")
+                      isLoggedIn ? t("video.comment.placeholder") : t("video.comment.login-prompt")
                     }
                     loading={isSubmitting}
                   />

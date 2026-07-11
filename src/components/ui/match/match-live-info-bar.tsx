@@ -25,12 +25,12 @@ import { Typography } from "@/components/ui/typography"
 import imgStadiumBg from "@assets/images/common/img-no-source.png"
 import imgVs from "@assets/images/common/img-vs.png"
 
-import { MatchLiveIndicator } from "./match-live-indicator"
-import { MatchPeriodBadge } from "./match-period-badge"
+import { MatchLiveIndicator } from "./parts/match-live-indicator"
+import { MatchPeriodBadge } from "./parts/match-period-badge"
 
 /* ── Types ───────────────────────────────────────────────── */
 
-export interface MatchInfoBarProps {
+export interface MatchLiveInfoBarProps {
   match: MatchInterface
   className?: string
 }
@@ -101,7 +101,7 @@ function ShareButton() {
 
 /* ── Main component ──────────────────────────────────────── */
 
-export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
+export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
   const { t } = useTranslation()
   const navigateToLive = useLiveNavigate()
 
@@ -227,7 +227,7 @@ export function MatchInfoBar({ match, className }: MatchInfoBarProps) {
             {isLive && <MatchLiveIndicator />}
             {isFinished && (
               <Typography as="span" variant="caption" weight="600" className="text-muted">
-                {t("common.match-card.finished")}
+                {t("match.card.finished")}
               </Typography>
             )}
           </div>

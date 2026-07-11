@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { ArrowRight, Heart, MessageCircle } from "lucide-react"
 
-import type { NewsItem } from "@/models/home.models"
-
+import type { NewsItem } from "@/features/news/news.models"
 import { Typography } from "@/components/ui/typography"
 
 interface NewsPanelHeaderProps {

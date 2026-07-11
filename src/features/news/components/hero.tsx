@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils"
 
 import { useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
-import type { NewsItem } from "@/models/home.models"
 
+import type { NewsItem } from "@/features/news/news.models"
 import { buttonVariants } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
 import { SlideNavButtons } from "@/components/ui/slide-nav"
@@ -95,7 +95,7 @@ export function NewsHeroCarousel({ items }: { items: NewsItem[] }) {
             <span
               className={cn(buttonVariants({ variant: "gradient" }), "pointer-events-none w-fit")}
             >
-              {t("news.readMore")}
+              {t("news.read-more")}
             </span>
           </div>
         </Link>

@@ -1,6 +1,12 @@
 import type { StaticImport } from "next/dist/shared/lib/get-img-props"
 
+import type { TranslationKey } from "@/i18n"
 import type { Routes } from "@/config/routes"
+
+interface NavI18nItemInterface {
+  labelKey: TranslationKey
+  getHref: (r: Routes) => string
+}
 
 interface FooterSocialInterface {
   name: string
@@ -13,4 +19,4 @@ interface FooterMenuInterface {
   getHref: (r: Routes) => string
 }
 
-export type { FooterSocialInterface, FooterMenuInterface }
+export type { NavI18nItemInterface, FooterSocialInterface, FooterMenuInterface }

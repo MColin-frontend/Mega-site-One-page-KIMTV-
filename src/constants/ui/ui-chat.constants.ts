@@ -38,8 +38,7 @@ export const CHAT_VIP_ICONS = {
   /** Từ CDN vì chưa có file local */
   SVIP: `${CDN}/images/svip_icon.png`,
   VIP: `${CDN}/images/vip_icon.png`,
-  /** Local public/images/chatroom/vip{0-12}.png — copy từ KIMTV-PC */
-  level: (n: number) => `/images/chatroom/vip${Math.min(12, Math.max(0, Math.floor(n || 0)))}.png`,
+  level: (n: number) => `/images/chat/vip${Math.min(12, Math.max(0, Math.floor(n || 0)))}.png`,
 } as const
 
 /* ── Social names ────────────────────────────────────────── */

@@ -24,7 +24,7 @@ export function Empty({ tip, image, imageSize = 120, className }: EmptyProps) {
         className="opacity-60"
       />
       {tip && (
-        <Typography variant="body" weight="500" className="text-center text-white/60">
+        <Typography variant="caption" weight="500" className="text-center text-white/40">
           {tip}
         </Typography>
       )}

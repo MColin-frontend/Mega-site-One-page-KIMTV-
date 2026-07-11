@@ -15,7 +15,6 @@ import {
 import { MatchFootballStateEnum, MatchStatusEnum } from "@/enums/match.enum"
 
 import { Img } from "@/components/ui/image"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
@@ -27,7 +26,7 @@ import icYellowCardV2 from "@assets/icons/match/ic-yellow-card-v2.svg"
 import imgStadiumBg from "@assets/images/common/img-stadium-bg.png"
 import imgVs from "@assets/images/common/img-vs.png"
 
-import { MatchPeriodBadge } from "./match-period-badge"
+import { MatchPeriodBadge } from "./parts/match-period-badge"
 
 /* ── Type ─────────────────────────────────────────────────── */
 
@@ -66,50 +65,6 @@ export interface LiveSearchMatchInterface {
   hotValue: number | null
 }
 
-/* ── Skeleton ─────────────────────────────────────────────── */
-
-export function MatchCardThumbnailSkeleton({ className }: { className?: string }) {
-  return (
-    <div className={cn("card-glow rounded-12 relative w-full overflow-hidden", className)}>
-      <Skeleton className="aspect-video w-full" />
-      <div className="flex flex-col gap-2 p-3">
-        {/* BLV row */}
-        <div className="flex items-center gap-1.5">
-          <Skeleton className="size-7 shrink-0 rounded-full" />
-          <div className="flex flex-col gap-1">
-            <Skeleton className="h-2.5 w-12 rounded-full" />
-            <Skeleton className="h-3 w-20" />
-          </div>
-        </div>
-        {/* Teams */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <Skeleton className="size-10 rounded-full" />
-            <Skeleton className="h-3 w-14" />
-          </div>
-          <div className="flex basis-1/5 flex-col items-center gap-1">
-            <Skeleton className="h-8 w-16" />
-          </div>
-          <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <Skeleton className="size-10 rounded-full" />
-            <Skeleton className="h-3 w-14" />
-          </div>
-        </div>
-        {/* Stats */}
-        <Skeleton className="rounded-8 h-8 w-full" />
-        {/* League */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Skeleton className="size-4 rounded-full" />
-            <Skeleton className="h-3 w-20" />
-          </div>
-          <Skeleton className="h-3 w-16" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 /* ── Stat item ────────────────────────────────────────────── */
 
 function StatItem({
@@ -140,7 +95,7 @@ function StatItem({
 
 /* ── Main card ────────────────────────────────────────────── */
 
-export function MatchCardThumbnail({
+export function MatchCardLive({
   match,
   className,
 }: {
@@ -467,25 +422,25 @@ export function MatchCardThumbnail({
                 icon: icFootball,
                 alt: "ball",
                 value: 0,
-                labelKey: "common.match-card.stats.shots",
+                labelKey: "match.card.stats.shots",
               },
               {
                 icon: icYellowCardV2,
                 alt: "yellow",
                 value: (match.homeYellowCard ?? 0) + (match.awayYellowCard ?? 0),
-                labelKey: "common.match-card.stats.yellowCard",
+                labelKey: "match.card.stats.yellowCard",
               },
               {
                 icon: icRedCardV2,
                 alt: "red",
                 value: (match.homeRedCard ?? 0) + (match.awayRedCard ?? 0),
-                labelKey: "common.match-card.stats.redCard",
+                labelKey: "match.card.stats.redCard",
               },
               {
                 icon: icCornerFlag,
                 alt: "corner",
                 value: (match.homeCornerKick ?? 0) + (match.awayCornerKick ?? 0),
-                labelKey: "common.match-card.stats.corner",
+                labelKey: "match.card.stats.corner",
               },
             ].map((s, i) => (
               <div key={s.alt} className="flex flex-1 items-center">

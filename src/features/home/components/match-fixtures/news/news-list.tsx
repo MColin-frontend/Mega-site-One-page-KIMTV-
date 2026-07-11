@@ -8,6 +8,7 @@ import { getRoutes } from "@/config/routes"
 
 import type { NewsItem } from "@/features/home/home.api"
 import { fetchFeaturedNewsAction } from "@/features/home/home.api"
+import type { NewsSectionPropsInterface } from "@/features/news/news.models"
 import { Typography } from "@/components/ui/typography"
 
 import { NewsCard } from "./news-card"
@@ -68,21 +69,13 @@ function SectionHeader({
   )
 }
 
-interface SectionProps {
-  title: string
-  categoryLabel: string
-  viewAllHref: string
-  viewAllLabel: string
-  getHref: (id: string) => string
-}
-
 async function FeaturedSection({
   title,
   categoryLabel,
   viewAllHref,
   viewAllLabel,
   getHref,
-}: SectionProps) {
+}: NewsSectionPropsInterface) {
   const items = await fetchFeaturedNewsAction()
   if (isEmpty(items)) return null
   return (
@@ -110,7 +103,7 @@ export default async function NewsList() {
   const commonProps = {
     categoryLabel: t("news.category"),
     viewAllHref: routes.news.index,
-    viewAllLabel: t("news.viewAll"),
+    viewAllLabel: t("news.view-all"),
     getHref: (id: string) => routes.news.article(id),
   }
 

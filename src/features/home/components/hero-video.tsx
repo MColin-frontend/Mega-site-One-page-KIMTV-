@@ -9,7 +9,7 @@ import { HERO_VIDEO_PARAMS } from "@/constants/component/home.constants"
 import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
 
 import { Chat, type UserRole } from "@/components/ui/chat"
-import { MatchInfoBar } from "@/components/ui/match/match-info-bar"
+import { MatchLiveInfoBar } from "@/components/ui/match/match-live-info-bar"
 import { VideoPlayer, type VideoSource } from "@/components/ui/video"
 
 /* ── Types ───────────────────────────────────────────────── */
@@ -92,7 +92,7 @@ export function HeroVideo({ matches, defaultMatchId, className }: HeroVideoProps
           isLive
           autoplay
         />
-        <MatchInfoBar
+        <MatchLiveInfoBar
           match={{
             ...(activeMatch as unknown as MatchInterface),
             matchId: Number(activeMatch.id),

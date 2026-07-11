@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 
 import { MATCH_GOLD_GLOW_CLASS } from "@/constants/ui/ui-match.constants"
 
-import { Typography } from "../typography"
+import { Typography } from "@/components/ui/typography"
 
 interface MatchLiveBadgeProps {
   halfLabel: string

@@ -2,8 +2,8 @@
   "nav": {
     "home": "Home",
     "schedule": "Schedule",
-    "liveScore": "Live Score",
-    "liveSchedule": "Live Schedule",
+    "live-score": "Live Score",
+    "live-schedule": "Live Schedule",
     "results": "Results",
     "standings": "Standings",
     "news": "News",
@@ -40,7 +40,7 @@
       "cancel": "Cancel"
     }
   },
-  "mobileMenu": {
+  "mobile-menu": {
     "open": "Open menu",
     "close": "Close menu"
   }

@@ -45,6 +45,9 @@ import icCrown from "@assets/icons/chat/ic-crown.png"
 import icPinImg from "@assets/icons/chat/ic-pin.png"
 import icRemove from "@assets/icons/chat/ic-remove.png"
 import icRestriction from "@assets/icons/chat/ic-restriction.png"
+import icFacebook from "@assets/icons/layout/ic-facebook.png"
+import icTele from "@assets/icons/layout/ic-tele.png"
+import icZalo from "@assets/icons/layout/ic-zalo.png"
 
 /* ── Types ───────────────────────────────────────────────── */
 
@@ -76,12 +79,7 @@ export interface ChatSocials {
 
 export interface ChatProps {
   socials?: ChatSocials
-  /** Role của user trong chatroom — lấy từ API live/detail.chatroomUserRole */
-  chatroomUserRole?: string | null
   onReport?: (message: ChatMessage, reportType: number) => void
-  onDelete?: (message: ChatMessage) => void
-  onPin?: (message: ChatMessage) => void
-  onUnpin?: (message: ChatMessage) => void
   onBanRoom?: (message: ChatMessage, mute: boolean) => void
   onBanAll?: (message: ChatMessage, mute: boolean) => void
   onSetManager?: (message: ChatMessage, set: boolean) => void
@@ -473,7 +471,7 @@ function UserPopup({
               >
                 <Img src={icBlacklist} alt="" width={40} height={40} objectFit="contain" />
                 <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
-                  {t("chat.actions.banAll")}
+                  {t("chat.actions.ban-all")}
                 </span>
               </button>
             )}
@@ -487,7 +485,7 @@ function UserPopup({
               >
                 <Img src={icRestriction} alt="" width={40} height={40} objectFit="contain" />
                 <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
-                  {t("chat.actions.banRoom")}
+                  {t("chat.actions.ban-room")}
                 </span>
               </button>
             )}
@@ -548,7 +546,7 @@ function UserPopup({
                   className="opacity-50"
                 />
                 <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
-                  {t("chat.actions.setManager")}
+                  {t("chat.actions.set-manager")}
                 </span>
               </button>
             )}
@@ -573,11 +571,7 @@ const DEFAULT_SOCIALS: ChatSocials = {
 
 export function Chat({
   socials,
-  chatroomUserRole,
   onReport,
-  onDelete,
-  onPin,
-  onUnpin,
   onBanRoom,
   onBanAll,
   onSetManager,
@@ -598,7 +592,7 @@ export function Chat({
   )
   const [hasMoreMessages, setHasMoreMessages] = useState(false)
   const chatSchema = z.object({
-    content: z.string().refine((v) => v.trim().length > 0, t("chat.emptyMessage")),
+    content: z.string().refine((v) => v.trim().length > 0, t("chat.empty-message")),
   })
   type ChatFormType = z.infer<typeof chatSchema>
 
@@ -892,7 +886,7 @@ export function Chat({
             className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#2aabee] py-1.5 no-underline shadow-[0_2px_8px_rgba(42,171,238,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(42,171,238,0.45)] hover:brightness-110 active:scale-95"
           >
             <Img
-              src="/tele.png"
+              src={icTele.src}
               alt=""
               width={14}
               height={14}
@@ -916,7 +910,7 @@ export function Chat({
             className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#1877f2] py-1.5 no-underline shadow-[0_2px_8px_rgba(24,119,242,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(24,119,242,0.45)] hover:brightness-110 active:scale-95"
           >
             <Img
-              src="/fb.png"
+              src={icFacebook.src}
               alt=""
               width={14}
               height={14}
@@ -940,7 +934,7 @@ export function Chat({
             className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#0068ff] py-1.5 no-underline shadow-[0_2px_8px_rgba(0,104,255,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,104,255,0.45)] hover:brightness-110 active:scale-95"
           >
             <Img
-              src="/zalo.png"
+              src={icZalo.src}
               alt=""
               width={14}
               height={14}
@@ -1007,7 +1001,7 @@ export function Chat({
                     weight="700"
                     className={cn("shrink-0 whitespace-nowrap", CHAT_CLASSES.pin)}
                   >
-                    {t("chat.pinLabel")}:
+                    {t("chat.pin-label")}:
                   </Typography>
                   <span
                     className={cn(
@@ -1120,7 +1114,7 @@ export function Chat({
             }}
             className="absolute bottom-[58px] left-1/2 z-10 -translate-x-1/2 rounded-full"
           >
-            {t("chat.newMessages")}
+            {t("chat.new-messages")}
           </Button>
         )}
       </div>
@@ -1134,7 +1128,7 @@ export function Chat({
               value={field.value}
               onChange={field.onChange}
               onSubmit={handleFormSubmit(handleSendMessage)}
-              placeholder={isLoggedIn ? t("chat.placeholder") : t("chat.loginToChat")}
+              placeholder={isLoggedIn ? t("chat.placeholder") : t("chat.login-to-chat")}
               className={cn(
                 "bg-chat-input-bg rounded-full backdrop-blur-xl transition-colors",
                 errors.content && "ring-1 ring-red-500/60",

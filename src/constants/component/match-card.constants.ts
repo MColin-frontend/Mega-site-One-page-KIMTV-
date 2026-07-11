@@ -5,12 +5,12 @@ import icYellowCardV2 from "@assets/icons/match/ic-yellow-card-v2.svg"
 
 /** Map halfLabel → i18n key dùng với t() */
 export const MATCH_HALF_LABEL_I18N_KEY: Record<string, string> = {
-  H1: "common.match-card.period.h1",
-  HT: "common.match-card.period.ht",
-  H2: "common.match-card.period.h2",
-  ET: "common.match-card.period.et",
-  PEN: "common.match-card.period.pen",
-  LIVE: "common.match-card.period.live",
+  H1: "match.card.period.h1",
+  HT: "match.card.period.ht",
+  H2: "match.card.period.h2",
+  ET: "match.card.period.et",
+  PEN: "match.card.period.pen",
+  LIVE: "match.card.period.live",
 } as const
 
 /** Fallback string khi không có i18n (tương thích ngược) */
@@ -24,23 +24,23 @@ export const MATCH_HALF_LABEL_VI: Record<string, string> = {
 } as const
 
 export const MATCH_STAT_I18N_KEYS = {
-  shots: "common.match-card.stats.shots",
-  yellowCard: "common.match-card.stats.yellowCard",
-  redCard: "common.match-card.stats.redCard",
-  corner: "common.match-card.stats.corner",
+  shots: "match.card.stats.shots",
+  yellowCard: "match.card.stats.yellow-card",
+  redCard: "match.card.stats.red-card",
+  corner: "match.card.stats.corner",
 } as const
 
 export const COUNTDOWN_I18N_KEYS = {
-  hours: "common.match-card.hours",
-  minutes: "common.match-card.minutes",
-  seconds: "common.match-card.seconds",
+  hours: "match.card.hours",
+  minutes: "match.card.minutes",
+  seconds: "match.card.seconds",
 } as const
 
 export const MATCH_CARD_I18N_KEYS = {
-  finished: "common.match-card.finished",
-  blvLabel: "common.match-card.blv-label",
-  watching: "common.match-card.watching",
-  watchingTooltip: "common.match-card.watching-tooltip",
+  finished: "match.card.finished",
+  blvLabel: "match.card.blv-label",
+  watching: "match.card.watching",
+  watchingTooltip: "match.card.watching-tooltip",
 } as const
 
 export const MATCH_STAT_ICONS = {

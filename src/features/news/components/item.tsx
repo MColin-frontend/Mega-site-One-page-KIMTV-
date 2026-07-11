@@ -2,8 +2,7 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
-import type { NewsItem } from "@/models/home.models"
-
+import type { NewsItem } from "@/features/news/news.models"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 

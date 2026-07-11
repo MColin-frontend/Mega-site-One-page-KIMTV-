@@ -1,0 +1,36 @@
+{
+  "card": {
+    "hours": "Giờ",
+    "minutes": "Phút",
+    "seconds": "Giây",
+    "finished": "Kết thúc",
+    "watch-preview": "Xem trước",
+    "blv-label": "BLV Trực tiếp",
+    "watching": "đang nghe",
+    "watching-tooltip": "người đang xem",
+    "period": {
+      "h1": "Hiệp 1",
+      "ht": "Giữa hiệp",
+      "h2": "Hiệp 2",
+      "et": "Hiệp phụ",
+      "pen": "Luân lưu",
+      "live": "Đang diễn ra"
+    },
+    "stats": {
+      "shots": "Sút",
+      "yellow-card": "Thẻ vàng",
+      "red-card": "Thẻ đỏ",
+      "corner": "Phạt góc"
+    }
+  },
+  "fixture": {
+    "league": "Giải đấu",
+    "match": "Trận đấu",
+    "time": "Thời gian",
+    "score": "Tỷ số",
+    "corner-kick": "Phạt góc",
+    "yellow-card": "Thẻ vàng",
+    "red-card": "Thẻ đỏ",
+    "empty": "Không có trận đấu nào"
+  }
+}

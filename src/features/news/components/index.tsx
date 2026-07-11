@@ -36,7 +36,7 @@ async function PanelsSection() {
         items={latestNews}
         title={t("news.latest")}
         viewAllHref={routes.news.index}
-        viewAllLabel={t("news.viewAll")}
+        viewAllLabel={t("news.view-all")}
         categoryLabel={t("news.category")}
         getHref={(id) => routes.news.article(id)}
       />
@@ -44,7 +44,7 @@ async function PanelsSection() {
         items={popularNews.slice(0, 4)}
         title={t("news.popular")}
         viewAllHref={routes.news.index}
-        viewAllLabel={t("news.viewAll")}
+        viewAllLabel={t("news.view-all")}
         categoryLabel={t("news.category")}
         getHref={(id) => routes.news.article(id)}
       />
@@ -59,7 +59,7 @@ export async function NewsIndexPage() {
     <div className="container flex flex-col gap-8 py-8 max-lg:gap-6 max-lg:py-6 max-md:gap-4 max-md:py-4">
       <div className="flex flex-col gap-1">
         <Typography variant="h1" className="text-gold uppercase">
-          {t("news.pageTitle")}
+          {t("news.page-title")}
         </Typography>
         <Typography variant="body" weight="600" className="text-white">
           {t("news.subtitle")}

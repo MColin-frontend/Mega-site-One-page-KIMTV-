@@ -1,5 +1,13 @@
 import { javaGet, javaPost } from "@/server/services/client-request"
 
+import type {
+  ActionMessagesInterface,
+  FetchCommentListParamsInterface,
+  FollowParamsInterface,
+  LikeCommentParamsInterface,
+  PostCommentParamsInterface,
+} from "@/features/news/news.models"
+
 const NEWS_SOCIAL_API = {
   FOLLOW: "/user/follow-user",
 } as const
@@ -11,44 +19,7 @@ const NEWS_COMMENT_API = {
   LIKE: "/news/user-like",
 } as const
 
-interface FetchCommentListParams {
-  newsId: string | number
-  pageIndex: number
-  pageSize: number
-  commentType: number
-  loginUserId: string
-}
-
-interface PostCommentParams {
-  commentType: number
-  content: string
-  mainNewsId: number
-  userSourceId: string
-  topFloorId?: number
-  replyToCommentId?: number
-  replyToUserSourceId?: string | number
-}
-
-interface LikeCommentParams {
-  typeId: string
-  isLike: boolean
-  loginUserId: string
-}
-
-interface ActionMessages {
-  messageSuccess?: string
-  messageError?: string
-}
-
-interface FollowParams {
-  userId: number
-  isFollow: boolean
-  setFollowing: (value: boolean) => void
-  setLoading: (value: boolean) => void
-  messageSuccess?: string
-}
-
-function fetchCommentList(p: FetchCommentListParams): Promise<unknown | null> {
+function fetchCommentList(p: FetchCommentListParamsInterface): Promise<unknown | null> {
   return javaGet<unknown>(NEWS_COMMENT_API.LIST, {
     params: {
       newsId: p.newsId,
@@ -61,8 +32,8 @@ function fetchCommentList(p: FetchCommentListParams): Promise<unknown | null> {
 }
 
 function handlePostComment(
-  params: PostCommentParams,
-  msg?: ActionMessages
+  params: PostCommentParamsInterface,
+  msg?: ActionMessagesInterface
 ): Promise<unknown | null> {
   return javaPost<unknown>(NEWS_COMMENT_API.POST, params, {
     isMessageSuccess: !!msg?.messageSuccess,
@@ -75,7 +46,7 @@ function handlePostComment(
 function fetchDeleteComment(
   commentId: string,
   loginUserId: string,
-  msg?: ActionMessages
+  msg?: ActionMessagesInterface
 ): Promise<unknown | null> {
   return javaGet<unknown>(NEWS_COMMENT_API.DELETE, {
     params: { commentId, loginUserId },
@@ -86,7 +57,7 @@ function fetchDeleteComment(
   })
 }
 
-function handleLikeComment(params: LikeCommentParams): Promise<unknown | null> {
+function handleLikeComment(params: LikeCommentParamsInterface): Promise<unknown | null> {
   return javaGet<unknown>(NEWS_COMMENT_API.LIKE, {
     params: {
       flag: "2",
@@ -97,7 +68,7 @@ function handleLikeComment(params: LikeCommentParams): Promise<unknown | null> {
   })
 }
 
-function handleFollowUser(params: FollowParams): Promise<void> {
+function handleFollowUser(params: FollowParamsInterface): Promise<void> {
   const { userId, isFollow, setFollowing, setLoading, messageSuccess } = params
   setLoading(true)
   return javaGet<unknown>(NEWS_SOCIAL_API.FOLLOW, {

@@ -22,9 +22,7 @@ export function NewsLatestPanel({
     <div className="card-glow rounded-12 panel-news flex flex-col gap-5 p-5">
       <NewsPanelHeader title={title} viewAllHref={viewAllHref} viewAllLabel={viewAllLabel} />
 
-      {/* 2-column grid — items-stretch để 2 cột bằng nhau */}
       <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
-        {/* Left — Featured large card */}
         <a
           href={getHref(String(featured.newsId))}
           className="card-glow group rounded-10 relative block h-full min-h-[280px] overflow-hidden bg-[#0a1128] transition-all hover:ring-1 hover:ring-white/20"
@@ -60,7 +58,6 @@ export function NewsLatestPanel({
           </div>
         </a>
 
-        {/* Right — Side list */}
         {sideItems.length > 0 && (
           <div className="flex h-full flex-col gap-1">
             {sideItems.map((item) => (
