@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { ReactSVG } from "react-svg"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
   ChevronDown,
   ChevronUp,
@@ -256,7 +256,7 @@ function FeedStackSlide({
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-12 bg-linear-to-t from-black/72 via-black/40 to-transparent px-5 pt-16 pb-14">
         {item.authorId && routes && isActive ? (
           <Link
-            href={`/user-info/${item.authorId}`}
+            href={routes.userInfo(item.authorId)}
             data-feed-nav-block
             className="pointer-events-auto mb-2 inline-block"
           >
@@ -312,11 +312,23 @@ export function HighlightsFeed({
 }: HighlightsFeedProps) {
   const { t, locale } = useTranslation()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, isLoggedIn, login } = useAuth()
   const routes = getRoutes(locale)
 
+  // Nếu có ?vid=ID, đưa video đó lên đầu feed
+  const featuredVid = searchParams.get("vid")
+  const orderedInitialVideos = React.useMemo(() => {
+    if (!featuredVid) return initialVideos
+    const idx = initialVideos.findIndex((v) => String(v.newsId) === featuredVid)
+    if (idx <= 0) return initialVideos
+    const copy = [...initialVideos]
+    const [featured] = copy.splice(idx, 1)
+    return [featured, ...copy]
+  }, [initialVideos, featuredVid])
+
   // ── Data state ──────────────────────────────────────────────────────────────
-  const [videos, setVideos] = useState<HighlightVideoInterface[]>(initialVideos)
+  const [videos, setVideos] = useState<HighlightVideoInterface[]>(orderedInitialVideos)
   const [activeMenu, setActiveMenu] = useState<FeedMenu>(initialMenu)
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -1196,7 +1208,7 @@ export function HighlightsFeed({
                 {/* Avatar + Follow */}
                 <div className="relative">
                   {currentItem?.authorId ? (
-                    <Link href={`/user-info/${currentItem.authorId}`}>
+                    <Link href={routes.userInfo(currentItem.authorId)}>
                       <Avatar size={56} className="border-2 border-white max-md:size-10!">
                         <AvatarImage
                           src={currentItem?.userAvatar}

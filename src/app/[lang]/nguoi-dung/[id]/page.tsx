@@ -1,13 +1,13 @@
 import type { Metadata } from "next"
 
-import { ProfilePage } from "@/features/profile/components"
+import { UserInfoPage } from "@/features/user-info/components"
 
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Hồ sơ cá nhân",
+  title: "Thông tin người dùng",
 }
 
 export default function Page() {
-  return <ProfilePage />
+  return <UserInfoPage />
 }

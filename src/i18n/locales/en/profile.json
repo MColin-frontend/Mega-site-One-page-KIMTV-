@@ -1,6 +1,7 @@
 {
   "pageTitle": "Profile",
   "subtitle": "Manage your account information",
+  "fallbackName": "Member",
   "loginPrompt": "Please log in to view your profile",
   "loginButton": "Log in",
   "emptyTab": "This feature is coming soon",

@@ -1,5 +1,5 @@
 import type { ElementType } from "react"
-import { CircleUser, Radio, Settings2 } from "lucide-react"
+import { MonitorPlay, SlidersHorizontal } from "lucide-react"
 
 import type { TranslationKey } from "@/i18n"
 import type { Routes } from "@/config/routes"
@@ -27,21 +27,14 @@ export const HEADER_DROPDOWN_ITEMS: DropdownItemInterface[] = [
   {
     key: "broadcast",
     labelKey: "header.user.menu.broadcast",
-    icon: Radio,
+    icon: MonitorPlay,
     iconColor: "text-amber-400",
     getHref: () => "#",
   },
   {
-    key: "profile",
-    labelKey: "header.user.menu.profile",
-    icon: CircleUser,
-    iconColor: "text-blue-400",
-    getHref: (r) => r.profile,
-  },
-  {
     key: "settings",
     labelKey: "header.user.menu.settings",
-    icon: Settings2,
+    icon: SlidersHorizontal,
     iconColor: "text-muted",
     getHref: () => "#",
   },

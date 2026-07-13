@@ -28,6 +28,25 @@ export interface Dictionary {
       "filter-live": string
       "filter-tv": string
     }
+    "user-info": {
+      tabs: { all: string; news: string; video: string }
+      stats: {
+        articles: string
+        videos: string
+        followers: string
+        joined: string
+        joinedSuffix: string
+      }
+      follow: string
+      following: string
+      hotNews: string
+      empty: string
+      category: string
+      readMore: string
+      video: string
+      fallbackBio1: string
+      fallbackBio2: string
+    }
   }
   match: {
     card: {

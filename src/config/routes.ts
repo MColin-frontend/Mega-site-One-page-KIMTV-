@@ -22,7 +22,7 @@ export const getRoutes = (locale: LocaleType) => ({
     register: localePath(locale, "dang-ky"),
   },
   inviteFriend: localePath(locale, "moi-ban"),
-  userInfo: (userId: string | number) => `/user-info/${userId}`,
+  userInfo: (userId: string | number) => localePath(locale, "nguoi-dung", String(userId)),
   live: (matchId: string | number, gameId: number) =>
     `${localePath(locale, "truc-tiep", String(matchId))}?game_id=${gameId}`,
 })

@@ -34,6 +34,7 @@ import {
   CHAT_VIP_ICONS,
 } from "@/constants/ui/ui-chat.constants"
 
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
 import { MessageInput } from "@/components/ui/message-input"
@@ -113,16 +114,9 @@ function ChatAvatar({ message, size = 48 }: { message: ChatMessage; size?: numbe
       className={cn("shrink-0 rounded-full p-px", wrapperCls)}
       style={{ width: size + 2, height: size + 2 }}
     >
-      <div className="bg-background size-full overflow-hidden rounded-full">
-        <Img
-          src={message.userAvatar}
-          alt=""
-          width={size}
-          height={size}
-          objectFit="cover"
-          rounded="full"
-        />
-      </div>
+      <Avatar size={size}>
+        <AvatarImage src={message.userAvatar} />
+      </Avatar>
     </div>
   )
 }
@@ -692,7 +686,6 @@ export function Chat({
         })
 
         ws.addEventListener("message", ({ data: raw }) => {
-          console.log("raw", raw)
           if (ws !== wsRef.current || raw === "ping") return
           try {
             const res = JSON.parse(raw) as Record<string, unknown>

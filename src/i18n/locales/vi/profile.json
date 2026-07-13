@@ -1,6 +1,7 @@
 {
   "pageTitle": "Hồ sơ cá nhân",
   "subtitle": "Quản lý thông tin tài khoản của bạn",
+  "fallbackName": "Thành viên",
   "loginPrompt": "Vui lòng đăng nhập để xem hồ sơ",
   "loginButton": "Đăng nhập",
   "emptyTab": "Tính năng đang được phát triển",

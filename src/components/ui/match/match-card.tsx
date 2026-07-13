@@ -23,9 +23,11 @@ import { MatchFootballStateEnum, MatchStatusEnum } from "@/enums/match.enum"
 import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
 
 import icMic from "@assets/icons/match/ic-mic.svg"
-import imgStadiumBg from "@assets/images/common/img-stadium-bg.png"
+import imgStadiumBg from "@assets/images/common/img-stadium-card-bg.png"
+import imgStadiumUpcoming from "@assets/images/common/img-stadium-upcoming.png"
 import imgVs from "@assets/images/common/img-vs.png"
 
+import { Avatar, AvatarImage } from "../avatar"
 import { Img } from "../image"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
 import { Typography } from "../typography"
@@ -110,7 +112,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
           <div
             className="pointer-events-none absolute inset-0 z-0"
             style={{
-              backgroundImage: `url(${imgStadiumBg.src})`,
+              backgroundImage: `url(${isUpcoming ? imgStadiumUpcoming.src : imgStadiumBg.src})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -175,16 +177,9 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
             {/* Avatar với mic icon overlay */}
             {firstAnchor.userAvatar && (
               <div className="relative shrink-0">
-                <Img
-                  src={firstAnchor.userAvatar}
-                  alt=""
-                  width={32}
-                  height={32}
-                  objectFit="cover"
-                  rounded="full"
-                  className="ring-live-green ring-1"
-                />
-                {/* Mic badge */}
+                <Avatar size={32} className="ring-live-green ring-1">
+                  <AvatarImage src={firstAnchor.userAvatar} />
+                </Avatar>
                 <div className="bg-live-green-bg shadow-white-soft absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full">
                   <Img src={icMic} alt="mic" width={14} height={14} objectFit="contain" />
                 </div>

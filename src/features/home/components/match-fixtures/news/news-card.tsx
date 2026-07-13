@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Heart, MessageCircle } from "lucide-react"
 
 import type { NewsItem } from "@/features/home/home.api"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
@@ -37,15 +38,9 @@ export function NewsCard({ item, href }: NewsCardProps) {
           {item.userName && (
             <div className="flex min-w-0 items-center gap-1.5">
               {item.userAvatar && (
-                <Img
-                  src={item.userAvatar}
-                  alt={item.userName}
-                  width={24}
-                  height={24}
-                  rounded="full"
-                  objectFit="cover"
-                  className="size-6 shrink-0 overflow-hidden rounded-full"
-                />
+                <Avatar size={24}>
+                  <AvatarImage src={item.userAvatar} alt={item.userName} />
+                </Avatar>
               )}
               <Typography variant="caption" className="truncate">
                 {item.userName}

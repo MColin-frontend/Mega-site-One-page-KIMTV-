@@ -1,5 +1,6 @@
 import type { NewsPanelProps } from "@/features/news/news.models"
 import { Img } from "@/components/ui/image"
+import { ScrollReveal, StaggerReveal } from "@/components/ui/scroll-reveal"
 import { Typography } from "@/components/ui/typography"
 
 import { NewsItemRow } from "./item"
@@ -23,6 +24,7 @@ export function NewsLatestPanel({
       <NewsPanelHeader title={title} viewAllHref={viewAllHref} viewAllLabel={viewAllLabel} />
 
       <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
+        <ScrollReveal variant="fade-up" duration={550} distance={20}>
         <a
           href={getHref(String(featured.newsId))}
           className="card-glow group rounded-10 relative block h-full min-h-[280px] overflow-hidden bg-[#0a1128] transition-all hover:ring-1 hover:ring-white/20"
@@ -57,9 +59,10 @@ export function NewsLatestPanel({
             <NewsMetaRow item={featured} />
           </div>
         </a>
+        </ScrollReveal>
 
         {sideItems.length > 0 && (
-          <div className="flex h-full flex-col gap-1">
+          <StaggerReveal variant="fade-up" stagger={60} duration={400} className="flex h-full flex-col gap-1">
             {sideItems.map((item) => (
               <NewsItemRow
                 key={String(item.newsId)}
@@ -69,7 +72,7 @@ export function NewsLatestPanel({
                 className="min-h-0 flex-1"
               />
             ))}
-          </div>
+          </StaggerReveal>
         )}
       </div>
     </div>

@@ -17,7 +17,7 @@ export function Footer() {
   const routes = getRoutes(locale)
 
   return (
-    <footer className="border-line w-full border-t pt-8 pb-14">
+    <footer className="border-line border-t">
       <div className="container">
         <div className="border-line flex items-center justify-between gap-4 border-b pb-10 max-lg:flex-col max-lg:pb-7 max-md:pb-5">
           <div className="max-w-[400px] max-lg:flex max-lg:w-full max-lg:max-w-full max-lg:flex-col max-lg:items-center">
