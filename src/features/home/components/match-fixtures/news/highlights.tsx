@@ -13,6 +13,7 @@ import type { NewsItem } from "@/features/home/home.api"
 import CarouselInfinity, {
   type CarouselInfinityApi,
 } from "@/components/ui/carousel/carousel-infinity"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
@@ -96,15 +97,9 @@ function HighlightSlide({ item, isActive }: { item: NewsItem; href: string; isAc
             {item.userName && (
               <div className="flex items-center gap-1.5">
                 {item.userAvatar && (
-                  <Img
-                    src={item.userAvatar}
-                    alt={item.userName}
-                    width={16}
-                    height={16}
-                    rounded="full"
-                    objectFit="cover"
-                    className="size-4 shrink-0 overflow-hidden rounded-full"
-                  />
+                  <Avatar size={16}>
+                    <AvatarImage src={item.userAvatar} alt={item.userName} />
+                  </Avatar>
                 )}
                 <Typography variant="caption" className="text-muted truncate">
                   {item.userName}

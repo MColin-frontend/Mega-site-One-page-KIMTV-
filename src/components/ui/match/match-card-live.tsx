@@ -14,6 +14,7 @@ import {
 } from "@/constants/component/match-card.constants"
 import { MatchFootballStateEnum, MatchStatusEnum } from "@/enums/match.enum"
 
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Img } from "@/components/ui/image"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
@@ -23,7 +24,7 @@ import icFootball from "@assets/icons/match/ic-football.png"
 import icMic from "@assets/icons/match/ic-mic.svg"
 import icRedCardV2 from "@assets/icons/match/ic-red-card-v2.svg"
 import icYellowCardV2 from "@assets/icons/match/ic-yellow-card-v2.svg"
-import imgStadiumBg from "@assets/images/common/img-stadium-bg.png"
+import imgStadiumBg from "@assets/images/common/img-stadium-card-bg.png"
 import imgVs from "@assets/images/common/img-vs.png"
 
 import { MatchPeriodBadge } from "./parts/match-period-badge"
@@ -79,14 +80,14 @@ function StatItem({
   label: string
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center gap-0.5">
-      <div className="flex items-center gap-0.5">
-        <Img src={icon} alt={alt} width={16} height={16} objectFit="contain" />
-        <Typography as="span" variant="body-sm" weight="700" className="text-white tabular-nums">
+    <div className="flex flex-1 flex-col items-center gap-1">
+      <div className="flex items-center gap-1">
+        <Img src={icon} alt={alt} width={20} height={20} objectFit="contain" />
+        <Typography as="span" variant="body" weight="700" className="text-white tabular-nums">
           {value}
         </Typography>
       </div>
-      <Typography as="span" size="12" weight="500" className="text-white">
+      <Typography as="span" size="14" weight="500" className="text-white">
         {label}
       </Typography>
     </div>
@@ -272,15 +273,9 @@ export function MatchCardLive({
             <div className="flex items-center gap-2.5">
               {match.anchorAvatar && (
                 <div className="relative shrink-0">
-                  <Img
-                    src={match.anchorAvatar}
-                    alt=""
-                    width={52}
-                    height={52}
-                    objectFit="cover"
-                    rounded="full"
-                    className="ring-live-green shadow-[0_0_16px_rgba(0,0,0,0.9),0_0_8px_rgba(0,200,100,0.3)] ring-2"
-                  />
+                  <Avatar size={52} className="ring-live-green shadow-[0_0_16px_rgba(0,0,0,0.9),0_0_8px_rgba(0,200,100,0.3)] ring-2">
+                    <AvatarImage src={match.anchorAvatar} />
+                  </Avatar>
                   <div className="bg-live-green-bg shadow-live-green-glow absolute -right-1.5 -bottom-1.5 flex size-7 items-center justify-center rounded-full">
                     <Img src={icMic} alt="mic" width={28} height={28} objectFit="contain" />
                   </div>
@@ -416,7 +411,7 @@ export function MatchCardLive({
 
         {/* Row 4: Stats bar */}
         {!isUpcoming && (
-          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/10 px-2 py-1.5 backdrop-blur-2xl">
+          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.06] px-3 py-2 backdrop-blur-2xl">
             {[
               {
                 icon: icFootball,
@@ -428,13 +423,13 @@ export function MatchCardLive({
                 icon: icYellowCardV2,
                 alt: "yellow",
                 value: (match.homeYellowCard ?? 0) + (match.awayYellowCard ?? 0),
-                labelKey: "match.card.stats.yellowCard",
+                labelKey: "match.card.stats.yellow-card",
               },
               {
                 icon: icRedCardV2,
                 alt: "red",
                 value: (match.homeRedCard ?? 0) + (match.awayRedCard ?? 0),
-                labelKey: "match.card.stats.redCard",
+                labelKey: "match.card.stats.red-card",
               },
               {
                 icon: icCornerFlag,

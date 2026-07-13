@@ -1,4 +1,5 @@
 import type { NewsPanelProps } from "@/features/news/news.models"
+import { StaggerReveal } from "@/components/ui/scroll-reveal"
 
 import { NewsItemRow } from "./item"
 import { NewsPanelHeader } from "./shared"
@@ -17,7 +18,7 @@ export function NewsPopularPanel({
     <div className="card-glow rounded-12 panel-news flex flex-col gap-4 p-5">
       <NewsPanelHeader title={title} viewAllHref={viewAllHref} viewAllLabel={viewAllLabel} />
 
-      <div className="flex flex-col gap-1">
+      <StaggerReveal variant="fade-up" stagger={70} duration={400} className="flex flex-col gap-1">
         {items.map((item) => (
           <NewsItemRow
             key={String(item.newsId)}
@@ -26,7 +27,7 @@ export function NewsPopularPanel({
             categoryLabel={categoryLabel}
           />
         ))}
-      </div>
+      </StaggerReveal>
     </div>
   )
 }

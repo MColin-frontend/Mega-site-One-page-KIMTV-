@@ -9,6 +9,7 @@ import { getRoutes } from "@/config/routes"
 import { FOOTBALL_GAME_ID } from "@/constants/component/home.constants"
 
 import { fetchHotNewsByGameAction, fetchNewsArticleAction } from "@/features/news/news.server"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Breadcrumb } from "@/components/ui/breadcrumb"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
@@ -48,17 +49,9 @@ export async function NewsArticlePage({ slug }: { slug: string }) {
           {/* Author row */}
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-3">
-              {detail.userAvatar && (
-                <Img
-                  src={detail.userAvatar}
-                  alt={detail.userName ?? ""}
-                  width={40}
-                  height={40}
-                  rounded="full"
-                  objectFit="cover"
-                  className="shrink-0"
-                />
-              )}
+              <Avatar size={40}>
+                <AvatarImage src={detail.userAvatar} />
+              </Avatar>
               <div className="flex flex-col gap-0.5">
                 {detail.userName && (
                   <Typography variant="body-sm" weight="600" className="text-white">

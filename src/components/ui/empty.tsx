@@ -5,7 +5,7 @@ import { Typography } from "@/components/ui/typography"
 
 import imgEmpty from "@assets/images/common/img-empty.png"
 
-export interface EmptyProps {
+interface EmptyProps {
   tip?: string
   image?: string
   imageSize?: number
@@ -24,7 +24,7 @@ export function Empty({ tip, image, imageSize = 120, className }: EmptyProps) {
         className="opacity-60"
       />
       {tip && (
-        <Typography variant="caption" weight="500" className="text-center text-white/40">
+        <Typography variant="body-lg" weight="500" className="text-center text-white/40">
           {tip}
         </Typography>
       )}

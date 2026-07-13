@@ -18,6 +18,9 @@ export const env = {
   // → phải truyền qua Docker build-arg (xem Dockerfile / workflow).
   // prod: wss://ws.kimtv.net | dev: wss://ws-dev.kimtv.net
   wsBaseUrl: process.env.NEXT_PUBLIC_WS_BASE_URL ?? "",
+
+  // VIP API — external service, client-side accessible.
+  vipApiBaseUrl: process.env.NEXT_PUBLIC_VIP_API_BASE_URL ?? "https://api.99kim.llc",
 } as const
 
 /**

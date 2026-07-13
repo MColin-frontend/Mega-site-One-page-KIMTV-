@@ -5,7 +5,7 @@ import { formatTimestamp } from "@/lib/date"
 import { cn } from "@/lib/utils"
 
 import type { CommentRecordInterface } from "@/features/highlights/highlight.models"
-import { Img } from "@/components/ui/image"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Typography } from "@/components/ui/typography"
 
 export interface CommentCardProps {
@@ -38,18 +38,11 @@ export function CommentCard({
   deleteLabel,
 }: CommentCardProps) {
   const size = isReply ? 32 : 40
-  const avatarClass = isReply ? "h-8 w-8" : "h-10 w-10"
 
   const avatar = (
-    <Img
-      src={item.avatar ?? ""}
-      alt={item.userName ?? ""}
-      width={size}
-      height={size}
-      objectFit="cover"
-      rounded="full"
-      className={cn("shrink-0", avatarClass)}
-    />
+    <Avatar size={size}>
+      <AvatarImage src={item.avatar} />
+    </Avatar>
   )
 
   return (

@@ -13,9 +13,11 @@ import { SLUG_MAP, useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
 import { HEADER_DROPDOWN_ITEMS, MAIN_NAV_ITEMS } from "@/constants/component/layout.constants"
 
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
 import { ConfirmModal } from "@/components/ui/modal/confirm"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
 import kimtvLogo from "@assets/icons/layout/ic-kimtv.svg"
@@ -23,10 +25,11 @@ import kimtvLogo from "@assets/icons/layout/ic-kimtv.svg"
 /* ── Avatar Dropdown ─────────────────────────────────────── */
 interface AvatarDropdownProps {
   user: { name?: string | null; avatar?: string | null }
+  userId?: string | number | null
   onLogout: () => void
 }
 
-function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
+function AvatarDropdown({ user, userId, onLogout }: AvatarDropdownProps) {
   const { t, locale } = useTranslation()
   const routes = getRoutes(locale)
   const { state, open, close, toggle, setOpen } = useDisclosure("dropdown", "confirm")
@@ -43,45 +46,22 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [state.dropdown, close])
 
-  const initial = String(user.name ?? "U")
-    .slice(0, 1)
-    .toUpperCase()
-
-  function renderAvatar(size: number) {
-    if (user.avatar) {
-      return (
-        <Img
-          src={user.avatar}
-          alt={user.name ?? "Avatar"}
-          width={size}
-          height={size}
-          rounded="full"
-        />
-      )
-    }
-    return (
-      <div className="from-blue/80 to-blue flex h-full w-full items-center justify-center bg-gradient-to-br">
-        <Typography variant="caption" weight="700" className="text-white">
-          {initial}
-        </Typography>
-      </div>
-    )
-  }
-
   return (
     <div ref={wrapRef} className="relative">
       <button
         onClick={() => toggle("dropdown")}
-        className="hover:ring-gold/50 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/15 transition-all"
+        className="border-gradient-gold-radiant flex items-center justify-center rounded-full transition-all"
         aria-label={t("header.user.aria-label")}
       >
-        {renderAvatar(36)}
+        <Avatar size={50}>
+          <AvatarImage src={user?.avatar} />
+        </Avatar>
       </button>
 
       <div
         className={cn(
           "absolute top-full right-0 z-50 mt-2 w-52",
-          "rounded-xl border border-white/10 bg-[#0d1829] shadow-[0_8px_32px_rgba(0,0,0,0.6)]",
+          "panel-news rounded-xl p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.6)]",
           "origin-top-right transition-all duration-150",
           state.dropdown
             ? "pointer-events-auto scale-100 opacity-100"
@@ -89,27 +69,47 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
         )}
       >
         {/* User info */}
-        <div className="flex items-center gap-2.5 border-b border-white/8 px-3.5 py-3">
-          <div className="from-blue/80 to-blue flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br">
-            {renderAvatar(32)}
+        <div className="flex items-center gap-2 border-b border-white/8 px-3.5 py-4">
+          <div className="border-gradient-gold-radiant flex items-center justify-center rounded-full transition-all">
+            <Avatar size={48}>
+              <AvatarImage src={user?.avatar} />
+            </Avatar>
           </div>
-          <div className="min-w-0">
-            <Typography variant="body-sm" weight="600" className="truncate text-white">
-              {user.name ?? t("header.user.fallback-name")}
-            </Typography>
-            <Typography variant="caption" className="text-muted">
-              {t("header.user.account")}
-            </Typography>
-          </div>
+          <Tooltip>
+            <TooltipTrigger>
+              <Typography
+                variant="body"
+                weight="800"
+                className="line-clamp-2 text-center text-white"
+              >
+                {user.name ?? t("header.user.fallback-name")}
+              </Typography>
+            </TooltipTrigger>
+            <TooltipContent>{user.name ?? t("header.user.fallback-name")}</TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Menu items */}
         <div className="py-1">
+          {userId && (
+            <Link
+              href={routes.userInfo(String(userId))}
+              className="group flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 transition-colors hover:bg-white/5"
+            >
+              <UserRound className="text-primary size-4 shrink-0 transition-colors" />
+              <Typography
+                variant="body-sm"
+                className="text-muted whitespace-nowrap transition-colors group-hover:text-white"
+              >
+                {t("header.user.menu.profile")}
+              </Typography>
+            </Link>
+          )}
           {HEADER_DROPDOWN_ITEMS.map((item) => (
             <Link
               key={item.key}
               href={item.getHref(routes)}
-              className="group flex items-center gap-2.5 px-3.5 py-2.5 transition-colors hover:bg-white/5"
+              className="group flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 transition-colors hover:bg-white/5"
             >
               <item.icon className={cn("size-4 shrink-0 transition-colors", item.iconColor)} />
               <Typography
@@ -131,7 +131,7 @@ function AvatarDropdown({ user, onLogout }: AvatarDropdownProps) {
               close("dropdown")
               open("confirm")
             }}
-            className="group flex w-full items-center gap-2.5 px-3.5 py-2.5 transition-colors hover:bg-red-500/8"
+            className="group flex w-full items-center gap-2.5 rounded-lg px-3.5 py-2.5 transition-colors hover:bg-red-500/8"
           >
             <LogOut className="size-4 shrink-0 text-red-400" />
             <Typography
@@ -293,7 +293,7 @@ export function Header() {
             <SearchInput />
 
             {isLoggedIn && user ? (
-              <AvatarDropdown user={user} onLogout={logout} />
+              <AvatarDropdown user={user} userId={user.userId ?? user.uid} onLogout={logout} />
             ) : (
               <Button variant="gradient" onClick={login} className="max-lg:hidden">
                 <UserRound className="h-3.5 w-3.5" />

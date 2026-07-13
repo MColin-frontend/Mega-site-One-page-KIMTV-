@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import dynamic from "next/dynamic"
 
 import { cn } from "@/lib/utils"
 import { useRouter } from "@/hooks/useRouter"
@@ -10,7 +11,11 @@ import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
 
 import { Chat, type UserRole } from "@/components/ui/chat"
 import { MatchLiveInfoBar } from "@/components/ui/match/match-live-info-bar"
-import { VideoPlayer, type VideoSource } from "@/components/ui/video"
+import type { VideoSource } from "@/components/ui/video"
+
+const VideoPlayer = dynamic(() => import("@/components/ui/video").then((m) => m.VideoPlayer), {
+  ssr: false,
+})
 
 /* ── Types ───────────────────────────────────────────────── */
 

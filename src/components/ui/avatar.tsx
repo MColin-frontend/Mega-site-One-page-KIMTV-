@@ -1,7 +1,10 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 
+import { getRoutes } from "@/config/routes"
+import { useTranslation } from "@/i18n"
 import { cn } from "@/lib/utils"
 
 import { Img } from "./image"
@@ -10,13 +13,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 /* ── Avatar ──────────────────────────────────────────────── */
 interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: number
+  userId?: string | number
 }
 
-function Avatar({ className, size = 32, children, ...props }: AvatarProps) {
-  return (
+function Avatar({ className, size = 32, children, userId, ...props }: AvatarProps) {
+  const { locale } = useTranslation()
+
+  const el = (
     <div
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/10 select-none",
+        userId && "cursor-pointer",
         className
       )}
       style={{ width: size, height: size }}
@@ -25,6 +32,12 @@ function Avatar({ className, size = 32, children, ...props }: AvatarProps) {
       {children}
     </div>
   )
+
+  if (userId != null) {
+    return <Link href={getRoutes(locale).userInfo(userId)}>{el}</Link>
+  }
+
+  return el
 }
 
 /* ── AvatarImage ─────────────────────────────────────────── */
@@ -121,6 +134,7 @@ interface AvatarWithTooltipProps {
   overlap?: number
   index?: number
   className?: string
+  userId?: string | number
 }
 
 function AvatarWithTooltip({
@@ -131,6 +145,7 @@ function AvatarWithTooltip({
   overlap = 8,
   index = 0,
   className,
+  userId,
 }: AvatarWithTooltipProps) {
   return (
     <Tooltip>
@@ -139,7 +154,7 @@ function AvatarWithTooltip({
           className="relative cursor-pointer transition-transform duration-150 hover:z-10 hover:-translate-y-1"
           style={{ marginLeft: index > 0 ? `-${overlap}px` : 0 }}
         >
-          <Avatar size={size} className={cn("ring-2 ring-[#0c1526]", className)}>
+          <Avatar size={size} className={cn("ring-2 ring-[#0c1526]", className)} userId={userId}>
             {src ? (
               <AvatarImage src={src} alt={alt ?? ""} />
             ) : (

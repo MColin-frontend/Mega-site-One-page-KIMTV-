@@ -5,6 +5,7 @@ import { getRoutes } from "@/config/routes"
 
 import { fetchFeaturedNewsAction, fetchLatestNewsListAction } from "@/features/home/home.api"
 import { fetchPopularNewsListAction } from "@/features/news/news.server"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { Typography } from "@/components/ui/typography"
 
 import { NewsHeroCarousel } from "./hero"
@@ -57,22 +58,28 @@ export async function NewsIndexPage() {
 
   return (
     <div className="container flex flex-col gap-8 py-8 max-lg:gap-6 max-lg:py-6 max-md:gap-4 max-md:py-4">
-      <div className="flex flex-col gap-1">
-        <Typography variant="h1" className="text-gold uppercase">
-          {t("news.page-title")}
-        </Typography>
-        <Typography variant="body" weight="600" className="text-white">
-          {t("news.subtitle")}
-        </Typography>
-      </div>
+      <ScrollReveal variant="fade-up" duration={500} distance={20}>
+        <div className="flex flex-col gap-1">
+          <Typography variant="h1" className="text-gold uppercase">
+            {t("news.page-title")}
+          </Typography>
+          <Typography variant="body" weight="600" className="text-white">
+            {t("news.subtitle")}
+          </Typography>
+        </div>
+      </ScrollReveal>
 
-      <Suspense fallback={<NewsHeroSkeleton />}>
-        <HeroSection />
-      </Suspense>
+      <ScrollReveal variant="fade-up" duration={600} distance={24} delay={80}>
+        <Suspense fallback={<NewsHeroSkeleton />}>
+          <HeroSection />
+        </Suspense>
+      </ScrollReveal>
 
-      <Suspense fallback={<NewsPanelsSkeleton />}>
-        <PanelsSection />
-      </Suspense>
+      <ScrollReveal variant="fade-up" duration={600} distance={20} delay={160}>
+        <Suspense fallback={<NewsPanelsSkeleton />}>
+          <PanelsSection />
+        </Suspense>
+      </ScrollReveal>
     </div>
   )
 }
