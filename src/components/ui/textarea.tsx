@@ -11,13 +11,7 @@ interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>
 }
 
 const variantStyles: Record<TextareaVariant, string> = {
-  default: cn(
-    "border border-input-border bg-input-surface",
-    "transition-all duration-200",
-    "hover:border-input-border-hover hover:bg-input-surface-hover hover:shadow-input-hover",
-    "focus:border-input-border-focus focus:bg-input-surface-hover",
-    "focus:shadow-input-focus"
-  ),
+  default: "border border-white/8 bg-white/[0.03] transition-colors hover:border-white/15 focus:border-white/25",
   ghost: "border-transparent bg-transparent",
 }
 

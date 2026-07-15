@@ -52,7 +52,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
   const countdown = useCountdown(match?.startTime)
 
   function handleClick() {
-    if (!match?.matchId || !match?.gameId) return
+    if (!match?.matchId || !match?.gameId || !isLive) return
     navigateToLive(match.matchId, match.gameId)
   }
 
@@ -87,8 +87,8 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
     <div
       onClick={handleClick}
       className={cn(
-        "card-match-bg rounded-12 relative h-full w-full cursor-pointer overflow-hidden transition-all",
-        "hover:shadow-card-hover shadow-none",
+        "card-match-bg rounded-12 relative h-full w-full overflow-hidden transition-all shadow-none",
+        isLive ? "cursor-pointer hover:shadow-card-hover" : "cursor-default",
         className
       )}
     >

@@ -12,10 +12,13 @@ import { useTranslation } from "@/i18n"
 import { handleFollowUser } from "@/features/news/news.api"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Img } from "@/components/ui/image"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
 import { useUserContent } from "../hooks/use-user-content"
 import { useUserInfo } from "../hooks/use-user-info"
+import { useVipBadge } from "../hooks/use-vip-badge"
 import { USER_INFO_STAT_ITEMS } from "../user-info.constants"
 import type { UserInfoModel } from "../user-info.models"
 import { ProfilePanelSkeleton } from "./skeleton"
@@ -33,6 +36,7 @@ export function UserInfoProfilePanel() {
   const { data: userInfo, isLoading } = useUserInfo(id, loginUserId)
   const { data: articleData } = useUserContent(id, "article", 1, loginUserId)
   const { data: videoData } = useUserContent(id, "video", 1, loginUserId)
+  const { data: vipBadge } = useVipBadge(id)
 
   const [following, setFollowing] = useState(() => isFollowed(userInfo?.hasFollow))
   const [followLoading, setFollowLoading] = useState(false)
@@ -107,6 +111,32 @@ export function UserInfoProfilePanel() {
               <Typography size="48" weight="700" className="max-md:text-30">
                 {userInfo?.name ?? "—"}
               </Typography>
+              {userInfo?.vip99Icon && (
+                <Img
+                  src={userInfo.vip99Icon}
+                  alt="VIP"
+                  width={80}
+                  height={40}
+                  objectFit="contain"
+                  className="!h-10 !w-auto shrink-0"
+                />
+              )}
+              {vipBadge?.badgeIcon && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="shrink-0">
+                      <Img
+                        src={vipBadge.badgeIcon}
+                        alt={vipBadge.badgeName ?? "VIP"}
+                        width={32}
+                        height={32}
+                        objectFit="contain"
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  {vipBadge.badgeName && <TooltipContent>{vipBadge.badgeName}</TooltipContent>}
+                </Tooltip>
+              )}
               {showFollow && (
                 <Button
                   variant={following ? "outline" : "gradient"}

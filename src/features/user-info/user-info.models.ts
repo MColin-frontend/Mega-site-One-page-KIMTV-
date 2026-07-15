@@ -12,6 +12,7 @@ export interface UserInfoModel {
   hasFollow?: boolean | 1 | 0 | "1" | "true" | null
   isVip?: boolean | null
   adminId?: string | null
+  vip99Icon?: string | null
 }
 
 export interface UserContentItem {
@@ -33,4 +34,12 @@ export interface UserContentItem {
 export interface UserContentResult {
   records: UserContentItem[]
   total: number
+}
+
+export interface VipBadgeModel {
+  badgeId?: number | string | null
+  badgeName?: string | null
+  badgeIcon?: string | null
+  level?: number | null
+  isVip?: boolean | null
 }

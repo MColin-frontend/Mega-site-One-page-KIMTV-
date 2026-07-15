@@ -84,7 +84,7 @@ export function HeroVideo({ matches, defaultMatchId, className }: HeroVideoProps
   return (
     <div
       className={cn(
-        "flex h-[min(76vh,1000px)] w-full gap-4 max-lg:h-auto max-lg:flex-col",
+        "flex h-[min(76vh,880px)] w-full gap-4 max-lg:h-auto max-lg:flex-col",
         className
       )}
     >

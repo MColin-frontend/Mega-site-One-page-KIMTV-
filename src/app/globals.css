@@ -273,6 +273,48 @@
   --radius-full: 9999px;
 }
 
+/* ─── Tiptap editor ─────────────────────────────────────────── */
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--color-placeholder);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.tiptap h1,
+.tiptap h2,
+.tiptap h3 {
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 0.25em;
+}
+.tiptap h2 {
+  font-size: 1.2em;
+}
+.tiptap ul,
+.tiptap ol {
+  padding-left: 1.25rem;
+}
+.tiptap ul {
+  list-style: disc;
+}
+.tiptap ol {
+  list-style: decimal;
+}
+.tiptap a {
+  color: theme(colors.amber.400);
+  text-decoration: underline;
+}
+.tiptap strong {
+  font-weight: 700;
+}
+.tiptap em {
+  font-style: italic;
+}
+.tiptap s {
+  text-decoration: line-through;
+}
+
 /* ─── Base ───────────────────────────────────────────────────── */
 @layer base {
   html {
@@ -779,6 +821,76 @@
 
 .xgplayer-controls {
   z-index: 12 !important;
+}
+
+/* Ẩn center grid (big play button area) */
+.xgplayer .xg-center-grid {
+  display: none !important;
+}
+
+/* Controls ẩn mặc định, hiện khi hover */
+.xgplayer .xgplayer-controls {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease !important;
+  height: auto !important;
+  min-height: unset !important;
+  padding: 8px 12px !important;
+  z-index: 11 !important;
+}
+
+.xgplayer:hover .xgplayer-controls,
+.xgplayer.xgplayer-pause .xgplayer-controls {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.xgplayer .xg-inner-controls {
+  height: auto !important;
+  align-items: center !important;
+  bottom: 10px !important;
+}
+
+.xgplayer .xg-left-grid,
+.xgplayer .xg-right-grid {
+  height: auto !important;
+  align-items: center !important;
+}
+
+/* Icon play giữa màn hình khi pause — style giống feed-player */
+.xgplayer.xgplayer-pause::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'%3E%3Ccircle cx='36' cy='36' r='35' fill='rgba(0%2C0%2C0%2C0.28)' stroke='rgba(255%2C255%2C255%2C0.92)' stroke-width='2'/%3E%3Cpath d='M27 19 L27 53 L55 36 Z' fill='white'/%3E%3C/svg%3E")
+    center / 72px no-repeat;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ─── News sidebar (home fixtures) ──────────────────────────── */
+.news-sidebar {
+  @media (width < 1024px) {
+    order: 1;
+    width: 100%;
+  }
+
+  @media (width < 640px) {
+    order: 1;
+    width: 100%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
 }
 
 @keyframes shine {

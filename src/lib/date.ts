@@ -78,11 +78,15 @@ export function formatPublishTime(publishTime: string | number | undefined | nul
   })
 }
 
-/** Milliseconds → "mm:ss" (dùng cho duration video). */
+/** Milliseconds → "mm:ss" hoặc "HH:mm:ss" khi >= 1 giờ. */
 export function formatDuration(ms: number): string {
-  const s = Math.floor(ms / 1000)
-  const m = Math.floor(s / 60)
-  return `${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`
+  const totalSeconds = Math.floor(ms / 1000)
+  const h = Math.floor(totalSeconds / 3600)
+  const m = Math.floor((totalSeconds % 3600) / 60)
+  const s = totalSeconds % 60
+  return h > 0
+    ? `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+    : `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
 }
 
 export function formatMatchDate(ts: number): string {

@@ -67,10 +67,12 @@ export function Img({
   }
 
   if (fill) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { width: _w, height: _h, ...fillProps } = props
     return (
       <div className={cn("relative overflow-hidden", roundedClass, wrapperClassName)}>
         <NextImage
-          {...props}
+          {...fillProps}
           {...sharedProps}
           src={imgSrc}
           fill

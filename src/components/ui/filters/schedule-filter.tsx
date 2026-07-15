@@ -22,6 +22,7 @@ interface ScheduleFilterProps {
   status: MatchStatusTabValue
   selectedLeagues: number[]
   disabled?: boolean
+  minDate?: Date | null
   onPickedDateChange: (d: Date | null) => void
   onStatusChange: (val: MatchStatusTabValue) => void
   onLeagueChange: (ids: number[]) => void
@@ -34,6 +35,7 @@ export function ScheduleFilter({
   status,
   selectedLeagues,
   disabled,
+  minDate,
   onPickedDateChange,
   onStatusChange,
   onLeagueChange,
@@ -61,7 +63,7 @@ export function ScheduleFilter({
 
   return (
     <section
-      className="flex items-center justify-end gap-2 max-lg:w-full max-lg:flex-wrap [&_button]:max-lg:w-full [&>*]:max-lg:w-full [&>*]:max-lg:flex-1"
+      className="flex items-center justify-end gap-2 max-sm:w-full max-sm:flex-wrap [&>*]:max-sm:basis-[calc(50%-4px)] [&>*]:max-sm:grow [&>*]:max-sm:shrink-0"
       style={disabled ? { pointerEvents: "none", opacity: 0.5 } : undefined}
     >
       <Select
@@ -86,6 +88,7 @@ export function ScheduleFilter({
         size="sm"
         disabled={disabled || status === MATCH_STATUS_TAB.LIVE}
         maxDate={status === MATCH_STATUS_TAB.FINISHED ? new Date() : null}
+        minDate={minDate}
       />
     </section>
   )

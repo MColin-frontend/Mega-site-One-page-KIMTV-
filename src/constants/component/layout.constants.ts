@@ -29,7 +29,7 @@ export const HEADER_DROPDOWN_ITEMS: DropdownItemInterface[] = [
     labelKey: "header.user.menu.broadcast",
     icon: MonitorPlay,
     iconColor: "text-amber-400",
-    getHref: () => "#",
+    getHref: (r) => r.broadcastCenter,
   },
   {
     key: "settings",

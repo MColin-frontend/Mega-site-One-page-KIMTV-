@@ -17,6 +17,8 @@ export const getRoutes = (locale: LocaleType) => ({
   },
   data: localePath(locale, "du-lieu"),
   profile: localePath(locale, "ho-so"),
+  broadcast: localePath(locale, "phat-truc-tiep"),
+  broadcastCenter: localePath(locale, "trung-tam-phat-truc-tiep"),
   auth: {
     login: localePath(locale, "dang-nhap"),
     register: localePath(locale, "dang-ky"),

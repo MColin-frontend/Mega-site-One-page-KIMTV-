@@ -46,16 +46,18 @@ export function LivePage({ match }: LivePageProps) {
         </div>
       </div>
 
-      {Object.values(LIVE_SECTION_CONFIG).map((cfg) => (
-        <MatchCarousel
-          key={cfg.i18nKey}
-          title={t(cfg.i18nKey as Parameters<typeof t>[0])}
-          endpoint={cfg.endpoint}
-          method={cfg.method}
-          params={{ ...cfg.params }}
-          matchType={cfg.matchType}
-        />
-      ))}
+      {[LIVE_SECTION_CONFIG.LIVE, LIVE_SECTION_CONFIG.UPCOMING, LIVE_SECTION_CONFIG.FINISHED].map(
+        (cfg) => (
+          <MatchCarousel
+            key={cfg.i18nKey}
+            title={t(cfg.i18nKey as Parameters<typeof t>[0])}
+            endpoint={cfg.endpoint}
+            method={cfg.method}
+            params={{ ...cfg.params }}
+            matchType={cfg.matchType}
+          />
+        )
+      )}
     </div>
   )
 }

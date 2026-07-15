@@ -52,7 +52,6 @@ export const MATCH_STAT_ICONS = {
 
 /** Config tĩnh cho từng stat — icon + alt + i18n key */
 export const MATCH_STAT_CONFIG = [
-  { icon: icFootball, alt: "ball", labelKey: MATCH_STAT_I18N_KEYS.shots },
   { icon: icYellowCardV2, alt: "yellow", labelKey: MATCH_STAT_I18N_KEYS.yellowCard },
   { icon: icRedCardV2, alt: "red", labelKey: MATCH_STAT_I18N_KEYS.redCard },
   { icon: icCornerFlag, alt: "corner", labelKey: MATCH_STAT_I18N_KEYS.corner },

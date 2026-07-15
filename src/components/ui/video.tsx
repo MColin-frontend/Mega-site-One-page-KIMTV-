@@ -220,14 +220,17 @@ export function VideoPlayer({
           </div>
         </div>
       )}
-      <div id={mountId} className="relative z-10 h-full w-full overflow-hidden rounded-[inherit]" />
+      <div
+        id={mountId}
+        className="xg-mount relative h-full w-full overflow-hidden rounded-[inherit]"
+      />
 
       {/* Vị trí 0: full overlay phủ toàn video */}
       <AdBanner
         src={playerOverlay?.[0]?.mediaPc || null}
         href={playerOverlay?.[0]?.jumpUrl || null}
         fallback={videoBanner}
-        className="absolute bottom-0 left-0 z-10 w-full"
+        className="video-ad-banner absolute bottom-0 left-0 z-10 w-full"
         skeletonClassName="aspect-[1200/58]"
       />
       {/* Vị trí 1: banner góc trái trên */}
@@ -235,7 +238,7 @@ export function VideoPlayer({
         src={playerOverlay?.[1]?.mediaPc || null}
         href={playerOverlay?.[1]?.jumpUrl || null}
         fallback={icLiveSmall}
-        className="absolute top-1 left-1 z-10 w-32 max-md:w-24 max-sm:w-16"
+        className="video-ad-banner absolute top-1 left-1 z-10 w-32 max-md:w-24 max-sm:w-16"
         skeletonClassName="aspect-[128/54]"
       />
     </div>

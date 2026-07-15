@@ -7,4 +7,5 @@ export const QUERY_KEYS = {
   userContent: (userId: string, type: "article" | "video", page: number) =>
     ["user-content", userId, type, page] as const,
   hotNews: ["hot-news"] as const,
+  vipBadge: (userId: string) => ["vip-badge", userId] as const,
 } as const

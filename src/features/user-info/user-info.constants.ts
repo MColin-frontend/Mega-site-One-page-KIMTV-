@@ -45,6 +45,7 @@ export const USER_INFO_STAT_ITEMS = [
 
 export const USER_INFO_API = {
   PROFILE: "/user/info",
+  VIP_BADGE: "/vip/badge",
   CONTENT: (userId: string | number, type: "article" | "video", page: number) =>
     `/user/${userId}/${type}/${page}`,
 } as const

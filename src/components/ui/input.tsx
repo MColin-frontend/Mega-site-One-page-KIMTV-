@@ -8,32 +8,22 @@ type InputSize = "sm" | "default" | "lg"
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "prefix"> {
   variant?: InputVariant
   inputSize?: InputSize
-  /** Icon bên trái, không có separator */
   leftIcon?: ReactNode
-  /** Icon bên phải, không có separator */
   rightIcon?: ReactNode
-  /** Node bên trái có separator (vd: "https://", dropdown chọn quốc gia) */
   prefix?: ReactNode
-  /** Node bên phải có separator (vd: "px", ".com") */
   suffix?: ReactNode
   wrapperClassName?: string
 }
 
-const wrapperVariants: Record<InputVariant, string> = {
-  default: cn(
-    "border border-input-border bg-input-surface backdrop-blur-sm",
-    "transition-all duration-200",
-    "hover:border-input-border-hover hover:bg-input-surface-hover hover:shadow-input-hover",
-    "focus-within:border-input-border-focus focus-within:bg-input-surface-hover",
-    "focus-within:shadow-input-focus"
-  ),
+const borderStyles: Record<InputVariant, string> = {
+  default: "border border-white/8 bg-white/[0.03] transition-colors hover:border-white/15 focus-within:border-white/25",
   ghost: "border-transparent bg-transparent",
 }
 
 const sizes: Record<InputSize, string> = {
-  sm: "h-8  rounded-8  px-2.5 py-1   gap-2   text-12",
-  default: "h-9  rounded-10 px-3   py-1.5 gap-2.5 text-14",
-  lg: "h-11 rounded-12 px-3.5 py-2   gap-3   text-14",
+  sm: "h-8 rounded-8 px-2.5 gap-2 text-12",
+  default: "h-9 rounded-8 px-4 gap-2.5 text-14",
+  lg: "h-11 rounded-12 px-3.5 gap-3 text-14",
 }
 
 const iconSizes: Record<InputSize, string> = {
@@ -43,9 +33,9 @@ const iconSizes: Record<InputSize, string> = {
 }
 
 const affixSizes: Record<InputSize, string> = {
-  sm: "px-2   text-12",
-  default: "px-2.5 text-13",
-  lg: "px-3   text-14",
+  sm: "px-2 text-12",
+  default: "px-2.5 text-12",
+  lg: "px-3 text-14",
 }
 
 export function Input({
@@ -59,30 +49,12 @@ export function Input({
   wrapperClassName,
   ...props
 }: InputProps) {
-  const hasWrapper = leftIcon || rightIcon || prefix || suffix
-
-  const inputEl = (
-    <input
-      className={cn(
-        "min-w-0 flex-1 bg-transparent text-white outline-none",
-        "placeholder:text-placeholder placeholder:text-16 transition-colors duration-200",
-        !hasWrapper && wrapperVariants[variant],
-        !hasWrapper && sizes[inputSize],
-        !hasWrapper && "w-full",
-        className
-      )}
-      {...props}
-    />
-  )
-
-  if (!hasWrapper) return inputEl
-
   return (
     <div
       className={cn(
         "group flex w-full items-center",
         sizes[inputSize],
-        wrapperVariants[variant],
+        borderStyles[variant],
         wrapperClassName
       )}
     >
@@ -90,8 +62,7 @@ export function Input({
         <>
           <span
             className={cn(
-              "text-muted shrink-0 transition-colors duration-200",
-              "group-focus-within:text-gold/70",
+              "text-muted shrink-0 transition-colors duration-200 group-focus-within:text-gold/70",
               affixSizes[inputSize],
               "-ml-px flex items-center self-stretch"
             )}
@@ -105,8 +76,7 @@ export function Input({
       {leftIcon && (
         <span
           className={cn(
-            "text-muted shrink-0 transition-colors duration-200",
-            "group-focus-within:text-gold/70 group-hover:text-white/70",
+            "text-muted shrink-0 transition-colors duration-200 group-focus-within:text-gold/70 group-hover:text-white/70",
             iconSizes[inputSize]
           )}
         >
@@ -114,7 +84,15 @@ export function Input({
         </span>
       )}
 
-      {inputEl}
+      <input
+        className={cn(
+          "min-w-0 flex-1 bg-transparent text-white outline-none",
+          "placeholder:text-placeholder placeholder:text-14 placeholder:font-500 placeholder:leading-150 placeholder:italic",
+          "transition-colors duration-200",
+          className
+        )}
+        {...props}
+      />
 
       {rightIcon && <span className="shrink-0">{rightIcon}</span>}
 
@@ -123,8 +101,7 @@ export function Input({
           <span className="bg-input-border group-focus-within:bg-gold/20 h-4 w-px shrink-0 transition-colors duration-200" />
           <span
             className={cn(
-              "text-muted shrink-0 transition-colors duration-200",
-              "group-focus-within:text-gold/70",
+              "text-muted shrink-0 transition-colors duration-200 group-focus-within:text-gold/70",
               affixSizes[inputSize],
               "-mr-px flex items-center self-stretch"
             )}
@@ -133,6 +110,28 @@ export function Input({
           </span>
         </>
       )}
+    </div>
+  )
+}
+
+/* ── InputDisplay — read-only label/value row ─────────────── */
+
+interface InputDisplayProps {
+  label: ReactNode
+  value: ReactNode
+  className?: string
+}
+
+export function InputDisplay({ label, value, className }: InputDisplayProps) {
+  return (
+    <div
+      className={cn(
+        "rounded-8 flex items-center justify-between border border-white/6 bg-white/[0.02] px-4 py-2.5",
+        className
+      )}
+    >
+      <span className="text-14 font-400 leading-150 text-white/60">{label}</span>
+      <span className="text-14 font-600 leading-150 text-white">{value}</span>
     </div>
   )
 }

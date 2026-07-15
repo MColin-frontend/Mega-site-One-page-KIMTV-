@@ -19,6 +19,7 @@ interface ConfirmModalProps {
   cancelLabel?: string
   onConfirm?: () => void
   onCancel?: () => void
+  image?: string
 }
 
 const TYPE_CONFIG: Record<
@@ -52,6 +53,7 @@ function ConfirmModal({
   cancelLabel = "Hủy",
   onConfirm,
   onCancel,
+  image,
 }: ConfirmModalProps) {
   const { Icon, iconClass, bgClass } = TYPE_CONFIG[type]
 
@@ -79,15 +81,20 @@ function ConfirmModal({
             )}
           >
             <div className="flex flex-col items-center px-6 pt-9 pb-7 text-center">
-              {/* Icon */}
-              <div
-                className={cn(
-                  "mb-5 flex size-18 items-center justify-center rounded-full",
-                  bgClass
-                )}
-              >
-                <Icon className={cn("size-9", iconClass)} strokeWidth={1.6} />
-              </div>
+              {/* Image hoặc Icon */}
+              {image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={image} alt="" className="mb-5 h-[100px] w-auto object-contain" />
+              ) : (
+                <div
+                  className={cn(
+                    "mb-5 flex size-18 items-center justify-center rounded-full",
+                    bgClass
+                  )}
+                >
+                  <Icon className={cn("size-9", iconClass)} strokeWidth={1.6} />
+                </div>
+              )}
 
               <AlertDialog.Title className="text-24 font-700 text-white">{title}</AlertDialog.Title>
               <AlertDialog.Description className="text-16 text-muted mt-2.5 leading-relaxed">
@@ -113,7 +120,7 @@ function ConfirmModal({
                   <Button
                     variant="gradient"
                     size="lg"
-                    className="text-15 flex-1"
+                    className="text-15 flex-1 text-black"
                     onClick={handleConfirm}
                   >
                     {confirmLabel}

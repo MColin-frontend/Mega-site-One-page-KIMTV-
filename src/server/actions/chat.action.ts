@@ -58,6 +58,7 @@ function normalizeRawMessage(item: Record<string, unknown>): ChatMessage {
     hasFictitious: item.hasFictitious as boolean | undefined,
     userAvatar: ((item.avatar ?? item.userAvatar) as string | null) || undefined,
     sendTime: (item.timeMillis ?? item.sendTime) as number | undefined,
+    vip99Icon: (item.vip99Icon as string | null) || null,
   }
 }
 
