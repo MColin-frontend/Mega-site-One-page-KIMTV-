@@ -404,17 +404,22 @@ export function HighlightsFeed({
     if (typeof window === "undefined") return
     const vw = window.innerWidth
     const vh = window.innerHeight
-    const headerH = document.getElementById("site-header")?.offsetHeight ?? 60
+    const headerH = document.getElementById("site-header")?.offsetHeight ?? 78
     const isMobile = vw <= 768
     const bottomNavH = isMobile ? 56 : 0
     const sideMenuW = isMobile ? 0 : 96
     const railW = isMobile ? 0 : 60
     const gap = 12
 
-    const stageH = Math.max(vh - headerH - bottomNavH - (isMobile ? 0 : 20), 360)
-    const maxPlayerW = Math.max(vw - sideMenuW - railW - gap * 2 - (isMobile ? 0 : 48), 260)
-    let pw = Math.round((stageH * 9) / 16)
-    if (pw > maxPlayerW) pw = maxPlayerW
+    const stageH = Math.max(vh - headerH - bottomNavH - (isMobile ? 0 : 34), 360)
+    let pw: number
+    if (isMobile) {
+      pw = vw
+    } else {
+      const maxPlayerW = Math.max(vw - sideMenuW - railW - gap * 2 - 48, 260)
+      pw = Math.round((stageH * 9) / 16)
+      if (pw > maxPlayerW) pw = maxPlayerW
+    }
 
     setStageHeight(Math.round(stageH))
     setPlayerWidth(Math.round(pw))

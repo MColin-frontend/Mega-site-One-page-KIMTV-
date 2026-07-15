@@ -2,10 +2,11 @@
 
 import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
-
+import { cn } from "@/lib/utils"
 import { useRouter } from "@/hooks/useRouter"
 
 import { useTranslation } from "@/i18n"
+import { LiveScheduleTabEnum } from "@/features/live-schedule/live-schedule.enums"
 
 import { liveMatchesGridQueryOptions } from "@/features/live-schedule/live-schedule.api"
 import {
@@ -14,12 +15,20 @@ import {
   LIVE_SCHEDULE_TAB_PARAM,
   type LiveScheduleTab,
 } from "@/features/live-schedule/live-schedule.constants"
+import NextImage from "next/image"
+
 import CarouselInfinity from "@/components/ui/carousel/carousel-infinity"
 import { Empty } from "@/components/ui/empty"
 import { MatchCardLive } from "@/components/ui/match/match-card-live"
 import { MatchCardLiveSkeleton } from "@/components/ui/match/skeleton"
-import { Select } from "@/components/ui/select/select"
 import { Typography } from "@/components/ui/typography"
+
+const TAB_ICONS: Record<LiveScheduleTabEnum, string> = {
+  [LiveScheduleTabEnum.ALL]: "/icons/anchor/ic-all.svg",
+  [LiveScheduleTabEnum.HOT]: "/icons/anchor/ic-hot.svg",
+  [LiveScheduleTabEnum.LIVE]: "/icons/anchor/ic-live.svg",
+  [LiveScheduleTabEnum.TV]: "/icons/anchor/ic-television.svg",
+}
 
 function getTypeScreen(tab: LiveScheduleTab): number {
   return LIVE_SCHEDULE_FILTER_OPTIONS.find((o) => o.value === tab)?.typeScreen ?? 0
@@ -36,11 +45,6 @@ export function LiveMatchFilterSection() {
 
   const typeScreen = getTypeScreen(tab)
 
-  const filterOptions = LIVE_SCHEDULE_FILTER_OPTIONS.map((o) => ({
-    value: o.value,
-    label: t(o.labelKey as Parameters<typeof t>[0]),
-  }))
-
   const { data: matches = [], isLoading } = useQuery(liveMatchesGridQueryOptions(typeScreen))
 
   const skeletonCount = 10
@@ -48,17 +52,37 @@ export function LiveMatchFilterSection() {
   return (
     <section className="card-glow rounded-12 flex flex-col gap-4 p-5">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 max-sm:flex-col max-sm:items-start">
         <Typography variant="h2">Trực tiếp</Typography>
 
-        <Select
-          options={filterOptions}
-          value={tab}
-          variant="glass"
-          size="sm"
-          triggerClassName="w-44 min-w-0"
-          onValueChange={(val) => setParams({ [LIVE_SCHEDULE_TAB_PARAM]: val }, { scroll: false })}
-        />
+        <div className="rounded-10 flex items-center gap-0.5 bg-white/5 p-1">
+          {LIVE_SCHEDULE_FILTER_OPTIONS.map((o) => {
+            const iconSrc = TAB_ICONS[o.value]
+            const isActive = tab === o.value
+            return (
+              <button
+                key={o.value}
+                onClick={() => setParams({ [LIVE_SCHEDULE_TAB_PARAM]: o.value }, { scroll: false })}
+                className={cn(
+                  "rounded-8 flex items-center gap-1.5 px-3 py-1.5 text-13 font-500 transition-all duration-150",
+                  isActive
+                    ? "bg-amber-400/15 text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.15)]"
+                    : "text-white/50 hover:bg-white/6 hover:text-white/80"
+                )}
+              >
+                <NextImage
+                  src={iconSrc}
+                  alt=""
+                  width={20}
+                  height={20}
+                  unoptimized
+                  className={cn("size-5 shrink-0", isActive ? "opacity-100" : "opacity-50")}
+                />
+                <span>{t(o.labelKey as Parameters<typeof t>[0])}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Mobile: carousel | Desktop: grid */}

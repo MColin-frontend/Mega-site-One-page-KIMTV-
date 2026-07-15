@@ -25,7 +25,7 @@ export default async function LangLayout({
   return (
     <>
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 max-md:h-full">{children}</main>
       <div className="max-md:hidden">
         <Footer />
       </div>

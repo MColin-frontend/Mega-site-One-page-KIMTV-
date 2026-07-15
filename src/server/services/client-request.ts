@@ -94,6 +94,23 @@ export function clientPost<T>(
   return request<T>({ method: "POST", url, params: options?.params, data: body }, options)
 }
 
+/** Upload multipart/form-data — bỏ Content-Type để axios/browser tự set boundary. */
+export function clientUpload<T>(
+  url: string,
+  formData: FormData,
+  options?: ClientRequestOptions
+): Promise<ClientRequestResult<T>> {
+  return request<T>(
+    {
+      method: "POST",
+      url,
+      data: formData,
+      headers: { "Content-Type": undefined },
+    },
+    options
+  )
+}
+
 export function clientDelete<T>(
   url: string,
   options?: ClientRequestOptions

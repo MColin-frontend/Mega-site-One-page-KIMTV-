@@ -20,7 +20,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Typography } from "@/components/ui/typography"
 
 import icCornerFlag from "@assets/icons/match/ic-corner-flag.svg"
-import icFootball from "@assets/icons/match/ic-football.png"
 import icMic from "@assets/icons/match/ic-mic.svg"
 import icRedCardV2 from "@assets/icons/match/ic-red-card-v2.svg"
 import icYellowCardV2 from "@assets/icons/match/ic-yellow-card-v2.svg"
@@ -273,7 +272,10 @@ export function MatchCardLive({
             <div className="flex items-center gap-2.5">
               {match.anchorAvatar && (
                 <div className="relative shrink-0">
-                  <Avatar size={52} className="ring-live-green shadow-[0_0_16px_rgba(0,0,0,0.9),0_0_8px_rgba(0,200,100,0.3)] ring-2">
+                  <Avatar
+                    size={52}
+                    className="ring-live-green shadow-[0_0_16px_rgba(0,0,0,0.9),0_0_8px_rgba(0,200,100,0.3)] ring-2"
+                  >
                     <AvatarImage src={match.anchorAvatar} />
                   </Avatar>
                   <div className="bg-live-green-bg shadow-live-green-glow absolute -right-1.5 -bottom-1.5 flex size-7 items-center justify-center rounded-full">
@@ -413,12 +415,6 @@ export function MatchCardLive({
         {!isUpcoming && (
           <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.06] px-3 py-2 backdrop-blur-2xl">
             {[
-              {
-                icon: icFootball,
-                alt: "ball",
-                value: 0,
-                labelKey: "match.card.stats.shots",
-              },
               {
                 icon: icYellowCardV2,
                 alt: "yellow",

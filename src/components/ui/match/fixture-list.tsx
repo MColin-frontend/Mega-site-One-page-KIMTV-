@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { isEmpty } from "lodash"
 
 import { formatKickOff } from "@/lib/date"
@@ -15,13 +16,19 @@ import { Pagination } from "@/components/ui/pagination"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
-import icCornerKick from "@assets/icons/match/ic-goc.svg"
-import icRedCard from "@assets/icons/match/ic-red-card.svg"
-import icYellowCard from "@assets/icons/match/ic-yellow-card.svg"
+import icCornerKick from "@assets/icons/match/ic-corner-flag.svg"
+import icRedCard from "@assets/icons/match/ic-red-card-v2.svg"
+import icYellowCard from "@assets/icons/match/ic-yellow-card-v2.svg"
 import imgEmpty from "@assets/images/common/img-empty.png"
 
 import { FixtureStatus, ScoreBadge, StatCell } from "./parts/match-fixture-cells"
 import { FIXTURE_ROW_CLASS, FixtureListSkeleton } from "./skeleton"
+
+export interface ExtraColumnInterface {
+  header: ReactNode
+  render: (match: MatchInterface) => ReactNode
+  width?: string
+}
 
 export { FIXTURE_ROW_CLASS, FixtureListSkeleton }
 
@@ -50,14 +57,28 @@ export function groupMatches(matches: MatchInterface[]): MatchGroupInterface[] {
   return Array.from(map.values())
 }
 
-export function FixtureRow({ match }: { match: MatchInterface }) {
+export function FixtureRow({
+  match,
+  onSelect,
+  extraColumn,
+}: {
+  match: MatchInterface
+  onSelect?: (match: MatchInterface) => void
+  extraColumn?: ExtraColumnInterface
+}) {
   const navigateToLive = useLiveNavigate()
 
   const isStarted =
     match.status === MatchStatusEnum.LIVE || match.status === MatchStatusEnum.FINISHED
 
+  const isLive = match.status === MatchStatusEnum.LIVE
+
   function handleClick() {
-    navigateToLive(match.matchId, match.gameId)
+    if (onSelect) {
+      onSelect(match)
+    } else if (isLive) {
+      navigateToLive(match.matchId, match.gameId)
+    }
   }
 
   return (
@@ -66,11 +87,18 @@ export function FixtureRow({ match }: { match: MatchInterface }) {
       <div
         onClick={handleClick}
         className={cn(
-          FIXTURE_ROW_CLASS,
+          extraColumn ? FIXTURE_ROW_CLASS + ` ${extraColumn.width ?? "auto"}` : FIXTURE_ROW_CLASS,
           "rounded-10 fixture-row-bg mb-1.5 border border-white/8 py-3 last:mb-0",
-          "cursor-pointer transition-colors hover:bg-white/[0.06]",
-          "max-sm:hidden"
+          onSelect || isLive ? "cursor-pointer hover:bg-white/[0.06]" : "cursor-default",
+          "transition-colors max-lg:hidden"
         )}
+        style={
+          extraColumn
+            ? {
+                gridTemplateColumns: `8rem 1fr 4.5rem 5rem 3rem 3rem 3rem ${extraColumn.width ?? "5rem"}`,
+              }
+            : undefined
+        }
       >
         <Tooltip>
           <TooltipTrigger className="flex min-w-0 items-center gap-2 text-left">
@@ -160,6 +188,9 @@ export function FixtureRow({ match }: { match: MatchInterface }) {
           home={isStarted ? match.homeRedCard : null}
           away={isStarted ? match.awayRedCard : null}
         />
+        {extraColumn && (
+          <div className="flex items-center justify-center">{extraColumn.render(match)}</div>
+        )}
       </div>
 
       {/* Mobile */}
@@ -167,8 +198,8 @@ export function FixtureRow({ match }: { match: MatchInterface }) {
         onClick={handleClick}
         className={cn(
           "rounded-10 fixture-row-bg mb-1.5 border border-white/8 px-3 py-2.5",
-          "cursor-pointer transition-colors hover:bg-white/[0.06]",
-          "flex flex-col gap-1.5 sm:hidden"
+          onSelect || isLive ? "cursor-pointer hover:bg-white/[0.06]" : "cursor-default",
+          "transition-colors flex flex-col gap-1.5 lg:hidden"
         )}
       >
         <div className="flex items-center gap-2">
@@ -239,6 +270,12 @@ export function FixtureRow({ match }: { match: MatchInterface }) {
           </div>
         </div>
 
+        {extraColumn && (
+          <div className="flex items-center justify-end">
+            {extraColumn.render(match)}
+          </div>
+        )}
+
         {isStarted && (
           <div className="flex items-center justify-center gap-3">
             <div className="flex items-center gap-1">
@@ -281,10 +318,19 @@ export function FixtureRow({ match }: { match: MatchInterface }) {
   )
 }
 
-export function FixtureTableHeader() {
+export function FixtureTableHeader({ extraColumn }: { extraColumn?: ExtraColumnInterface }) {
   const { t } = useTranslation()
   return (
-    <div className={cn(FIXTURE_ROW_CLASS, "py-3 max-sm:hidden")}>
+    <div
+      className={cn(FIXTURE_ROW_CLASS, "py-3 max-lg:hidden")}
+      style={
+        extraColumn
+          ? {
+              gridTemplateColumns: `8rem 1fr 4.5rem 5rem 3rem 3rem 3rem ${extraColumn.width ?? "5rem"}`,
+            }
+          : undefined
+      }
+    >
       <Typography as="span" variant="body-sm" weight="500" color="foreground/60">
         {t("match.fixture.league")}
       </Typography>
@@ -336,6 +382,7 @@ export function FixtureTableHeader() {
           objectFit="contain"
         />
       </span>
+      {extraColumn && <span className="flex justify-center">{extraColumn.header}</span>}
     </div>
   )
 }
@@ -347,6 +394,8 @@ interface FixtureListProps {
   pageSize: number
   total: number
   onPageChange: (page: number) => void
+  onSelect?: (match: MatchInterface) => void
+  extraColumn?: ExtraColumnInterface
 }
 
 export function FixtureList({
@@ -356,6 +405,8 @@ export function FixtureList({
   pageSize,
   total,
   onPageChange,
+  onSelect,
+  extraColumn,
 }: FixtureListProps) {
   const { t } = useTranslation()
 
@@ -377,12 +428,17 @@ export function FixtureList({
           </Typography>
         </div>
       ) : (
-        <div className="rounded-12 overflow-hidden">
-          <FixtureTableHeader />
+        <div className="rounded-12 w-full overflow-hidden">
+          <FixtureTableHeader extraColumn={extraColumn} />
           {groups.map((group) => (
             <div key={group.key}>
               {group.matches.map((match) => (
-                <FixtureRow key={match.matchId} match={match} />
+                <FixtureRow
+                  key={match.matchId}
+                  match={match}
+                  onSelect={onSelect}
+                  extraColumn={extraColumn}
+                />
               ))}
             </div>
           ))}

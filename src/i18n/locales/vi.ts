@@ -1,3 +1,5 @@
+import broadcast from "./vi/broadcast.json"
+import broadcastCenter from "./vi/broadcast-center.json"
 import chat from "./vi/chat.json"
 import common from "./vi/common.json"
 import footer from "./vi/footer.json"
@@ -9,7 +11,7 @@ import profile from "./vi/profile.json"
 import schedule from "./vi/schedule.json"
 import video from "./vi/video.json"
 
-const vi = { common, header, footer, home, match, news, schedule, chat, video, profile }
+const vi = { common, header, footer, home, match, news, schedule, chat, video, profile, broadcast, broadcastCenter }
 
 export default vi
 
@@ -294,5 +296,85 @@ export interface Dictionary {
     }
     preferences: { title: string; addMore: string }
     security: { title: string; changeLink: string; changePassword: string }
+  }
+  broadcast: {
+    hero: { fallbackName: string; role: string; subtitle: string; channel: string }
+    rules: {
+      title: string
+      description: string
+      item0: string; item1: string; item2: string; item3: string; item4: string
+      item5: string; item6: string; item7: string; item8: string
+    }
+    streamPanel: {
+      title: string; refresh: string; refreshSuccess: string
+      fields: { rtmpUrl: string; streamKey: string; liveUrlHls: string; liveUrlFlv: string }
+    }
+    guide: {
+      button: string; title: string; subtitle: string; notice: string
+      steps: { step1: string; step2: string; step3: string; step4: string }
+    }
+    roomOwner: {
+      title: string
+      subtitle: string
+      fields: {
+        intro: { label: string; placeholder: string; error: string }
+        introDetail: { label: string; placeholder: string; error: string }
+        images: { label: string; error: string }
+        announcement: { label: string; placeholder: string; error: string }
+      }
+      actions: { cancel: string; save: string }
+      preview: {
+        noIntro: string
+        introDetail: string
+        images: string
+        announcement: string
+        edit: string
+        label: string
+      }
+    }
+    streamSettings: {
+      title: string
+      status: { idle: string }
+      liveId: string
+      ownerInfo: { subtitle: string }
+      admin: { label: string; empty: string }
+      fields: {
+        title: { label: string; placeholder: string; error: string; maxLength: string }
+        cover: { label: string; hint: string }
+        scheduled: { label: string }
+        scheduledAt: { label: string; placeholder: string; error: string }
+        liveMode: { label: string }
+        sport: { label: string; placeholder: string }
+        league: { placeholder: string; error: string }
+        match: { label: string; placeholder: string; error: string }
+        matchStatus: { label: string }
+        streamType: { label: string }
+        loginRequired: { label: string }
+        externalComment: { label: string }
+        m3u8Url: { label: string; placeholder: string }
+      }
+      options: {
+        yes: string
+        no: string
+        liveMode: { match: string; free: string }
+        sport: { soccer: string; basketball: string; tennis: string; volleyball: string; tableTennis: string; badminton: string; snooker: string; baseball: string; football: string; cricket: string }
+        liveStatus: { live: string }
+        matchStatus: { upcoming: string; live: string; finished: string; cancelled: string; postponed: string }
+        streamType: { host: string; anchor: string; bot: string }
+        loginRequired: { no: string; yes: string; coin: string; level: string }
+        externalComment: { none: string; connected: string }
+        customType: { customLive: string }
+      }
+      bannedUsers: { label: string; view: string }
+      actions: { cancel: string; confirm: string; edit: string; startStream: string; startStreamSuccess: string; endStream: string; endStreamSuccess: string; cancelReservation: string; cancelReservationConfirm: string }
+    }
+  }
+  broadcastCenter: {
+    title: string
+    sectionManage: string
+    joinNow: string
+    menu: { settings: string; reservation: string; commentator: string; channel: string; history: string; guide: string; faq: string; support: string; social: string }
+    empty: string
+    reservation: { activeTitle: string; formTitle: string; book: string; booked: string; streamTitle: string; scheduledAt: string; cancel: string; submit: string; selectMatchHint: string; changeMatch: string }
   }
 }

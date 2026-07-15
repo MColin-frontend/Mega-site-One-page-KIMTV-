@@ -31,7 +31,6 @@ import {
   CHAT_SOCIAL_NAMES,
   CHAT_SYMBOLS,
   CHAT_USER_ROLE,
-  CHAT_VIP_ICONS,
 } from "@/constants/ui/ui-chat.constants"
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
@@ -70,6 +69,7 @@ export interface ChatMessage {
   hasFictitious?: boolean
   userAvatar?: string
   sendTime?: number
+  vip99Icon?: string | null
 }
 
 export interface ChatSocials {
@@ -92,13 +92,6 @@ const WS_RECONNECT_DELAY = 2000
 const WS_HEARTBEAT_INTERVAL = 10_000
 
 type TFunc = (key: Parameters<ReturnType<typeof useTranslation>["t"]>[0]) => string
-
-function getVipIconSrc(message: ChatMessage): string | null {
-  if (message.isSVip) return CHAT_VIP_ICONS.SVIP
-  if (message.isVip) return CHAT_VIP_ICONS.VIP
-  if (message.level != null) return CHAT_VIP_ICONS.level(message.level)
-  return null
-}
 
 /* ── Sub-components ──────────────────────────────────────── */
 
@@ -161,18 +154,6 @@ function WelcomeMessageItem({
   onDoubleClick: (msg: ChatMessage) => void
   t: TFunc
 }) {
-  const vipIcon = getVipIconSrc(message)
-  const VipIcon = vipIcon ? (
-    <Img
-      src={vipIcon}
-      alt=""
-      width={32}
-      height={16}
-      unoptimized
-      className="mr-1 inline-block h-4 w-auto align-middle"
-    />
-  ) : null
-
   return (
     <div
       onDoubleClick={() => onDoubleClick(message)}
@@ -208,7 +189,17 @@ function WelcomeMessageItem({
                 <TooltipContent>{message.userName}</TooltipContent>
               </Tooltip>
               <RoleBadge message={message} t={t} />
-              {VipIcon}
+
+              {message?.vip99Icon && (
+                <Img
+                  src={message?.vip99Icon || ""}
+                  alt="vip99 icon"
+                  width={32}
+                  height={16}
+                  unoptimized
+                  objectFit="contain"
+                />
+              )}
             </div>
             {message.sendTime && (
               <Typography variant="overline" className="text-muted ml-auto shrink-0 tabular-nums">
@@ -234,19 +225,6 @@ function MessageItem({
   onDoubleClick: (msg: ChatMessage) => void
   t: TFunc
 }) {
-  const vipIcon = getVipIconSrc(message)
-
-  const VipIcon = vipIcon ? (
-    <Img
-      src={vipIcon}
-      alt=""
-      width={32}
-      height={16}
-      unoptimized
-      className="mr-1 inline-block h-4 w-auto align-middle"
-    />
-  ) : null
-
   if (message.type === CHAT_MESSAGE_TYPE.GIFT) {
     return (
       <div
@@ -256,7 +234,16 @@ function MessageItem({
           CHAT_MSG_PADDING
         )}
       >
-        {VipIcon}
+        {message?.vip99Icon && (
+          <Img
+            src={message?.vip99Icon || ""}
+            alt="vip99 icon"
+            width={32}
+            height={16}
+            unoptimized
+            objectFit="contain"
+          />
+        )}
         <span dangerouslySetInnerHTML={{ __html: message.content }} />
       </div>
     )
@@ -292,7 +279,16 @@ function MessageItem({
               {message.userName}
             </Typography>
             <RoleBadge message={message} t={t} />
-            {VipIcon}
+            {message?.vip99Icon && (
+              <Img
+                src={message?.vip99Icon || ""}
+                alt="vip99 icon"
+                width={32}
+                height={16}
+                unoptimized
+                objectFit="contain"
+              />
+            )}
           </div>
           {formatMatchTime(message?.sendTime ?? 0) && (
             <Typography variant="overline" className="text-muted shrink-0 tabular-nums">

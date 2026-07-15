@@ -80,12 +80,13 @@ const triggerVariants = cva(
           "border-transparent text-foreground hover:bg-foreground/6 data-[popup-open]:bg-foreground/6",
         navy: "border-white/10 bg-navy text-white hover:bg-navy/80 data-[popup-open]:bg-navy/80",
         gold: "border-transparent bg-gradient-to-r from-[#FFF200] to-[#AB7200] text-black hover:opacity-90",
-        dark: "border-white/20 bg-white/8 text-white backdrop-blur-sm hover:border-white/35 hover:bg-white/12 data-[popup-open]:ring-2 data-[popup-open]:ring-white/15",
+        dark: "border-white/8 bg-white/[0.03] text-white transition-colors hover:border-white/15 data-[popup-open]:border-white/25",
       },
       size: {
-        sm: "h-9 gap-2.5 px-3.5 text-13",
-        default: "h-9 gap-3 px-4 text-14",
-        lg: "h-12 gap-3 px-5 text-16",
+        sm: "h-9! gap-2.5 px-3.5 text-13",
+        default: "h-9! gap-3 px-4 text-14",
+        input: "h-11! gap-2.5 px-4 text-14",
+        lg: "h-12! gap-3 px-5 text-16",
       },
     },
     defaultVariants: { variant: "dark", size: "default" },
@@ -109,6 +110,7 @@ interface CalendarGridProps {
   hidePrev?: boolean
   hideNext?: boolean
   maxDate?: Date | null
+  minDate?: Date | null
 }
 
 function CalendarGrid({
@@ -125,6 +127,7 @@ function CalendarGrid({
   hidePrev,
   hideNext,
   maxDate,
+  minDate,
 }: CalendarGridProps) {
   const total = daysIn(year, month)
   const offset = monthOffset(year, month)
@@ -219,7 +222,9 @@ function CalendarGrid({
           const isEndpoint = isSel || isFrom || isTo
           const isToday = same(date, today)
 
-          const isDisabled = !!maxDate && ld(date) > ld(maxDate)
+          const isDisabled =
+            (!!maxDate && ld(date) > ld(maxDate)) ||
+            (!!minDate && ld(date) < ld(minDate))
 
           const handleClick = () => {
             if (isDisabled) return
@@ -315,6 +320,7 @@ export interface DatePickerProps extends VariantProps<typeof triggerVariants> {
   label?: string
   disabled?: boolean
   maxDate?: Date | null
+  minDate?: Date | null
   className?: string
   triggerClassName?: string
   popupClassName?: string
@@ -328,6 +334,7 @@ export function DatePicker({
   label,
   disabled,
   maxDate,
+  minDate,
   variant = "dark",
   size,
   className,
@@ -373,50 +380,57 @@ export function DatePicker({
     } else setViewMonth((m) => m + 1)
   }, [viewMonth])
 
+  const popover = (
+    <Popover.Root open={open} onOpenChange={(v) => setOpen(v)}>
+      <Popover.Trigger
+        disabled={disabled}
+        className={cn(triggerVariants({ variant, size }), triggerClassName)}
+      >
+        <span className={cn("flex-1 text-left", !selected && "text-white/40")}>
+          {selected ? fmt(selected) : placeholder}
+        </span>
+        {selected ? (
+          <span
+            role="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              update(null)
+            }}
+            className="flex size-3.5 items-center justify-center rounded-full opacity-50 hover:opacity-100"
+          >
+            <X className="size-3.5" />
+          </span>
+        ) : (
+          <CalendarDays className="size-3.5 opacity-50" />
+        )}
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Positioner side="bottom" align="start" sideOffset={5}>
+          <PickerPopup className={popupClassName}>
+            <CalendarGrid
+              year={viewYear}
+              month={viewMonth}
+              selected={selected}
+              onDay={handleDay}
+              onPrev={handlePrev}
+              onNext={handleNext}
+              maxDate={maxDate}
+              minDate={minDate}
+            />
+            {selected && <PickerFooter label={fmt(selected)} onClear={() => update(null)} />}
+          </PickerPopup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  )
+
+  if (!label) return <div className={className}>{popover}</div>
+
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      {label && (
-        <span className="text-11 font-600 tracking-2 text-foreground/45 uppercase">{label}</span>
-      )}
-      <Popover.Root open={open} onOpenChange={(v) => setOpen(v)}>
-        <Popover.Trigger
-          disabled={disabled}
-          className={cn(triggerVariants({ variant, size }), "w-[148px]", triggerClassName)}
-        >
-          <span className="flex-1 text-left">{selected ? fmt(selected) : placeholder}</span>
-          {selected ? (
-            <span
-              role="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                update(null)
-              }}
-              className="flex size-3.5 items-center justify-center rounded-full opacity-50 hover:opacity-100"
-            >
-              <X className="size-3.5" />
-            </span>
-          ) : (
-            <CalendarDays className="size-3.5 opacity-50" />
-          )}
-        </Popover.Trigger>
-
-        <Popover.Portal>
-          <Popover.Positioner side="bottom" align="start" sideOffset={5}>
-            <PickerPopup className={popupClassName}>
-              <CalendarGrid
-                year={viewYear}
-                month={viewMonth}
-                selected={selected}
-                onDay={handleDay}
-                onPrev={handlePrev}
-                onNext={handleNext}
-                maxDate={maxDate}
-              />
-              {selected && <PickerFooter label={fmt(selected)} onClear={() => update(null)} />}
-            </PickerPopup>
-          </Popover.Positioner>
-        </Popover.Portal>
-      </Popover.Root>
+      <span className="text-11 font-600 tracking-2 text-foreground/45 uppercase">{label}</span>
+      {popover}
     </div>
   )
 }
@@ -516,29 +530,38 @@ export function DateRangePicker({
     return null
   })()
 
-  return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      {label && (
-        <span className="text-11 font-600 tracking-2 text-foreground/45 uppercase">{label}</span>
-      )}
-      <Popover.Root open={open} onOpenChange={(v) => setOpen(v)}>
-        <Popover.Trigger
-          disabled={disabled}
-          className={cn(triggerVariants({ variant, size }), triggerClassName)}
-        >
-          <span className={cn("flex-1 text-left", !triggerText && "opacity-50")}>
-            {triggerText ?? placeholder}
-          </span>
-          <CalendarDays className="size-3.5 opacity-50" />
-        </Popover.Trigger>
+  const popover = (
+    <Popover.Root open={open} onOpenChange={(v) => setOpen(v)}>
+      <Popover.Trigger
+        disabled={disabled}
+        className={cn(triggerVariants({ variant, size }), triggerClassName)}
+      >
+        <span className={cn("flex-1 text-left", !triggerText && "opacity-50")}>
+          {triggerText ?? placeholder}
+        </span>
+        <CalendarDays className="size-3.5 opacity-50" />
+      </Popover.Trigger>
 
-        <Popover.Portal>
-          <Popover.Positioner side="bottom" align="start" sideOffset={5}>
-            <PickerPopup className={popupClassName}>
-              <div className={cn("flex", numberOfMonths === 2 && "divide-x divide-white/8")}>
+      <Popover.Portal>
+        <Popover.Positioner side="bottom" align="start" sideOffset={5}>
+          <PickerPopup className={popupClassName}>
+            <div className={cn("flex", numberOfMonths === 2 && "divide-x divide-white/8")}>
+              <CalendarGrid
+                year={viewYear}
+                month={viewMonth}
+                range={range}
+                hovered={hovered}
+                selecting={selecting}
+                onDay={handleDay}
+                onHover={setHovered}
+                onPrev={handlePrev}
+                onNext={handleNext}
+                hideNext={numberOfMonths === 2}
+              />
+              {numberOfMonths === 2 && (
                 <CalendarGrid
-                  year={viewYear}
-                  month={viewMonth}
+                  year={nextYear}
+                  month={nextMonth}
                   range={range}
                   hovered={hovered}
                   selecting={selecting}
@@ -546,30 +569,25 @@ export function DateRangePicker({
                   onHover={setHovered}
                   onPrev={handlePrev}
                   onNext={handleNext}
-                  hideNext={numberOfMonths === 2}
+                  hidePrev
                 />
-                {numberOfMonths === 2 && (
-                  <CalendarGrid
-                    year={nextYear}
-                    month={nextMonth}
-                    range={range}
-                    hovered={hovered}
-                    selecting={selecting}
-                    onDay={handleDay}
-                    onHover={setHovered}
-                    onPrev={handlePrev}
-                    onNext={handleNext}
-                    hidePrev
-                  />
-                )}
-              </div>
-              {footerText && (
-                <PickerFooter label={footerText} onClear={() => update({ from: null, to: null })} />
               )}
-            </PickerPopup>
-          </Popover.Positioner>
-        </Popover.Portal>
-      </Popover.Root>
+            </div>
+            {footerText && (
+              <PickerFooter label={footerText} onClear={() => update({ from: null, to: null })} />
+            )}
+          </PickerPopup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  )
+
+  if (!label) return <div className={className}>{popover}</div>
+
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <span className="text-11 font-600 tracking-2 text-foreground/45 uppercase">{label}</span>
+      {popover}
     </div>
   )
 }

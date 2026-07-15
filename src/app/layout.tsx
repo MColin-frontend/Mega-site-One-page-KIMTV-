@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             className="object-cover object-top"
             sizes="100vw"
           />
-          <div className="bg-background/80 absolute inset-0" />
+          <div className="bg-background/85 absolute inset-0" />
         </div>
         <QueryProvider>
           <MouseGlowProvider>

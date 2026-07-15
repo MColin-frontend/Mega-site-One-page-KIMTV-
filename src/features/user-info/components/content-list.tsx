@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { startTransition, useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { Heart, MessageCircle, Play } from "lucide-react"
@@ -315,10 +315,12 @@ function VideoSlide({
   const [playing, setPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  if (!isActive && playing) {
-    setPlaying(false)
-    if (videoRef.current) videoRef.current.pause()
-  }
+  useEffect(() => {
+    if (!isActive) {
+      startTransition(() => setPlaying(false))
+      videoRef.current?.pause()
+    }
+  }, [isActive])
 
   return (
     <Link href={href} className="group block" onClick={(e) => playing && e.preventDefault()}>
@@ -513,7 +515,7 @@ function AllTabView({ items, videoItems, routes, page, total, onPageChange }: Al
           variant="fade-left"
           duration={500}
           distance={20}
-          className="col-span-3 max-lg:order-first max-lg:col-span-full"
+          className="col-span-3 max-lg:order-first max-lg:col-span-full lg:sticky lg:top-20 lg:self-start"
         >
           <VideoPanel items={videos} routes={routes} />
         </ScrollReveal>

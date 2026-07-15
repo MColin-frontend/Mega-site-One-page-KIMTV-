@@ -11,7 +11,7 @@ import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { LiveBanner } from "./live-banner"
 import { LiveMatchFilterSection } from "./live-match-filter-section"
 
-const SECTIONS = [LIVE_SECTION_CONFIG.UPCOMING, LIVE_SECTION_CONFIG.FINISHED] as const
+const SECTIONS = [LIVE_SECTION_CONFIG.UPCOMING] as const
 
 export function LiveSchedulePage() {
   const { t } = useTranslation()

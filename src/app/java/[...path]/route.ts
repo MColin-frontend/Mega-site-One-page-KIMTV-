@@ -47,9 +47,22 @@ async function proxyToJava(req: NextRequest, context: RouteContext) {
 
   try {
     let data: unknown
+    const extraHeaders: Record<string, string> = {}
+
+    const contentType = req.headers.get("content-type") ?? ""
+
     if (req.method !== "GET" && req.method !== "HEAD") {
-      const raw = await req.text()
-      data = raw ? JSON.parse(raw) : undefined
+      if (contentType.includes("multipart/form-data")) {
+        // Forward FormData as-is — let axios set Content-Type with boundary
+        const formData = await req.formData()
+        const upstream = new FormData()
+        formData.forEach((value, key) => upstream.append(key, value))
+        data = upstream
+        extraHeaders["Content-Type"] = "multipart/form-data"
+      } else {
+        const raw = await req.text()
+        data = raw ? JSON.parse(raw) : undefined
+      }
     }
 
     const res = await httpClient.request({
@@ -57,7 +70,7 @@ async function proxyToJava(req: NextRequest, context: RouteContext) {
       url: backendPath,
       params,
       data,
-      headers,
+      headers: { ...headers, ...extraHeaders },
     })
 
     return NextResponse.json(res.data)

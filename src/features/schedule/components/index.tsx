@@ -21,7 +21,7 @@ export async function SchedulePage() {
             </Suspense>
           </div>
 
-          <div className="col-span-3 max-lg:order-2 max-lg:w-full lg:sticky lg:top-[76px] lg:self-start">
+          <div className="col-span-3 max-lg:order-2 max-lg:w-full lg:sticky lg:top-19 lg:self-start">
             <Suspense fallback={null}>
               <ScheduleSidebar />
             </Suspense>

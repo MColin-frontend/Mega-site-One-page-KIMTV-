@@ -25,7 +25,7 @@ export default function ScheduleList() {
 
   return (
     <section className="rounded-12 card-glow panel-news flex flex-col gap-4 p-5">
-      <div className="sticky top-[76px] z-20">
+      <div className="sticky top-19 z-20">
         <ScheduleFilter
           groups={leagueGroups}
           hotLeagues={hotLeagues}

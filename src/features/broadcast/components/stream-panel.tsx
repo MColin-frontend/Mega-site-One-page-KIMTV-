@@ -1,0 +1,174 @@
+"use client"
+
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { Check, Copy, Eye, EyeOff, RefreshCw } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+import { useTranslation } from "@/i18n/use-translation"
+
+import { downcastStream, type CreateAnchorLiveResult } from "@/features/broadcast/broadcast.api"
+import { useStreamStatus } from "@/features/broadcast/hooks/use-stream-status"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
+import { toast } from "@/components/ui/toast"
+import { Typography } from "@/components/ui/typography"
+
+export function StreamField({
+  label,
+  value,
+  masked = false,
+}: {
+  label: string
+  value: string
+  masked?: boolean
+}) {
+  const [visible, setVisible] = useState(!masked)
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    navigator.clipboard?.writeText(value).catch(() => {})
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Typography variant="caption" weight="500" className="text-muted">
+        {label}
+      </Typography>
+      <Input
+        readOnly
+        value={value}
+        placeholder="—"
+        className={cn("font-mono", masked && !visible && "blur-sm select-none")}
+        rightIcon={
+          <div className="flex items-center gap-0.5">
+            {masked && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => setVisible((v) => !v)}
+                className="text-white/40 hover:bg-white/8 hover:text-white"
+              >
+                {visible ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={handleCopy}
+              className="text-white/40 hover:bg-white/8 hover:text-white"
+            >
+              {copied ? (
+                <Check className="size-3.5 text-green-400" />
+              ) : (
+                <Copy className="size-3.5" />
+              )}
+            </Button>
+          </div>
+        }
+      />
+    </div>
+  )
+}
+
+export function StreamPanel() {
+  const { t } = useTranslation()
+  const { streaming, liveUrlItem, isFetching, isLoading, invalidate } = useStreamStatus()
+
+  const { data: liveResult = null } = useQuery<CreateAnchorLiveResult | null>({
+    queryKey: ["live-result"],
+    queryFn: () => null,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  })
+
+  async function handleRefresh() {
+    await invalidate()
+    toast.success(t("broadcast.streamPanel.refreshSuccess"))
+  }
+
+  if (isLoading) {
+    return (
+      <div className="card-glow rounded-12 flex flex-col gap-5 p-5">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-6 w-36 rounded-8" />
+          <Skeleton className="h-8 w-24 rounded-8" />
+        </div>
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="flex flex-col gap-1.5">
+            <Skeleton className="h-4 w-20 rounded-4" />
+            <Skeleton className="h-9 w-full rounded-8" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (!streaming) return null
+
+  return (
+    <div className="card-glow rounded-12 flex flex-col gap-5 p-5">
+      <div className="flex items-center justify-between">
+        <Typography variant="h5" className="text-white">
+          {t("broadcast.streamPanel.title")}
+        </Typography>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={!streaming}
+          className="rounded-8 text-12 font-500 bg-white/5 px-3 py-1.5 text-white/60 hover:bg-white/10 hover:text-white"
+        >
+          <RefreshCw className={cn("size-3.5", isFetching && "animate-spin")} />
+          {t("broadcast.streamPanel.refresh")}
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <StreamField
+          label={t("broadcast.streamPanel.fields.rtmpUrl")}
+          value={liveResult?.rtmpPushUrl ?? ""}
+        />
+        <StreamField
+          label={t("broadcast.streamPanel.fields.streamKey")}
+          value={liveResult?.streamingKey ?? ""}
+          masked
+        />
+        {liveUrlItem && (
+          <>
+            <StreamField
+              label={t("broadcast.streamPanel.fields.liveUrlHls")}
+              value={liveUrlItem.liveUrl ?? ""}
+            />
+            <StreamField
+              label={t("broadcast.streamPanel.fields.liveUrlFlv")}
+              value={liveUrlItem.liveUrlFlv ?? ""}
+            />
+          </>
+        )}
+      </div>
+
+      {streaming && (
+        <Button
+          type="button"
+          variant="gradient"
+          className="w-full"
+          onClick={async () => {
+            if (!liveResult?.id) return
+            await downcastStream(liveResult.id)
+            invalidate()
+          }}
+        >
+          {t("broadcast.streamSettings.actions.endStream")}
+        </Button>
+      )}
+    </div>
+  )
+}
