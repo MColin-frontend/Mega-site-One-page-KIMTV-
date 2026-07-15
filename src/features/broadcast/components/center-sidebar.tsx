@@ -120,7 +120,6 @@ export function BroadcastCenterSidebar() {
 
   return (
     <div className="flex w-80 shrink-0 flex-col gap-3 max-lg:w-full">
-      {/* Main card — Accordion on all screens */}
       <AccordionPrimitive.Root
         defaultValue={["nav"]}
         className="card-glow rounded-12 overflow-hidden"
