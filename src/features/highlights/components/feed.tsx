@@ -36,6 +36,7 @@ import { FILTER_MENU_CONFIG, LINK_MENU_CONFIG } from "@/features/highlights/high
 import { resolveIsLiked } from "@/features/highlights/highlights.utils"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Empty } from "@/components/ui/empty"
 import { Img } from "@/components/ui/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Typography } from "@/components/ui/typography"
@@ -1104,9 +1105,7 @@ export function HighlightsFeed({
         {loading || !layoutReady ? (
           <FeedSkeleton playerWidth={playerWidth} stageHeight={stageHeight} />
         ) : videos.length === 0 ? (
-          <Typography variant="body-sm" className="text-white/50">
-            {t("video.empty")}
-          </Typography>
+          <Empty tip={t("video.empty")} className="[&_p]:text-white/50" />
         ) : (
           <div
             className="flex h-full w-full items-center justify-center"

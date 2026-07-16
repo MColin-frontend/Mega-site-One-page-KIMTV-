@@ -1,4 +1,33 @@
 {
+  "registration": {
+    "title": "Become a Commentator",
+    "description": "Join KimTV as a sports commentator to broadcast live match commentary and build your own fan community.",
+    "benefit1": "Live commentary on your favorite sports matches",
+    "benefit2": "Build your own channel and viewer community",
+    "benefit3": "Technical support and training from the KimTV team",
+    "cta": "Apply as Commentator",
+    "form": {
+      "sectionInfo": "Personal information",
+      "sectionId": "ID Card",
+      "sectionIdHint": "(Upload front, back, and a photo holding your ID card)",
+      "name": "Name",
+      "namePlaceholder": "Enter display name",
+      "phone": "Phone number",
+      "phonePlaceholder": "Enter phone number",
+      "idNumber": "ID Card number",
+      "idNumberPlaceholder": "Enter ID card number",
+      "brief": "Personal introduction",
+      "briefPlaceholder": "Brief description about yourself...",
+      "idFront": "ID Front",
+      "idBack": "ID Back",
+      "idHolding": "Holding ID photo",
+      "submit": "Apply as broadcaster",
+      "tip": "The platform will deduct 20% commission from gifts.",
+      "successTitle": "Application submitted!",
+      "successDesc": "We will review and contact you as soon as possible.",
+      "backHome": "Back to home"
+    }
+  },
   "hero": {
     "fallbackName": "Member",
     "role": "Streamer",

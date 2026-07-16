@@ -1,4 +1,5 @@
-import { BookOpen, CalendarClock, Settings2 } from "lucide-react"
+import { BookOpen, CalendarClock, Mic2, Settings2 } from "lucide-react"
+import { z } from "zod"
 
 import type { TranslationKey } from "@/i18n/use-translation"
 
@@ -288,6 +289,7 @@ export function getBroadcastRules(t: T): string[] {
 /* ── Broadcast Center ─────────────────────────────────────── */
 
 export enum BroadcastCenterTabEnum {
+  REGISTRATION = "dang-ky",
   SETTINGS = "cai-dat",
   RESERVATION = "dat-cho-truoc",
   GUIDE = "huong-dan",
@@ -303,10 +305,50 @@ export interface BroadcastCenterMenuItemInterface {
 }
 
 export const BROADCAST_CENTER_MAIN_MENU: BroadcastCenterMenuItemInterface[] = [
-  { tab: BroadcastCenterTabEnum.SETTINGS, labelKey: "broadcastCenter.menu.settings", icon: Settings2 },
-  { tab: BroadcastCenterTabEnum.RESERVATION, labelKey: "broadcastCenter.menu.reservation", icon: CalendarClock },
+  {
+    tab: BroadcastCenterTabEnum.SETTINGS,
+    labelKey: "broadcastCenter.menu.settings",
+    icon: Settings2,
+  },
+  {
+    tab: BroadcastCenterTabEnum.RESERVATION,
+    labelKey: "broadcastCenter.menu.reservation",
+    icon: CalendarClock,
+  },
+]
+
+export const BROADCAST_CENTER_GUEST_MENU: BroadcastCenterMenuItemInterface[] = [
+  {
+    tab: BroadcastCenterTabEnum.REGISTRATION,
+    labelKey: "broadcastCenter.menu.registration",
+    icon: Mic2,
+  },
 ]
 
 export const BROADCAST_CENTER_SUB_MENU: BroadcastCenterMenuItemInterface[] = [
   { tab: BroadcastCenterTabEnum.GUIDE, labelKey: "broadcastCenter.menu.guide", icon: BookOpen },
 ]
+
+/* ── Anchor registration form ─────────────────────────────── */
+
+export const ApplySchema = z.object({
+  name: z.string().min(1, "Họ tên không được để trống"),
+  phone: z.string().min(1, "Số điện thoại không được để trống").regex(/^\d+$/, "Chỉ được nhập số"),
+  idNumber: z.string().min(1, "Số CMND/CCCD không được để trống"),
+  brief: z.string().min(1, "Giới thiệu không được để trống").max(40, "Tối đa 40 ký tự"),
+  idFront: z.string().min(1, "Vui lòng tải ảnh mặt trước CMND/CCCD"),
+  idBack: z.string().min(1, "Vui lòng tải ảnh mặt sau CMND/CCCD"),
+  idHolding: z.string().min(1, "Vui lòng tải ảnh cầm CMND/CCCD"),
+})
+
+export type ApplyFormType = z.infer<typeof ApplySchema>
+
+export const APPLY_FORM_DEFAULTS: ApplyFormType = {
+  name: "",
+  phone: "",
+  idNumber: "",
+  brief: "",
+  idFront: "",
+  idBack: "",
+  idHolding: "",
+}

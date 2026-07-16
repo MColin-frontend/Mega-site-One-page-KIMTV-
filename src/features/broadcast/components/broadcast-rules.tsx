@@ -18,19 +18,19 @@ export function BroadcastRules() {
         </Typography>
       </div>
 
-      <Typography variant="body" className="text-white/80">
+      <Typography variant="body-sm" className="text-white/80">
         {t("broadcast.rules.description")}
       </Typography>
 
       <div className="flex flex-col gap-2">
         {rules.map((rule, i) => (
-          <div key={i} className="flex gap-2.5">
-            <span className="rounded-4 mt-0.5 flex size-[18px] shrink-0 items-center justify-center bg-red-500/15 text-red-400">
-              <Typography as="span" variant="caption" weight="700" className="text-inherit">
+          <div key={i} className="flex gap-2">
+            <span className="rounded-4 mt-0.5 flex size-4 shrink-0 items-center justify-center bg-red-500/15 text-red-400">
+              <Typography as="span" size="10" weight="700" className="text-inherit">
                 {i + 1}
               </Typography>
             </span>
-            <Typography variant="body" className="text-white">
+            <Typography variant="body-sm" className="text-white/80">
               {rule}
             </Typography>
           </div>

@@ -37,7 +37,8 @@ export interface LeagueFetchResultInterface {
 /* ── Anchor ───────────────────────────────────────────────── */
 
 export interface AnchorInfoInterface {
-  userId: number
+  anchorId: number | null
+  userId: number | null
   userName: string | null
   userAvatar: string | null
   brief: string | null
@@ -56,6 +57,18 @@ export interface UpdateAnchorPayloadInterface {
   detailIntroduce: string
   introduceImages: string[]
   content: string
+}
+
+export interface ApplyAnchorPayloadInterface {
+  userName: string
+  mobile: string
+  idCard: string
+  description: string
+  idCardFront: string
+  idCardOpposite: string
+  handIdCard: string
+  gameIds: string
+  customTags: string
 }
 
 /* ── Live ─────────────────────────────────────────────────── */

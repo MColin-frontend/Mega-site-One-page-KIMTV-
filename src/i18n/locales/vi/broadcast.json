@@ -1,4 +1,33 @@
 {
+  "registration": {
+    "title": "Đăng ký làm Bình Luận Viên",
+    "description": "Trở thành BLV tại KimTV để phát sóng bình luận trực tiếp các trận đấu thể thao và xây dựng cộng đồng người hâm mộ riêng của bạn.",
+    "benefit1": "Phát sóng bình luận trực tiếp các trận đấu yêu thích",
+    "benefit2": "Xây dựng kênh và cộng đồng người xem riêng",
+    "benefit3": "Được hỗ trợ kỹ thuật và đào tạo từ đội ngũ KimTV",
+    "cta": "Đăng ký làm BLV",
+    "form": {
+      "sectionInfo": "Thông tin cá nhân",
+      "sectionId": "CMND / CCCD",
+      "sectionIdHint": "(Tải lên ảnh mặt trước, mặt sau và ảnh cầm CMND)",
+      "name": "Tên",
+      "namePlaceholder": "Nhập tên hiển thị",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại",
+      "idNumber": "Số CMND / CCCD",
+      "idNumberPlaceholder": "Nhập số CMND / CCCD",
+      "brief": "Giới thiệu cá nhân",
+      "briefPlaceholder": "Mô tả ngắn về bản thân...",
+      "idFront": "Mặt trước",
+      "idBack": "Mặt sau",
+      "idHolding": "Ảnh cầm CMND",
+      "submit": "Đăng ký chủ phòng",
+      "tip": "Nền tảng sẽ trích 20% hoa hồng từ quà tặng.",
+      "successTitle": "Đã gửi đơn đăng ký!",
+      "successDesc": "Chúng tôi sẽ xem xét và liên hệ với bạn trong thời gian sớm nhất.",
+      "backHome": "Về trang chủ"
+    }
+  },
   "hero": {
     "fallbackName": "Thành viên",
     "role": "BLV",
