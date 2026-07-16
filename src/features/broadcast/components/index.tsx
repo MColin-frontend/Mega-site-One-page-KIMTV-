@@ -1,14 +1,18 @@
 "use client"
 
+import { useQuery } from "@tanstack/react-query"
+
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "@/hooks/useRouter"
 
 import { useTranslation } from "@/i18n/use-translation"
 
+import { fetchAnchorInfo } from "@/features/broadcast/broadcast.api"
 import { Empty } from "@/components/ui/empty"
 import { Skeleton } from "@/components/ui/skeleton"
 
 import { BroadcastCenterTabEnum } from "../broadcast.constants"
+import { AnchorRegistrationPage } from "./anchor-registration"
 import { BroadcastHero } from "./broadcast-hero"
 import { BroadcastReservation } from "./broadcast-reservation"
 import { BroadcastRules } from "./broadcast-rules"
@@ -32,6 +36,29 @@ function BroadcastHeroSkeleton() {
 }
 
 export function BroadcastPage() {
+  const { data: anchorInfo, isLoading } = useQuery({
+    queryKey: ["anchor-info"],
+    queryFn: fetchAnchorInfo,
+    staleTime: 60_000,
+  })
+
+  if (isLoading) {
+    return (
+      <div className="container flex flex-col gap-5">
+        <BroadcastHeroSkeleton />
+        <Skeleton className="rounded-16 h-80 w-full" />
+      </div>
+    )
+  }
+
+  if (!anchorInfo?.anchorId) {
+    return (
+      <div className="container flex flex-col gap-5">
+        <AnchorRegistrationPage />
+      </div>
+    )
+  }
+
   return (
     <div className="container flex flex-col gap-5">
       <BroadcastHero />
@@ -53,19 +80,44 @@ function TabContent() {
   const { isLoading: authLoading } = useAuth()
   const tab = (getParam("tab") as BroadcastCenterTabEnum) ?? BroadcastCenterTabEnum.SETTINGS
 
+  const { data: anchorInfo, isLoading: anchorLoading } = useQuery({
+    queryKey: ["anchor-info"],
+    queryFn: fetchAnchorInfo,
+    staleTime: 60_000,
+  })
+
+  const isBLV = !!anchorInfo?.userId
+
   const content = (() => {
-    if (tab === BroadcastCenterTabEnum.SETTINGS) {
+    if (anchorLoading) {
       return (
         <div className="flex flex-col gap-5">
-          {authLoading ? <BroadcastHeroSkeleton /> : <BroadcastHero />}
-          <StreamPanel />
-          <StreamSettings />
+          <BroadcastHeroSkeleton />
+          <Skeleton className="rounded-16 h-80 w-full" />
         </div>
       )
     }
-    if (tab === BroadcastCenterTabEnum.RESERVATION) return <BroadcastReservation />
-    if (tab === BroadcastCenterTabEnum.GUIDE) return <BroadcastRules />
-    return <Empty tip={t("broadcastCenter.empty")} className="min-h-[40vh] [&_p]:text-white/30" />
+
+    if (!isBLV || tab === BroadcastCenterTabEnum.REGISTRATION) return <AnchorRegistrationPage />
+
+    switch (tab) {
+      case BroadcastCenterTabEnum.SETTINGS:
+        return (
+          <div className="flex flex-col gap-5">
+            {authLoading ? <BroadcastHeroSkeleton /> : <BroadcastHero />}
+            <StreamPanel />
+            <StreamSettings />
+          </div>
+        )
+      case BroadcastCenterTabEnum.RESERVATION:
+        return <BroadcastReservation />
+      case BroadcastCenterTabEnum.GUIDE:
+        return <BroadcastRules />
+      default:
+        return (
+          <Empty tip={t("broadcastCenter.empty")} className="min-h-[40vh] [&_p]:text-white/30" />
+        )
+    }
   })()
 
   return (

@@ -3,6 +3,7 @@ import { clientGet, javaGet, javaPost, javaUrl } from "@/server/services/client-
 
 import type {
   AnchorInfoInterface,
+  ApplyAnchorPayloadInterface,
   BroadcastMatchGroupInterface,
   CreateAnchorLivePayloadInterface,
   CreateAnchorLiveResultInterface,
@@ -28,6 +29,7 @@ export const BROADCAST_API = {
   CREATE_LIVE: "/anchor/creat-anchor-live",
   TOGGLE_MATCH_ID: "/anchor/toggle-match-id",
   ANCHOR_INFO: "/anchor-info",
+  APPLY_ANCHOR: "/anchor/user",
   MATCHES_BY_GAME: "/match/game-living-future",
   LEAGUE_LIST: "/match/league",
   UPDATE_ANCHOR: "/update-anchor",
@@ -71,6 +73,29 @@ export async function fetchLeagueOptions(
 
 export function fetchAnchorInfo(): Promise<AnchorInfoInterface | null> {
   return javaPost<AnchorInfoInterface>(BROADCAST_API.ANCHOR_INFO)
+}
+
+export function applyAnchor(form: {
+  name: string
+  phone: string
+  idNumber: string
+  brief: string
+  idFront: string
+  idBack: string
+  idHolding: string
+}): Promise<void | null> {
+  const payload: ApplyAnchorPayloadInterface = {
+    userName: form.name,
+    mobile: form.phone,
+    idCard: form.idNumber,
+    description: form.brief,
+    idCardFront: form.idFront,
+    idCardOpposite: form.idBack,
+    handIdCard: form.idHolding,
+    gameIds: "202",
+    customTags: "1",
+  }
+  return javaPost<void>(BROADCAST_API.APPLY_ANCHOR, payload, { isMessageSuccess: true })
 }
 
 /* ── Create anchor live ───────────────────────────────────── */

@@ -11,13 +11,18 @@ import { useRouter } from "@/hooks/useRouter"
 import { useTranslation } from "@/i18n/use-translation"
 import { getRoutes } from "@/config/routes"
 
-import { deleteReservation, fetchReservations } from "@/features/broadcast/broadcast.api"
+import {
+  deleteReservation,
+  fetchAnchorInfo,
+  fetchReservations,
+} from "@/features/broadcast/broadcast.api"
 import { Empty } from "@/components/ui/empty"
 import { Img } from "@/components/ui/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Typography } from "@/components/ui/typography"
 
 import {
+  BROADCAST_CENTER_GUEST_MENU,
   BROADCAST_CENTER_MAIN_MENU,
   BROADCAST_CENTER_SUB_MENU,
   BroadcastCenterTabEnum,
@@ -95,8 +100,19 @@ export function BroadcastCenterSidebarSkeleton() {
 export function BroadcastCenterSidebar() {
   const { t, locale } = useTranslation()
   const { getParam } = useRouter()
-  const activeTab = (getParam("tab") as BroadcastCenterTabEnum) ?? BroadcastCenterTabEnum.SETTINGS
   const routes = getRoutes(locale)
+
+  const { data: anchorInfo } = useQuery({
+    queryKey: ["anchor-info"],
+    queryFn: fetchAnchorInfo,
+    staleTime: 60_000,
+  })
+
+  const isRegistered = !!anchorInfo?.userId
+  const defaultTab = isRegistered
+    ? BroadcastCenterTabEnum.SETTINGS
+    : BroadcastCenterTabEnum.REGISTRATION
+  const activeTab = (getParam("tab") as BroadcastCenterTabEnum) ?? defaultTab
 
   const tabHref = (tab: BroadcastCenterTabEnum) => {
     const step = getParam("step")
@@ -111,6 +127,7 @@ export function BroadcastCenterSidebar() {
     queryKey: ["reservations"],
     queryFn: fetchReservations,
     staleTime: 0,
+    enabled: isRegistered,
   })
 
   async function handleCancel(matchId: number, gameId: number) {
@@ -141,34 +158,39 @@ export function BroadcastCenterSidebar() {
           <AccordionPrimitive.Panel className="data-open:animate-accordion-down data-closed:animate-accordion-up overflow-hidden">
             <div className="border-t border-white/6">
               <nav className="flex flex-col gap-0.5 p-2">
-                {BROADCAST_CENTER_MAIN_MENU.map((item) => (
-                  <MenuItem
-                    key={item.tab}
-                    item={item}
-                    isActive={activeTab === item.tab}
-                    href={tabHref(item.tab)}
-                    t={t}
-                  />
-                ))}
+                {(isRegistered ? BROADCAST_CENTER_MAIN_MENU : BROADCAST_CENTER_GUEST_MENU).map(
+                  (item) => (
+                    <MenuItem
+                      key={item.tab}
+                      item={item}
+                      isActive={activeTab === item.tab}
+                      href={tabHref(item.tab)}
+                      t={t}
+                    />
+                  )
+                )}
               </nav>
-              <div className="mx-3 h-px bg-white/6" />
-              <nav className="flex flex-col gap-0.5 p-2">
-                {BROADCAST_CENTER_SUB_MENU.map((item) => (
-                  <MenuItem
-                    key={item.tab}
-                    item={item}
-                    isActive={activeTab === item.tab}
-                    href={tabHref(item.tab)}
-                    t={t}
-                  />
-                ))}
-              </nav>
+              {isRegistered && (
+                <>
+                  <div className="mx-3 h-px bg-white/6" />
+                  <nav className="flex flex-col gap-0.5 p-2">
+                    {BROADCAST_CENTER_SUB_MENU.map((item) => (
+                      <MenuItem
+                        key={item.tab}
+                        item={item}
+                        isActive={activeTab === item.tab}
+                        href={tabHref(item.tab)}
+                        t={t}
+                      />
+                    ))}
+                  </nav>
+                </>
+              )}
             </div>
           </AccordionPrimitive.Panel>
         </AccordionPrimitive.Item>
       </AccordionPrimitive.Root>
 
-      {/* Reservation section */}
       {activeTab === BroadcastCenterTabEnum.RESERVATION && (
         <AccordionPrimitive.Root
           defaultValue={["res"]}

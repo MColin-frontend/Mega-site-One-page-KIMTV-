@@ -1,7 +1,7 @@
 "use client"
 
 import { AlertDialog } from "@base-ui/react/alert-dialog"
-import { CircleAlert, CircleCheck, TriangleAlert } from "lucide-react"
+import { CircleAlert, CircleCheck, Loader2, TriangleAlert } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -20,6 +20,7 @@ interface ConfirmModalProps {
   onConfirm?: () => void
   onCancel?: () => void
   image?: string
+  isConfirming?: boolean
 }
 
 const TYPE_CONFIG: Record<
@@ -54,12 +55,13 @@ function ConfirmModal({
   onConfirm,
   onCancel,
   image,
+  isConfirming = false,
 }: ConfirmModalProps) {
   const { Icon, iconClass, bgClass } = TYPE_CONFIG[type]
 
   function handleConfirm() {
     onConfirm?.()
-    onOpenChange(false)
+    if (!isConfirming) onOpenChange(false)
   }
 
   function handleCancel() {
@@ -109,24 +111,31 @@ function ConfirmModal({
                     variant="cancel"
                     size="lg"
                     className="text-15 flex-1"
+                    disabled={isConfirming}
                     onClick={handleCancel}
                   >
                     {cancelLabel}
                   </Button>
                 }
               />
-              <AlertDialog.Close
-                render={
-                  <Button
-                    variant="gradient"
-                    size="lg"
-                    className="text-15 flex-1 text-black"
-                    onClick={handleConfirm}
-                  >
-                    {confirmLabel}
-                  </Button>
-                }
-              />
+              {isConfirming ? (
+                <Button variant="gradient" size="lg" className="text-15 flex-1 text-black" disabled>
+                  <Loader2 className="size-4 animate-spin" />
+                </Button>
+              ) : (
+                <AlertDialog.Close
+                  render={
+                    <Button
+                      variant="gradient"
+                      size="lg"
+                      className="text-15 flex-1 text-black"
+                      onClick={handleConfirm}
+                    >
+                      {confirmLabel}
+                    </Button>
+                  }
+                />
+              )}
             </div>
           </AlertDialog.Popup>
         </AlertDialog.Viewport>

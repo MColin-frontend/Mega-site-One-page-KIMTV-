@@ -22,6 +22,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "news.esportsdata.cc",
       },
+      {
+        protocol: "https",
+        hostname: "dev.kimtv.net",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.99kim.llc",
+      },
+      {
+        protocol: "https",
+        hostname: "img.antdata.cc",
+      },
     ],
   },
 }

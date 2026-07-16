@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form"
 import { ReactSVG } from "react-svg"
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { ChevronDown, MonitorPlay, Pencil, UserCircle } from "lucide-react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { ChevronDown, Loader2, MonitorPlay, Pencil, UserCircle } from "lucide-react"
 
 import { useDisclosure } from "@/hooks/useDisclosure"
 import { useRouter } from "@/hooks/useRouter"
@@ -109,6 +109,25 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
   const liveResult = queryClient.getQueryData<CreateAnchorLiveResult>(["live-result"]) || null
   const togglePayload = queryClient.getQueryData<ToggleMatchIdPayload>(["toggle-payload"]) || null
 
+  const { mutateAsync: submitLive, isPending: isSubmitting } = useMutation({
+    mutationFn: createAnchorLive,
+  })
+  const { mutateAsync: doToggle, isPending: isToggling } = useMutation({
+    mutationFn: toggleMatchId,
+  })
+  const { mutateAsync: doStart, isPending: isStarting } = useMutation({
+    mutationFn: startBroadcast,
+  })
+  const { mutateAsync: doDowncast, isPending: isDowncasting } = useMutation({
+    mutationFn: downcastStream,
+  })
+  const { mutateAsync: doCancelRes, isPending: isCancellingRes } = useMutation({
+    mutationFn: cancelReservation,
+  })
+
+  const isAnyLoading = isSubmitting || isToggling || isStarting || isDowncasting || isCancellingRes
+  const isRightLoading = isSubmitting || isStarting || isDowncasting
+
   const schema = useMemo(() => createStreamSettingsSchema(t), [t])
 
   const { data: isBroadcast, isLoading: isBroadcastLoading } = useQuery({
@@ -140,7 +159,21 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
   const liveUrlList = watch("liveUrlList")
 
   const isLive = isBroadcast?.result?.hasLive || false
-  const step = isBroadcastLoading ? rawStep : isLive ? rawStep || BroadcastStepEnum.STREAMING : null
+  const hasStreamData = isLive || !!isBroadcast?.result?.responseVo || !!liveResult
+  const step = isBroadcastLoading
+    ? rawStep
+    : isLive
+      ? rawStep || BroadcastStepEnum.STREAMING
+      : hasStreamData
+        ? rawStep === BroadcastStepEnum.STREAMING
+          ? null
+          : rawStep
+        : null
+
+  useEffect(() => {
+    if (isBroadcastLoading || hasStreamData) return
+    if (rawStep) setStep(null)
+  }, [isBroadcastLoading, hasStreamData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!anchorInfo) return
@@ -215,7 +248,7 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
   async function onSubmit(data: StreamSettingsFormType) {
     const sportName = getSportOptions(t).find((o) => o.value === data.sport)?.label || data.sport
     const payload = buildPayload(data, sportName)
-    const result = await createAnchorLive(payload)
+    const result = await submitLive(payload)
     if (result) {
       queryClient.setQueryData(["live-result"], result)
       reset((prev) => ({
@@ -232,6 +265,7 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
       })
     }
     setStep(data.scheduled ? BroadcastStepEnum.RESERVATION : BroadcastStepEnum.CREATED)
+    queryClient.invalidateQueries({ queryKey: ["is-broadcast"] })
   }
 
   function buildTogglePayload(): ToggleMatchIdPayload | null {
@@ -261,14 +295,15 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
   }
 
   async function handleLeftBtn() {
-    if (
-      step === BroadcastStepEnum.CREATED ||
-      step === BroadcastStepEnum.STREAMING ||
-      step === BroadcastStepEnum.RESERVATION
-    ) {
+    if (step === BroadcastStepEnum.CREATED) {
+      queryClient.removeQueries({ queryKey: ["live-result"] })
+      queryClient.removeQueries({ queryKey: ["toggle-payload"] })
+      reset((prev) => ({ ...prev, rtmpPushUrl: "", streamingKey: "", liveUrlList: [] }))
+      setStep(null)
+    } else if (step === BroadcastStepEnum.RESERVATION) {
       const payload = buildTogglePayload()
-      if (payload) await toggleMatchId(payload)
-    } else {
+      if (payload) await doToggle(payload)
+    } else if (step !== BroadcastStepEnum.STREAMING) {
       push(getRoutes(locale).home)
     }
   }
@@ -276,7 +311,8 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
   async function confirmCancelReservation() {
     const liveId = liveResult?.id ?? isBroadcast?.result?.responseVo?.id
     if (!liveId) return
-    await cancelReservation(liveId)
+    await doCancelRes(liveId)
+    setCancelResOpen(false)
     setStep(null)
   }
 
@@ -284,11 +320,11 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
     const liveId = liveResult?.id || isBroadcast?.result?.responseVo?.id
     if (!liveId) return
     if (step === BroadcastStepEnum.STREAMING) {
-      await downcastStream(liveId)
+      await doDowncast(liveId)
       setStep(BroadcastStepEnum.CREATED)
       toast.success(t("broadcast.streamSettings.actions.endStreamSuccess"))
     } else {
-      await startBroadcast(liveId)
+      await doStart(liveId)
       setStep(BroadcastStepEnum.STREAMING)
       toast.success(t("broadcast.streamSettings.actions.startStreamSuccess"))
     }
@@ -334,559 +370,573 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="card-glow rounded-12 flex flex-col gap-4 p-5">
-        <div className="flex items-center justify-between">
-          <Typography variant="h5" className="text-white">
-            {t("broadcast.streamSettings.title")}
-          </Typography>
-          <GuideButton />
-        </div>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="card-glow rounded-12 flex flex-col gap-4 p-5">
+          <div className="flex items-center justify-between">
+            <Typography variant="h5" className="text-white">
+              {t("broadcast.streamSettings.title")}
+            </Typography>
+            <GuideButton />
+          </div>
 
-        <div className="rounded-8 flex items-center justify-between border border-white/6 bg-white/[0.02] px-4 py-2.5">
-          <Typography variant="body-sm" className="text-white/60">
-            {t("broadcast.streamSettings.liveId")}
-          </Typography>
-          <Typography variant="body-sm" weight="600" className="text-white">
-            {liveId}
-          </Typography>
-        </div>
-
-        <Accordion
-          defaultValue={["owner"]}
-          className="rounded-10 overflow-hidden border border-amber-400/20"
-        >
-          <AccordionItem value="owner" className="group/item border-none">
-            <AccordionPrimitive.Header className="flex">
-              <AccordionPrimitive.Trigger className="flex w-full items-center gap-3 bg-gradient-to-r from-amber-400/8 to-amber-400/3 px-4 py-3 transition-colors outline-none hover:from-amber-400/12 hover:to-amber-400/5">
-                <div className="rounded-8 flex size-7 shrink-0 items-center justify-center bg-amber-400/15">
-                  <UserCircle className="size-4 text-amber-400" />
-                </div>
-                <div className="flex flex-1 flex-col items-start text-left">
-                  <div className="flex items-center gap-1.5">
-                    <Typography variant="body-sm" weight="500" className="text-white/90">
-                      {t("broadcast.roomOwner.preview.label")}
-                    </Typography>
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        open("ownerModal")
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.stopPropagation()
-                          open("ownerModal")
-                        }
-                      }}
-                      className="cursor-pointer text-white/30 transition-colors hover:text-amber-400"
-                    >
-                      <Pencil className="size-3" />
-                    </span>
-                  </div>
-                  <Typography variant="caption" className="text-white/35">
-                    {t("broadcast.streamSettings.ownerInfo.subtitle")}
-                  </Typography>
-                </div>
-                <ChevronDown className="size-4 shrink-0 text-white/40 transition-transform duration-200 group-data-[open]/item:rotate-180" />
-              </AccordionPrimitive.Trigger>
-            </AccordionPrimitive.Header>
-
-            <AccordionContent className="border-t border-amber-400/10 bg-white/[0.01]">
-              <div className="flex flex-col gap-5 p-4 pt-4">
-                <FormField
-                  control={control}
-                  name="intro"
-                  label={t("broadcast.roomOwner.fields.intro.label")}
-                  required
-                  disabled
-                  render={(field) => (
-                    <Input
-                      {...field}
-                      placeholder={t("broadcast.roomOwner.fields.intro.placeholder")}
-                      inputSize="default"
-                    />
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="introDetail"
-                  label={t("broadcast.roomOwner.fields.introDetail.label")}
-                  required
-                  disabled
-                  render={(field) => (
-                    <TextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder={t("broadcast.roomOwner.fields.introDetail.placeholder")}
-                    />
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="announcement"
-                  label={t("broadcast.roomOwner.fields.announcement.label")}
-                  required
-                  disabled
-                  render={(field) => (
-                    <TextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder={t("broadcast.roomOwner.fields.announcement.placeholder")}
-                    />
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="images"
-                  label={t("broadcast.roomOwner.fields.images.label")}
-                  required
-                  disabled
-                  render={(field) => (
-                    <ImageUpload value={field.value as string[]} onChange={field.onChange} />
-                  )}
-                />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-
-        {/* Admin */}
-        <div className="flex flex-col gap-4">
-          <Label required>{t("broadcast.streamSettings.admin.label")} (0)</Label>
-          <div className="rounded-8 flex items-center justify-between border border-white/8 bg-white/[0.03] px-3 py-2.5">
-            <Typography variant="body-sm" className="text-white/40">
-              {t("broadcast.streamSettings.admin.empty")}
+          <div className="rounded-8 flex items-center justify-between border border-white/6 bg-white/[0.02] px-4 py-2.5">
+            <Typography variant="body-sm" className="text-white/60">
+              {t("broadcast.streamSettings.liveId")}
+            </Typography>
+            <Typography variant="body-sm" weight="600" className="text-white">
+              {liveId}
             </Typography>
           </div>
-        </div>
 
-        {/* Title */}
-        <FormField
-          control={control}
-          name="title"
-          label={t("broadcast.streamSettings.fields.title.label")}
-          required
-          render={(field) => (
-            <div className="relative">
-              <Input
-                {...field}
-                placeholder={t("broadcast.streamSettings.fields.title.placeholder")}
-              />
-              <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
-                <Typography variant="caption" className="text-white/30">
-                  {(field.value as string).length}/40
-                </Typography>
-              </span>
-            </div>
-          )}
-        />
+          <Accordion
+            defaultValue={["owner"]}
+            className="rounded-10 overflow-hidden border border-amber-400/20"
+          >
+            <AccordionItem value="owner" className="group/item border-none">
+              <AccordionPrimitive.Header className="flex">
+                <AccordionPrimitive.Trigger className="flex w-full items-center gap-3 bg-gradient-to-r from-amber-400/8 to-amber-400/3 px-4 py-3 transition-colors outline-none hover:from-amber-400/12 hover:to-amber-400/5">
+                  <div className="rounded-8 flex size-7 shrink-0 items-center justify-center bg-amber-400/15">
+                    <UserCircle className="size-4 text-amber-400" />
+                  </div>
+                  <div className="flex flex-1 flex-col items-start text-left">
+                    <div className="flex items-center gap-1.5">
+                      <Typography variant="body-sm" weight="500" className="text-white/90">
+                        {t("broadcast.roomOwner.preview.label")}
+                      </Typography>
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          open("ownerModal")
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.stopPropagation()
+                            open("ownerModal")
+                          }
+                        }}
+                        className="cursor-pointer text-white/30 transition-colors hover:text-amber-400"
+                      >
+                        <Pencil className="size-3" />
+                      </span>
+                    </div>
+                    <Typography variant="caption" className="text-white/35">
+                      {t("broadcast.streamSettings.ownerInfo.subtitle")}
+                    </Typography>
+                  </div>
+                  <ChevronDown className="size-4 shrink-0 text-white/40 transition-transform duration-200 group-data-[open]/item:rotate-180" />
+                </AccordionPrimitive.Trigger>
+              </AccordionPrimitive.Header>
 
-        {/* Cover image */}
-        <div className="flex flex-col gap-4">
-          <Typography variant="body-sm" weight="500" className="text-white/80">
-            {t("broadcast.streamSettings.fields.cover.label")}
-          </Typography>
-          <ImageUpload
-            value={coverUrl ? [coverUrl] : []}
-            onChange={(urls) => setCoverUrl(urls[0] || null)}
-            multiple={false}
-            max={1}
-            description={t("broadcast.streamSettings.fields.cover.hint")}
-          />
-        </div>
-
-        {/* Schedule */}
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={control}
-            name="scheduled"
-            label={t("broadcast.streamSettings.fields.scheduled.label")}
-            render={(field) => (
-              <Select
-                value={field.value ? ScheduledEnum.YES : ScheduledEnum.NO}
-                onValueChange={(v) => {
-                  const isYes = v === ScheduledEnum.YES
-                  field.onChange(isYes)
-                  if (isYes) {
-                    setValue("liveMode", LiveModeEnum.FREE)
-                  } else {
-                    setValue("scheduledAt", null)
-                    clearErrors("scheduledAt")
-                  }
-                }}
-                options={getScheduledOptions(t)}
-                variant="dark"
-              />
-            )}
-          />
-          <FormField
-            control={control}
-            name="scheduledAt"
-            label={t("broadcast.streamSettings.fields.scheduledAt.label")}
-            required={scheduled}
-            render={(field) => (
-              <DatePicker
-                value={field.value as Date | null}
-                onChange={field.onChange}
-                placeholder={t("broadcast.streamSettings.fields.scheduledAt.placeholder")}
-                disabled={!scheduled}
-                triggerClassName="w-full"
-                minDate={new Date()}
-              />
-            )}
-          />
-        </div>
-
-        {/* Live mode — accordion */}
-        <Accordion
-          defaultValue={["liveMode"]}
-          className="rounded-10 overflow-hidden border border-sky-400/20"
-        >
-          <AccordionItem value="liveMode" className="group/item border-none">
-            <AccordionPrimitive.Header className="flex">
-              <AccordionPrimitive.Trigger className="flex w-full items-center gap-3 bg-gradient-to-r from-sky-400/8 to-sky-400/3 px-4 py-3 transition-colors outline-none hover:from-sky-400/12 hover:to-sky-400/5">
-                <div className="rounded-8 flex size-7 shrink-0 items-center justify-center bg-sky-400/15">
-                  <ReactSVG
-                    src={
-                      typeof icLiveMode === "string"
-                        ? icLiveMode
-                        : (icLiveMode as { src: string }).src
-                    }
-                    className="size-4 text-sky-400 [&_svg]:h-4! [&_svg]:w-4! [&>div]:flex [&>div]:size-full [&>div]:items-center [&>div]:justify-center"
+              <AccordionContent className="border-t border-amber-400/10 bg-white/[0.01]">
+                <div className="flex flex-col gap-5 p-4 pt-4">
+                  <FormField
+                    control={control}
+                    name="intro"
+                    label={t("broadcast.roomOwner.fields.intro.label")}
+                    required
+                    disabled
+                    render={(field) => (
+                      <Input
+                        {...field}
+                        placeholder={t("broadcast.roomOwner.fields.intro.placeholder")}
+                        inputSize="default"
+                      />
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="introDetail"
+                    label={t("broadcast.roomOwner.fields.introDetail.label")}
+                    required
+                    disabled
+                    render={(field) => (
+                      <TextEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder={t("broadcast.roomOwner.fields.introDetail.placeholder")}
+                      />
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="announcement"
+                    label={t("broadcast.roomOwner.fields.announcement.label")}
+                    required
+                    disabled
+                    render={(field) => (
+                      <TextEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder={t("broadcast.roomOwner.fields.announcement.placeholder")}
+                      />
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="images"
+                    label={t("broadcast.roomOwner.fields.images.label")}
+                    required
+                    disabled
+                    render={(field) => (
+                      <ImageUpload value={field.value as string[]} onChange={field.onChange} />
+                    )}
                   />
                 </div>
-                <Typography
-                  variant="body-sm"
-                  weight="500"
-                  className="flex-1 text-left text-white/90"
-                >
-                  <span className="mr-0.5 text-red-400">*</span>
-                  {t("broadcast.streamSettings.fields.liveMode.label")}
-                </Typography>
-                <ChevronDown className="size-4 shrink-0 text-white/40 transition-transform duration-200 group-data-[open]/item:rotate-180" />
-              </AccordionPrimitive.Trigger>
-            </AccordionPrimitive.Header>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
 
-            <AccordionContent className="border-t border-sky-400/10 bg-white/[0.01]">
-              <div className="grid grid-cols-2 gap-4 p-4">
-                <FormField
-                  control={control}
-                  name="liveMode"
-                  label={t("broadcast.streamSettings.fields.liveMode.label")}
-                  required
-                  render={(field) => (
-                    <Select
-                      value={field.value as string}
-                      onValueChange={(v) => field.onChange(v || "")}
-                      options={getLiveModeOptions(t).map((o) =>
-                        scheduled && o.value !== LiveModeEnum.FREE ? { ...o, disabled: true } : o
-                      )}
-                      variant="dark"
-                      disabled={scheduled}
-                    />
-                  )}
-                />
-                {liveMode === LiveModeEnum.MATCH ? (
-                  <FormField
-                    control={control}
-                    name="sport"
-                    label={t("broadcast.streamSettings.fields.sport.label")}
-                    render={(field) => (
-                      <Select
-                        value={field.value as string}
-                        onValueChange={(v) => {
-                          reset((prev) => ({
-                            ...prev,
-                            sport: v || "",
-                            league: "",
-                            match: "",
-                          }))
-                        }}
-                        placeholder={t("broadcast.streamSettings.fields.sport.placeholder")}
-                        options={getSportOptions(t)}
-                        variant="dark"
-                      />
-                    )}
-                  />
-                ) : (
-                  <FormField
-                    control={control}
-                    name="customType"
-                    label={t("broadcast.streamSettings.options.liveMode.free")}
-                    render={(field) => (
-                      <Select
-                        value={field.value as string}
-                        onValueChange={(v) => field.onChange(v || null)}
-                        placeholder={t("broadcast.streamSettings.options.liveMode.free")}
-                        options={getCustomBroadcastTypeOptions(t)}
-                        variant="dark"
-                      />
-                    )}
-                  />
-                )}
+          {/* Admin */}
+          <div className="flex flex-col gap-4">
+            <Label required>{t("broadcast.streamSettings.admin.label")} (0)</Label>
+            <div className="rounded-8 flex items-center justify-between border border-white/8 bg-white/[0.03] px-3 py-2.5">
+              <Typography variant="body-sm" className="text-white/40">
+                {t("broadcast.streamSettings.admin.empty")}
+              </Typography>
+            </div>
+          </div>
 
-                {liveMode === LiveModeEnum.MATCH && (
-                  <>
-                    <FormField
-                      control={control}
-                      name="league"
-                      label={t("broadcast.streamSettings.fields.league.placeholder")}
-                      required
-                      render={(field) => (
-                        <SelectAsync
-                          value={field.value as string}
-                          onValueChange={(v, opt) => {
-                            reset((prev) => ({
-                              ...prev,
-                              league: v,
-                              leagueName: opt?.label || "",
-                              match: "",
-                              matchName: "",
-                            }))
-                          }}
-                          endpoint={BROADCAST_API.MATCHES_BY_GAME}
-                          endpointParams={{ gameId: sport }}
-                          trigger={sport}
-                          transformData={(raw) =>
-                            convertMatchGroupsToLeagueOptions((raw as BroadcastMatchGroup[]) || [])
-                          }
-                          placeholder={t("broadcast.streamSettings.fields.league.placeholder")}
-                          disabled={!sport}
-                          variant="dark"
-                          clearable
-                          defaultOption={
-                            league && leagueName
-                              ? { value: league || "", label: leagueName || "" }
-                              : undefined
-                          }
-                        />
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name="matchStatus"
-                      label={t("broadcast.streamSettings.fields.matchStatus.label")}
-                      render={(field) => (
-                        <Select
-                          value={field.value as string}
-                          onValueChange={(v) => {
-                            reset((prev) => ({
-                              ...prev,
-                              matchStatus: (v || "") as StreamSettingsFormType["matchStatus"],
-                              match: "",
-                            }))
-                          }}
-                          options={getMatchStatusOptions(t)}
-                          variant="dark"
-                        />
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name="match"
-                      label={t("broadcast.streamSettings.fields.match.label")}
-                      required
-                      render={(field) => (
-                        <SelectAsync
-                          value={field.value as string}
-                          onValueChange={(v, opt) => {
-                            field.onChange(v)
-                            setValue("matchName", opt?.label || "")
-                          }}
-                          endpoint={BROADCAST_API.MATCHES_BY_GAME}
-                          endpointParams={{ gameId: sport, leagueId: league }}
-                          trigger={`${league}-${matchStatus}`}
-                          transformData={(raw) =>
-                            convertMatchGroupsToOptions(
-                              (raw as BroadcastMatchGroup[]) || [],
-                              league || undefined,
-                              matchStatus || undefined
-                            )
-                          }
-                          placeholder={t("broadcast.streamSettings.fields.match.placeholder")}
-                          disabled={!sport}
-                          variant="dark"
-                          defaultOption={
-                            matchValue && matchName
-                              ? { value: matchValue || "", label: matchName || "" }
-                              : undefined
-                          }
-                        />
-                      )}
-                    />
-                  </>
-                )}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-
-        {/* Stream settings */}
-        <div className="grid grid-cols-2 gap-4">
+          {/* Title */}
           <FormField
             control={control}
-            name="streamType"
-            label={t("broadcast.streamSettings.fields.streamType.label")}
+            name="title"
+            label={t("broadcast.streamSettings.fields.title.label")}
             required
-            disabled
             render={(field) => (
-              <Select
-                value={field.value as string}
-                onValueChange={(v) => field.onChange(v || "")}
-                options={getStreamTypeOptions(t)}
-                variant="dark"
-                disabled
-              />
+              <div className="relative">
+                <Input
+                  {...field}
+                  placeholder={t("broadcast.streamSettings.fields.title.placeholder")}
+                />
+                <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
+                  <Typography variant="caption" className="text-white/30">
+                    {(field.value as string).length}/40
+                  </Typography>
+                </span>
+              </div>
             )}
           />
-          <FormField
-            control={control}
-            name="loginRequired"
-            label={t("broadcast.streamSettings.fields.loginRequired.label")}
-            render={(field) => (
-              <Select
-                value={field.value as string}
-                onValueChange={(v) => field.onChange(v || "")}
-                options={getLoginRequiredOptions(t)}
-                variant="dark"
-              />
-            )}
-          />
-          {!scheduled && (
+
+          {/* Cover image */}
+          <div className="flex flex-col gap-4">
+            <Typography variant="body-sm" weight="500" className="text-white/80">
+              {t("broadcast.streamSettings.fields.cover.label")}
+            </Typography>
+            <ImageUpload
+              value={coverUrl ? [coverUrl] : []}
+              onChange={(urls) => setCoverUrl(urls[0] || null)}
+              multiple={false}
+              max={1}
+              description={t("broadcast.streamSettings.fields.cover.hint")}
+            />
+          </div>
+
+          {/* Schedule */}
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={control}
-              name="externalComment"
-              label={t("broadcast.streamSettings.fields.externalComment.label")}
+              name="scheduled"
+              label={t("broadcast.streamSettings.fields.scheduled.label")}
               render={(field) => (
                 <Select
-                  value={field.value as string}
-                  onValueChange={(v) => field.onChange(v || "")}
-                  options={getExternalCommentOptions(t)}
+                  value={field.value ? ScheduledEnum.YES : ScheduledEnum.NO}
+                  onValueChange={(v) => {
+                    const isYes = v === ScheduledEnum.YES
+                    field.onChange(isYes)
+                    if (isYes) {
+                      setValue("liveMode", LiveModeEnum.FREE)
+                    } else {
+                      setValue("scheduledAt", null)
+                      clearErrors("scheduledAt")
+                    }
+                  }}
+                  options={getScheduledOptions(t)}
                   variant="dark"
                 />
               )}
             />
-          )}
-          {watch("streamType") === StreamTypeEnum.BOT && (
             <FormField
               control={control}
-              name="m3u8Url"
-              label={t("broadcast.streamSettings.fields.m3u8Url.label")}
-              required
+              name="scheduledAt"
+              label={t("broadcast.streamSettings.fields.scheduledAt.label")}
+              required={scheduled}
               render={(field) => (
-                <Input
-                  {...field}
-                  placeholder={t("broadcast.streamSettings.fields.m3u8Url.placeholder")}
+                <DatePicker
+                  value={field.value as Date | null}
+                  onChange={field.onChange}
+                  placeholder={t("broadcast.streamSettings.fields.scheduledAt.placeholder")}
+                  disabled={!scheduled}
+                  triggerClassName="w-full"
+                  minDate={new Date()}
                 />
               )}
             />
-          )}
-        </div>
+          </div>
 
-        {/* Banned users */}
-        <div className="flex items-center justify-between">
-          <Label required>{t("broadcast.streamSettings.bannedUsers.label")}: 0</Label>
-        </div>
-
-        {/* OBS fields — hiện khi có giá trị */}
-        {(rtmpPushUrl || streamingKey) && (
+          {/* Live mode — accordion */}
           <Accordion
-            defaultValue={["obs"]}
-            className="rounded-8 overflow-hidden border border-violet-400/20"
+            defaultValue={["liveMode"]}
+            className="rounded-10 overflow-hidden border border-sky-400/20"
           >
-            <AccordionItem value="obs" className="group/item border-none">
+            <AccordionItem value="liveMode" className="group/item border-none">
               <AccordionPrimitive.Header className="flex">
-                <AccordionPrimitive.Trigger className="flex w-full items-center gap-3 bg-gradient-to-r from-violet-400/8 to-violet-400/3 px-4 py-3 transition-colors outline-none hover:from-violet-400/12 hover:to-violet-400/5">
-                  <div className="rounded-8 flex size-7 shrink-0 items-center justify-center bg-violet-400/15">
-                    <MonitorPlay className="size-4 text-violet-400" />
+                <AccordionPrimitive.Trigger className="flex w-full items-center gap-3 bg-gradient-to-r from-sky-400/8 to-sky-400/3 px-4 py-3 transition-colors outline-none hover:from-sky-400/12 hover:to-sky-400/5">
+                  <div className="rounded-8 flex size-7 shrink-0 items-center justify-center bg-sky-400/15">
+                    <ReactSVG
+                      src={
+                        typeof icLiveMode === "string"
+                          ? icLiveMode
+                          : (icLiveMode as { src: string }).src
+                      }
+                      className="size-4 text-sky-400 [&_svg]:h-4! [&_svg]:w-4! [&>div]:flex [&>div]:size-full [&>div]:items-center [&>div]:justify-center"
+                    />
                   </div>
                   <Typography
                     variant="body-sm"
                     weight="500"
                     className="flex-1 text-left text-white/90"
                   >
-                    Server & Key OBS
+                    <span className="mr-0.5 text-red-400">*</span>
+                    {t("broadcast.streamSettings.fields.liveMode.label")}
                   </Typography>
                   <ChevronDown className="size-4 shrink-0 text-white/40 transition-transform duration-200 group-data-[open]/item:rotate-180" />
                 </AccordionPrimitive.Trigger>
               </AccordionPrimitive.Header>
-              <AccordionContent className="border-t border-violet-400/10 bg-white/[0.01]">
-                <div className="grid grid-cols-2 gap-3 p-4">
-                  {rtmpPushUrl && (
-                    <StreamField
-                      label={t("broadcast.streamPanel.fields.rtmpUrl")}
-                      value={rtmpPushUrl}
-                    />
-                  )}
-                  {streamingKey && (
-                    <StreamField
-                      label={t("broadcast.streamPanel.fields.streamKey")}
-                      value={streamingKey}
-                      masked
-                    />
-                  )}
-                  {liveUrlList.map((item, i) => (
-                    <Fragment key={i}>
-                      {item.liveUrl && (
-                        <StreamField
-                          label={t("broadcast.streamPanel.fields.liveUrlHls")}
-                          value={item.liveUrl}
+
+              <AccordionContent className="border-t border-sky-400/10 bg-white/[0.01]">
+                <div className="grid grid-cols-2 gap-4 p-4">
+                  <FormField
+                    control={control}
+                    name="liveMode"
+                    label={t("broadcast.streamSettings.fields.liveMode.label")}
+                    required
+                    render={(field) => (
+                      <Select
+                        value={field.value as string}
+                        onValueChange={(v) => field.onChange(v || "")}
+                        options={getLiveModeOptions(t).map((o) =>
+                          scheduled && o.value !== LiveModeEnum.FREE ? { ...o, disabled: true } : o
+                        )}
+                        variant="dark"
+                        disabled={scheduled}
+                      />
+                    )}
+                  />
+                  {liveMode === LiveModeEnum.MATCH ? (
+                    <FormField
+                      control={control}
+                      name="sport"
+                      label={t("broadcast.streamSettings.fields.sport.label")}
+                      render={(field) => (
+                        <Select
+                          value={field.value as string}
+                          onValueChange={(v) => {
+                            reset((prev) => ({
+                              ...prev,
+                              sport: v || "",
+                              league: "",
+                              match: "",
+                            }))
+                          }}
+                          placeholder={t("broadcast.streamSettings.fields.sport.placeholder")}
+                          options={getSportOptions(t)}
+                          variant="dark"
                         />
                       )}
-                      {item.liveUrlFlv && (
-                        <StreamField
-                          label={t("broadcast.streamPanel.fields.liveUrlFlv")}
-                          value={item.liveUrlFlv}
+                    />
+                  ) : (
+                    <FormField
+                      control={control}
+                      name="customType"
+                      label={t("broadcast.streamSettings.options.liveMode.free")}
+                      render={(field) => (
+                        <Select
+                          value={field.value as string}
+                          onValueChange={(v) => field.onChange(v || null)}
+                          placeholder={t("broadcast.streamSettings.options.liveMode.free")}
+                          options={getCustomBroadcastTypeOptions(t)}
+                          variant="dark"
                         />
                       )}
-                    </Fragment>
-                  ))}
+                    />
+                  )}
+
+                  {liveMode === LiveModeEnum.MATCH && (
+                    <>
+                      <FormField
+                        control={control}
+                        name="league"
+                        label={t("broadcast.streamSettings.fields.league.placeholder")}
+                        required
+                        render={(field) => (
+                          <SelectAsync
+                            value={field.value as string}
+                            onValueChange={(v, opt) => {
+                              reset((prev) => ({
+                                ...prev,
+                                league: v,
+                                leagueName: opt?.label || "",
+                                match: "",
+                                matchName: "",
+                              }))
+                            }}
+                            endpoint={BROADCAST_API.MATCHES_BY_GAME}
+                            endpointParams={{ gameId: sport }}
+                            trigger={sport}
+                            transformData={(raw) =>
+                              convertMatchGroupsToLeagueOptions(
+                                (raw as BroadcastMatchGroup[]) || []
+                              )
+                            }
+                            placeholder={t("broadcast.streamSettings.fields.league.placeholder")}
+                            disabled={!sport}
+                            variant="dark"
+                            clearable
+                            defaultOption={
+                              league && leagueName
+                                ? { value: league || "", label: leagueName || "" }
+                                : undefined
+                            }
+                          />
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="matchStatus"
+                        label={t("broadcast.streamSettings.fields.matchStatus.label")}
+                        render={(field) => (
+                          <Select
+                            value={field.value as string}
+                            onValueChange={(v) => {
+                              reset((prev) => ({
+                                ...prev,
+                                matchStatus: (v || "") as StreamSettingsFormType["matchStatus"],
+                                match: "",
+                              }))
+                            }}
+                            options={getMatchStatusOptions(t)}
+                            variant="dark"
+                          />
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="match"
+                        label={t("broadcast.streamSettings.fields.match.label")}
+                        required
+                        render={(field) => (
+                          <SelectAsync
+                            value={field.value as string}
+                            onValueChange={(v, opt) => {
+                              field.onChange(v)
+                              setValue("matchName", opt?.label || "")
+                            }}
+                            endpoint={BROADCAST_API.MATCHES_BY_GAME}
+                            endpointParams={{ gameId: sport, leagueId: league }}
+                            trigger={`${league}-${matchStatus}`}
+                            transformData={(raw) =>
+                              convertMatchGroupsToOptions(
+                                (raw as BroadcastMatchGroup[]) || [],
+                                league || undefined,
+                                matchStatus || undefined
+                              )
+                            }
+                            placeholder={t("broadcast.streamSettings.fields.match.placeholder")}
+                            disabled={!sport}
+                            variant="dark"
+                            defaultOption={
+                              matchValue && matchName
+                                ? { value: matchValue || "", label: matchName || "" }
+                                : undefined
+                            }
+                          />
+                        )}
+                      />
+                    </>
+                  )}
                 </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        )}
 
-        <div className="flex justify-center gap-4 pt-1">
-          <Button
-            type="button"
-            variant="cancel"
-            className="min-w-36"
-            disabled={step === BroadcastStepEnum.STREAMING}
-            onClick={handleLeftBtn}
-          >
-            {step === BroadcastStepEnum.CREATED ||
-            step === BroadcastStepEnum.STREAMING ||
-            step === BroadcastStepEnum.RESERVATION
-              ? t("broadcast.streamSettings.actions.edit")
-              : t("broadcast.streamSettings.actions.cancel")}
-          </Button>
-          {step === BroadcastStepEnum.RESERVATION && (
+          {/* Stream settings */}
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={control}
+              name="streamType"
+              label={t("broadcast.streamSettings.fields.streamType.label")}
+              required
+              disabled
+              render={(field) => (
+                <Select
+                  value={field.value as string}
+                  onValueChange={(v) => field.onChange(v || "")}
+                  options={getStreamTypeOptions(t)}
+                  variant="dark"
+                  disabled
+                />
+              )}
+            />
+            <FormField
+              control={control}
+              name="loginRequired"
+              label={t("broadcast.streamSettings.fields.loginRequired.label")}
+              render={(field) => (
+                <Select
+                  value={field.value as string}
+                  onValueChange={(v) => field.onChange(v || "")}
+                  options={getLoginRequiredOptions(t)}
+                  variant="dark"
+                />
+              )}
+            />
+            {!scheduled && (
+              <FormField
+                control={control}
+                name="externalComment"
+                label={t("broadcast.streamSettings.fields.externalComment.label")}
+                render={(field) => (
+                  <Select
+                    value={field.value as string}
+                    onValueChange={(v) => field.onChange(v || "")}
+                    options={getExternalCommentOptions(t)}
+                    variant="dark"
+                  />
+                )}
+              />
+            )}
+            {watch("streamType") === StreamTypeEnum.BOT && (
+              <FormField
+                control={control}
+                name="m3u8Url"
+                label={t("broadcast.streamSettings.fields.m3u8Url.label")}
+                required
+                render={(field) => (
+                  <Input
+                    {...field}
+                    placeholder={t("broadcast.streamSettings.fields.m3u8Url.placeholder")}
+                  />
+                )}
+              />
+            )}
+          </div>
+
+          {/* Banned users */}
+          <div className="flex items-center justify-between">
+            <Label required>{t("broadcast.streamSettings.bannedUsers.label")}: 0</Label>
+          </div>
+
+          {/* OBS fields — hiện khi có giá trị */}
+          {(rtmpPushUrl || streamingKey) && (
+            <Accordion
+              defaultValue={["obs"]}
+              className="rounded-8 overflow-hidden border border-violet-400/20"
+            >
+              <AccordionItem value="obs" className="group/item border-none">
+                <AccordionPrimitive.Header className="flex">
+                  <AccordionPrimitive.Trigger className="flex w-full items-center gap-3 bg-gradient-to-r from-violet-400/8 to-violet-400/3 px-4 py-3 transition-colors outline-none hover:from-violet-400/12 hover:to-violet-400/5">
+                    <div className="rounded-8 flex size-7 shrink-0 items-center justify-center bg-violet-400/15">
+                      <MonitorPlay className="size-4 text-violet-400" />
+                    </div>
+                    <Typography
+                      variant="body-sm"
+                      weight="500"
+                      className="flex-1 text-left text-white/90"
+                    >
+                      Server & Key OBS
+                    </Typography>
+                    <ChevronDown className="size-4 shrink-0 text-white/40 transition-transform duration-200 group-data-[open]/item:rotate-180" />
+                  </AccordionPrimitive.Trigger>
+                </AccordionPrimitive.Header>
+                <AccordionContent className="border-t border-violet-400/10 bg-white/[0.01]">
+                  <div className="grid grid-cols-2 gap-3 p-4">
+                    {rtmpPushUrl && (
+                      <StreamField
+                        label={t("broadcast.streamPanel.fields.rtmpUrl")}
+                        value={rtmpPushUrl}
+                      />
+                    )}
+                    {streamingKey && (
+                      <StreamField
+                        label={t("broadcast.streamPanel.fields.streamKey")}
+                        value={streamingKey}
+                        masked
+                      />
+                    )}
+                    {liveUrlList.map((item, i) => (
+                      <Fragment key={i}>
+                        {item.liveUrl && (
+                          <StreamField
+                            label={t("broadcast.streamPanel.fields.liveUrlHls")}
+                            value={item.liveUrl}
+                          />
+                        )}
+                        {item.liveUrlFlv && (
+                          <StreamField
+                            label={t("broadcast.streamPanel.fields.liveUrlFlv")}
+                            value={item.liveUrlFlv}
+                          />
+                        )}
+                      </Fragment>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
+
+          <div className="flex justify-center gap-4 pt-1">
             <Button
               type="button"
               variant="cancel"
               className="min-w-36"
-              onClick={() => setCancelResOpen(true)}
+              disabled={step === BroadcastStepEnum.STREAMING || isAnyLoading}
+              onClick={handleLeftBtn}
             >
-              {t("broadcast.streamSettings.actions.cancelReservation")}
+              {isToggling && step === BroadcastStepEnum.RESERVATION ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : step === BroadcastStepEnum.CREATED ||
+                step === BroadcastStepEnum.STREAMING ||
+                step === BroadcastStepEnum.RESERVATION ? (
+                t("broadcast.streamSettings.actions.edit")
+              ) : (
+                t("broadcast.streamSettings.actions.cancel")
+              )}
             </Button>
-          )}
-          <Button
-            type={step && step !== BroadcastStepEnum.RESERVATION ? "button" : "submit"}
-            variant="gradient"
-            className="min-w-36"
-            onClick={step && step !== BroadcastStepEnum.RESERVATION ? handleRightBtn : undefined}
-          >
-            {step === BroadcastStepEnum.STREAMING
-              ? t("broadcast.streamSettings.actions.endStream")
-              : step === BroadcastStepEnum.CREATED
-                ? t("broadcast.streamSettings.actions.startStream")
-                : t("broadcast.streamSettings.actions.confirm")}
-          </Button>
+            {step === BroadcastStepEnum.RESERVATION && (
+              <Button
+                type="button"
+                variant="cancel"
+                className="min-w-36"
+                disabled={isAnyLoading}
+                onClick={() => setCancelResOpen(true)}
+              >
+                {t("broadcast.streamSettings.actions.cancelReservation")}
+              </Button>
+            )}
+            <Button
+              type={step && step !== BroadcastStepEnum.RESERVATION ? "button" : "submit"}
+              variant="gradient"
+              className="min-w-36"
+              disabled={isAnyLoading}
+              onClick={step && step !== BroadcastStepEnum.RESERVATION ? handleRightBtn : undefined}
+            >
+              {isRightLoading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : step === BroadcastStepEnum.STREAMING ? (
+                t("broadcast.streamSettings.actions.endStream")
+              ) : step === BroadcastStepEnum.CREATED ? (
+                t("broadcast.streamSettings.actions.startStream")
+              ) : (
+                t("broadcast.streamSettings.actions.confirm")
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
+      </form>
       {state.ownerModal && (
         <RoomOwnerModal
           open={state.ownerModal}
@@ -903,8 +953,9 @@ export function StreamSettings({ liveId = 528 }: { liveId?: number }) {
           confirmLabel={t("broadcast.streamSettings.actions.confirm")}
           cancelLabel={t("broadcast.roomOwner.actions.cancel")}
           onConfirm={confirmCancelReservation}
+          isConfirming={isCancellingRes}
         />
       )}
-    </form>
+    </>
   )
 }
