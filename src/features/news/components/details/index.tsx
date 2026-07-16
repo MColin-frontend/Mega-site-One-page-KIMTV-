@@ -49,9 +49,12 @@ export async function NewsArticlePage({ slug }: { slug: string }) {
           {/* Author row */}
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-3">
-              <Avatar size={40}>
-                <AvatarImage src={detail.userAvatar} />
-              </Avatar>
+              <Link href={routes.userInfo(detail.authorId || "")}>
+                <Avatar size={40}>
+                  <AvatarImage src={detail.userAvatar} />
+                </Avatar>
+              </Link>
+
               <div className="flex flex-col gap-0.5">
                 {detail.userName && (
                   <Typography variant="body-sm" weight="600" className="text-white">

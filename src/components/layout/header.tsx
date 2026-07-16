@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LogOut, Menu, Search, UserRound, X } from "lucide-react"
+import { LogOut, Menu, UserRound, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
@@ -160,83 +160,84 @@ function AvatarDropdown({ user, userId, onLogout }: AvatarDropdownProps) {
   )
 }
 
+/* TODO: restore search */
 /* ── Search ──────────────────────────────────────────────── */
-function SearchInput() {
-  const { t } = useTranslation()
-  const { state, open, close } = useDisclosure("search")
-  const [value, setValue] = useState<string>("")
-  const inputRef = useRef<HTMLInputElement>(null)
-  const wrapRef = useRef<HTMLDivElement>(null)
+// function SearchInput() {
+//   const { t } = useTranslation()
+//   const { state, open, close } = useDisclosure("search")
+//   const [value, setValue] = useState<string>("")
+//   const inputRef = useRef<HTMLInputElement>(null)
+//   const wrapRef = useRef<HTMLDivElement>(null)
 
-  const expand = () => {
-    open("search")
-    setTimeout(() => inputRef.current?.focus(), 50)
-  }
+//   const expand = () => {
+//     open("search")
+//     setTimeout(() => inputRef.current?.focus(), 50)
+//   }
 
-  const collapse = () => {
-    close("search")
-    setValue("")
-  }
+//   const collapse = () => {
+//     close("search")
+//     setValue("")
+//   }
 
-  const handleBlur = () => {
-    setTimeout(() => {
-      if (!wrapRef.current?.contains(document.activeElement)) collapse()
-    }, 100)
-  }
+//   const handleBlur = () => {
+//     setTimeout(() => {
+//       if (!wrapRef.current?.contains(document.activeElement)) collapse()
+//     }, 100)
+//   }
 
-  return (
-    <div ref={wrapRef} className="relative hidden md:block" onBlur={handleBlur}>
-      <button
-        onClick={expand}
-        aria-label={t("header.search.aria-label")}
-        className={cn(
-          "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
-          "border shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
-          state.search
-            ? "border-white/25 bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-            : "text-muted border-white/10 bg-white/[0.05] hover:border-white/20 hover:bg-white/10 hover:text-white"
-        )}
-      >
-        <Search className="h-[15px] w-[15px]" />
-      </button>
+//   return (
+//     <div ref={wrapRef} className="relative hidden md:block" onBlur={handleBlur}>
+//       <button
+//         onClick={expand}
+//         aria-label={t("header.search.aria-label")}
+//         className={cn(
+//           "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
+//           "border shadow-[0_1px_2px_rgba(0,0,0,0.3)]",
+//           state.search
+//             ? "border-white/25 bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+//             : "text-muted border-white/10 bg-white/[0.05] hover:border-white/20 hover:bg-white/10 hover:text-white"
+//         )}
+//       >
+//         <Search className="h-[15px] w-[15px]" />
+//       </button>
 
-      <div
-        className={cn(
-          "absolute top-1/2 right-0 z-50 -translate-y-1/2",
-          "flex items-center gap-2.5",
-          "h-9 rounded-full border border-white/15 bg-[#0d1829]",
-          "pr-2.5 pl-3 shadow-[0_4px_24px_rgba(0,0,0,0.4)]",
-          "origin-right transition-all duration-200 ease-out",
-          state.search
-            ? "pointer-events-auto w-56 scale-x-100 opacity-100"
-            : "pointer-events-none w-8 scale-x-0 opacity-0"
-        )}
-      >
-        <Search className="text-muted h-3.5 w-3.5 shrink-0" />
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => e.key === "Escape" && collapse()}
-          placeholder={t("header.search.placeholder")}
-          className="text-13 placeholder:text-placeholder flex-1 bg-transparent text-white outline-none"
-        />
-        {value && (
-          <button
-            onClick={() => {
-              setValue("")
-              inputRef.current?.focus()
-            }}
-            className="text-muted hover:text-muted flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-white/20"
-          >
-            <X className="h-3 w-3" />
-          </button>
-        )}
-      </div>
-    </div>
-  )
-}
+//       <div
+//         className={cn(
+//           "absolute top-1/2 right-0 z-50 -translate-y-1/2",
+//           "flex items-center gap-2.5",
+//           "h-9 rounded-full border border-white/15 bg-[#0d1829]",
+//           "pr-2.5 pl-3 shadow-[0_4px_24px_rgba(0,0,0,0.4)]",
+//           "origin-right transition-all duration-200 ease-out",
+//           state.search
+//             ? "pointer-events-auto w-56 scale-x-100 opacity-100"
+//             : "pointer-events-none w-8 scale-x-0 opacity-0"
+//         )}
+//       >
+//         <Search className="text-muted h-3.5 w-3.5 shrink-0" />
+//         <input
+//           ref={inputRef}
+//           type="text"
+//           value={value}
+//           onChange={(e) => setValue(e.target.value)}
+//           onKeyDown={(e) => e.key === "Escape" && collapse()}
+//           placeholder={t("header.search.placeholder")}
+//           className="text-13 placeholder:text-placeholder flex-1 bg-transparent text-white outline-none"
+//         />
+//         {value && (
+//           <button
+//             onClick={() => {
+//               setValue("")
+//               inputRef.current?.focus()
+//             }}
+//             className="text-muted hover:text-muted flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-white/20"
+//           >
+//             <X className="h-3 w-3" />
+//           </button>
+//         )}
+//       </div>
+//     </div>
+//   )
+// }
 
 /* ── Main ────────────────────────────────────────────────── */
 export function Header() {
@@ -290,7 +291,8 @@ export function Header() {
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-3">
-            <SearchInput />
+            {/* TODO: restore search */}
+            {/* <SearchInput /> */}
 
             {isLoggedIn && user ? (
               <AvatarDropdown user={user} userId={user.userId ?? user.uid} onLogout={logout} />
