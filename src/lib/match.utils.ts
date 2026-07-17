@@ -51,7 +51,7 @@ export function buildMatchApiConfig(
 
   return {
     endpoint: MATCH_API.LIST,
-    method: "POST",
+    method: HTTP_METHOD.POST,
     params: {
       date: pickedDateTs,
       gameId: FOOTBALL_GAME_ID,

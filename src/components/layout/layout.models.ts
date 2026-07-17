@@ -1,3 +1,4 @@
+import type { ElementType } from "react"
 import type { StaticImport } from "next/dist/shared/lib/get-img-props"
 
 import type { TranslationKey } from "@/i18n"
@@ -6,6 +7,8 @@ import type { Routes } from "@/config/routes"
 interface NavI18nItemInterface {
   labelKey: TranslationKey
   getHref: (r: Routes) => string
+  icon?: ElementType
+  badge?: boolean
 }
 
 interface FooterSocialInterface {

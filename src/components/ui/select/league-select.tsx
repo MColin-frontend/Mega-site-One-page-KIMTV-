@@ -91,7 +91,7 @@ export function LeagueSelect({
       <Popover.Root>
         <Popover.Trigger
           className={cn(
-            "group/trigger inline-flex h-9 w-[160px] items-center justify-between gap-2.5",
+            "group/trigger inline-flex h-9 w-[160px] max-sm:w-full items-center justify-between gap-2.5",
             "rounded-8 border px-3.5 backdrop-blur-sm",
             "cursor-pointer outline-none select-none",
             "transition-all duration-200",

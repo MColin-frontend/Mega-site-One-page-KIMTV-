@@ -3,7 +3,9 @@
 import { useTranslation } from "@/i18n"
 import type { MatchInterface } from "@/models/match.models"
 
-import { getEndpointByDate } from "@/features/home/home.api"
+import { HTTP_METHOD } from "@/lib/match.utils"
+
+import { HOME_API } from "@/features/home/home.api"
 import CarouselInfinityApi from "@/components/ui/carousel/carousel-infinity-api"
 import { Img } from "@/components/ui/image"
 import { MatchCard } from "@/components/ui/match/match-card"
@@ -20,8 +22,8 @@ export function MatchSchedule() {
       <MatchStatusLabel type="live" />
 
       <CarouselInfinityApi<MatchInterface>
-        endpoint={getEndpointByDate(null)}
-        method="POST"
+        endpoint={HOME_API.MATCH_LIVE}
+        method={HTTP_METHOD.GET}
         params={{ gameId: [] }}
         renderItem={(match, _, isLoading) => <MatchCard match={match} isLoading={isLoading} />}
         renderEmpty={() => (

@@ -75,12 +75,14 @@ export function ScheduleFilter({
         variant="glass"
         size="sm"
         isActive={status !== MATCH_STATUS_TAB.ALL}
+        triggerClassName="max-sm:w-full"
       />
       <LeagueSelect
         groups={groups}
         favorites={hotLeagues}
         value={selectedLeagues}
         onValueChange={onLeagueChange}
+        className="max-sm:w-full"
       />
       <DatePicker
         value={pickedDate}
@@ -89,6 +91,7 @@ export function ScheduleFilter({
         disabled={disabled || status === MATCH_STATUS_TAB.LIVE}
         maxDate={status === MATCH_STATUS_TAB.FINISHED ? new Date() : null}
         minDate={minDate}
+        triggerClassName="max-sm:w-full"
       />
     </section>
   )

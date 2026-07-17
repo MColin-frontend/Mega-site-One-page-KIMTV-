@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Calendar, Share2, Trophy } from "lucide-react"
+import { Calendar, ChartBarStacked, Share2, Trophy } from "lucide-react"
 
 import { formatFootballGameTime, formatMatchDate, formatMatchTime } from "@/lib/date"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/use-auth"
 import { useLiveNavigate } from "@/hooks/use-live-navigate"
 import { useFakeGameMinute } from "@/hooks/useFakeGameMinute"
 
@@ -18,7 +19,9 @@ import {
 import { MatchFootballStateEnum, MatchStatusEnum } from "@/enums/match.enum"
 import type { MatchInterface } from "@/models/match.models"
 
+import { PollModal } from "@/features/live/components/poll-modal"
 import { AvatarWithTooltip } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
@@ -37,7 +40,14 @@ export interface MatchLiveInfoBarProps {
 
 /* ── Share button ────────────────────────────────────────── */
 
-function ShareButton() {
+interface ShareButtonState {
+  open: boolean
+  copied: boolean
+  toggle: () => void
+  copy: () => void
+}
+
+function useShareButton(): ShareButtonState {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -50,7 +60,7 @@ function ShareButton() {
     return () => document.removeEventListener("mousedown", handleClick)
   }, [])
 
-  function handleCopy() {
+  function copy() {
     const url = window.location.href
     navigator.clipboard?.writeText(url).catch(() => {
       const input = document.createElement("input")
@@ -64,16 +74,23 @@ function ShareButton() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  return { open, copied, toggle: () => setOpen((v) => !v), copy }
+}
+
+function ShareButton() {
+  const { open, copied, toggle, copy } = useShareButton()
+
   return (
     <div id="match-share-btn" className="relative">
       <button
-        onClick={() => setOpen((v) => !v)}
-        className="group text-muted flex h-[30px] items-center gap-1.5 rounded-full border border-transparent px-3 transition-all hover:border-[rgba(255,187,0,0.35)] hover:bg-gradient-to-b hover:from-[#111] hover:via-[#222] hover:to-[#111]"
+        onClick={toggle}
+        className="group hover:border-border-hover hover:text-gold/90 flex h-[30px] items-center gap-1 rounded-full border border-white/20 bg-white/5 px-3 text-white/70 transition-all hover:bg-white/10 max-sm:h-6 max-sm:gap-0.5 max-sm:px-2"
       >
-        <Share2 className="size-[14px] shrink-0 transition-colors group-hover:text-[rgba(234,195,103,0.8)]" />
+        <Share2 className="group-hover:text-gold/90 size-[14px] shrink-0 transition-colors max-sm:size-3" />
         <Typography
           variant="caption"
-          className="transition-colors group-hover:text-[rgba(234,195,103,0.8)]"
+          weight="500"
+          className="max-sm:text-10 group-hover:text-gold/90 transition-colors"
         >
           Chia sẻ
         </Typography>
@@ -87,7 +104,7 @@ function ShareButton() {
               className="rounded-6 text-12 text-muted min-w-0 flex-1 border border-white/10 bg-white/5 px-2 py-1.5 outline-none"
             />
             <button
-              onClick={handleCopy}
+              onClick={copy}
               className="rounded-6 text-12 font-500 shrink-0 bg-white/10 px-3 py-1.5 text-white transition-colors hover:bg-white/20"
             >
               {copied ? "Đã sao chép!" : "Sao chép"}
@@ -104,10 +121,23 @@ function ShareButton() {
 export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
   const { t } = useTranslation()
   const navigateToLive = useLiveNavigate()
+  const { user } = useAuth()
+  const [pollOpen, setPollOpen] = useState(false)
+
+  const isRoomOwner =
+    !!user &&
+    !!match.anchorRoomVos?.some(
+      (a) => a.anchorId != null && String(a.anchorId) === String(user.userId ?? user.uid)
+    )
 
   function handleClick() {
     if (!match.matchId || !match.gameId) return
     navigateToLive(match.matchId, match.gameId)
+  }
+
+  function handlePoll(e: React.MouseEvent) {
+    e.stopPropagation()
+    setPollOpen(true)
   }
 
   const {
@@ -223,14 +253,17 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
       <div className="relative z-[2] flex flex-col gap-1 max-lg:gap-2">
         {/* Row 1: live + time + share — ẩn trên mobile */}
         <div className="flex w-full items-center justify-between max-sm:-my-1 max-sm:origin-left">
-          <div className="flex items-center gap-2 max-sm:scale-75">
+          <div className="flex items-center gap-2 max-md:scale-90 max-sm:scale-75">
             <MatchLiveIndicator />
           </div>
-          <div className="flex items-center gap-1.5 max-sm:scale-75">
+          <div className="flex items-center gap-1.5">
             <div className="flex items-center gap-1.5">
-              <MatchPeriodBadge label={periodLabel} className="sm:hidden" />
+              <MatchPeriodBadge
+                label={periodLabel}
+                className="max-sm:px-1 max-sm:text-[10px] sm:hidden"
+              />
               {displayMinute != null && displayMinute !== 0 && (
-                <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5">
+                <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5 max-sm:px-1 max-sm:py-0">
                   <Typography
                     as="span"
                     variant="label"
@@ -243,23 +276,35 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
                 </div>
               )}
             </div>
+            {isRoomOwner && (
+              <Button
+                variant="ghost"
+                onClick={handlePoll}
+                className="border-gold/60 bg-gold/15 text-12 font-600 text-gold hover:border-gold hover:bg-gold/25 h-[30px] gap-1 rounded-full border px-3 shadow-[0_0_12px_rgba(246,195,67,0.3)] transition-all hover:shadow-[0_0_20px_rgba(246,195,67,0.5)] max-sm:h-6 max-sm:gap-0.5 max-sm:px-2"
+              >
+                <ChartBarStacked className="drop-shadow-gold size-[14px] max-sm:size-3" />
+                <span className="font-600 max-sm:text-10 drop-shadow-gold">
+                  {t("match.card.poll" as Parameters<typeof t>[0])}
+                </span>
+              </Button>
+            )}
             <ShareButton />
           </div>
         </div>
 
         {/* Row 2: teams + score */}
-        <div className="flex items-center justify-between gap-4 max-sm:gap-2">
+        <div className="flex items-center justify-between gap-4 max-md:gap-2 max-sm:gap-2">
           {/* Home */}
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-3 max-sm:gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-3 max-md:gap-2 max-sm:gap-1.5">
             <Typography
               as="span"
               variant="body"
               weight="700"
-              className="min-w-0 truncate text-right text-white"
+              className="max-md:text-14 max-sm:text-14 min-w-0 truncate text-right text-white"
             >
               {homeName}
             </Typography>
-            <div className="flex size-[64px] shrink-0 items-center justify-center max-lg:size-12 max-sm:size-9">
+            <div className="flex size-[64px] shrink-0 items-center justify-center max-lg:size-12 max-md:size-10 max-sm:size-10">
               <Img src={homeLogo} alt={homeName ?? ""} width={64} height={64} objectFit="contain" />
             </div>
           </div>
@@ -267,7 +312,14 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
           {/* Score */}
           <div className="flex shrink-0 flex-col items-center gap-1">
             {isUpcoming ? (
-              <Img src={imgVs} alt="VS" width={48} height={48} objectFit="contain" />
+              <Img
+                src={imgVs}
+                alt="VS"
+                width={48}
+                height={48}
+                objectFit="contain"
+                className="max-md:size-9 max-sm:size-9"
+              />
             ) : (
               <>
                 <div className="flex items-center gap-0.5">
@@ -275,7 +327,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
                     as="span"
                     size="48"
                     weight="700"
-                    className="text-gold drop-shadow-gold-score max-sm:!text-30 leading-none tabular-nums"
+                    className="text-gold drop-shadow-gold-score max-md:!text-36 max-sm:!text-30 leading-none tabular-nums"
                   >
                     {homeScore ?? 0}
                   </Typography>
@@ -283,7 +335,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
                     as="span"
                     size="24"
                     weight="500"
-                    className="text-gold/60 px-0.5 leading-100"
+                    className="text-gold/60 max-md:!text-16 max-sm:!text-16 px-0.5 leading-100"
                   >
                     :
                   </Typography>
@@ -291,12 +343,12 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
                     as="span"
                     size="48"
                     weight="700"
-                    className="text-gold drop-shadow-gold-score max-sm:!text-30 leading-none tabular-nums"
+                    className="text-gold drop-shadow-gold-score max-md:!text-36 max-sm:!text-30 leading-none tabular-nums"
                   >
                     {awayScore ?? 0}
                   </Typography>
                 </div>
-                <MatchPeriodBadge label={periodLabel} className="max-sm:hidden" />
+                {isLive && <MatchPeriodBadge label={periodLabel} className="max-md:text-10 max-md:px-1 max-sm:text-10 max-sm:px-1" />}
                 {isFinished && (
                   <div className="rounded-4 border-gold/30 bg-gold/10 shadow-gold-glow border px-1.5 py-px">
                     <Typography
@@ -314,15 +366,15 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
           </div>
 
           {/* Away */}
-          <div className="flex min-w-0 flex-1 items-center gap-3 max-sm:gap-1.5">
-            <div className="flex size-[64px] shrink-0 items-center justify-center max-lg:size-12 max-sm:size-9">
+          <div className="flex min-w-0 flex-1 items-center gap-3 max-md:gap-2 max-sm:gap-1.5">
+            <div className="flex size-[64px] shrink-0 items-center justify-center max-lg:size-12 max-md:size-10 max-sm:size-10">
               <Img src={awayLogo} alt={awayName ?? ""} width={64} height={64} objectFit="contain" />
             </div>
             <Typography
               as="span"
               variant="body"
               weight="700"
-              className="min-w-0 truncate text-white"
+              className="max-md:text-14 max-sm:text-14 min-w-0 truncate text-white"
             >
               {awayName}
             </Typography>
@@ -331,7 +383,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
 
         {/* Row 3: stats + anchors */}
         {showStats && (
-          <div className="flex items-center justify-center gap-3 max-sm:origin-center max-sm:scale-75">
+          <div className="flex items-center justify-center gap-3 max-md:origin-center max-md:scale-90 max-sm:origin-center max-sm:scale-75">
             <div className="rounded-8 flex items-center gap-1 bg-white/10 px-2 py-1 backdrop-blur-2xl">
               {stats.map((s, i) => (
                 <div key={i} className="flex items-center">
@@ -424,6 +476,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
           )}
         </div>
       </div>
+      {pollOpen && <PollModal open={pollOpen} onOpenChange={setPollOpen} />}
     </div>
   )
 }

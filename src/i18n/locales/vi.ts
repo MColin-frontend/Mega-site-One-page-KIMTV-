@@ -5,6 +5,7 @@ import common from "./vi/common.json"
 import footer from "./vi/footer.json"
 import header from "./vi/header.json"
 import home from "./vi/home.json"
+import live from "./vi/live.json"
 import match from "./vi/match.json"
 import news from "./vi/news.json"
 import profile from "./vi/profile.json"
@@ -24,6 +25,7 @@ const vi = {
   profile,
   broadcast,
   broadcastCenter,
+  live,
 }
 
 export default vi
@@ -447,6 +449,24 @@ export interface Dictionary {
         endStreamSuccess: string
         cancelReservation: string
         cancelReservationConfirm: string
+      }
+    }
+  }
+  live: {
+    poll: {
+      title: string
+      subtitle: string
+      steps: { question: string; options: string; duration: string }
+      placeholder: { question: string; option: string; duration: string }
+      labels: { minutes: string }
+      actions: { addOption: string; cancel: string; submit: string }
+      errors: {
+        questionRequired: string
+        questionMax: string
+        optionRequired: string
+        optionsMin: string
+        durationRequired: string
+        durationPositive: string
       }
     }
   }

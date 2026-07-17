@@ -1,0 +1,32 @@
+{
+  "poll": {
+    "title": "Tạo Poll Bình Chọn",
+    "subtitle": "Tạo câu hỏi và lựa chọn cho bình chọn",
+    "steps": {
+      "question": "Câu hỏi",
+      "options": "Lựa chọn",
+      "duration": "Thời gian"
+    },
+    "placeholder": {
+      "question": "Nhập câu hỏi poll...",
+      "option": "Lựa chọn",
+      "duration": "Số phút hiển thị poll"
+    },
+    "labels": {
+      "minutes": "phút"
+    },
+    "actions": {
+      "addOption": "Thêm lựa chọn",
+      "cancel": "Huỷ",
+      "submit": "Tạo Poll"
+    },
+    "errors": {
+      "questionRequired": "Vui lòng nhập câu hỏi",
+      "questionMax": "Tối đa 120 ký tự",
+      "optionRequired": "Vui lòng nhập lựa chọn",
+      "optionsMin": "Cần ít nhất 2 lựa chọn",
+      "durationRequired": "Vui lòng nhập thời gian",
+      "durationPositive": "Thời gian phải lớn hơn 0"
+    }
+  }
+}

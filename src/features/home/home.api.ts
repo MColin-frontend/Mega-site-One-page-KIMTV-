@@ -23,6 +23,7 @@ export const HOME_API = {
   NEWS_FEATURED: "/news/featured-by-game",
   NEWS_POPULAR: "/news/get-popular-news-by-game",
   NEWS_LATEST: "/v4/0/new/1",
+  MATCH_LIVE: "/v2/match/get-pc-live-game-match",
 } as const
 
 function fetchLatestNewsAction(): Promise<NewsItem | null> {

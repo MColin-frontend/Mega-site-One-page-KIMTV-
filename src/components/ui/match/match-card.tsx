@@ -153,10 +153,10 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
       <div className="relative z-10 flex h-full min-h-[300px] flex-col justify-between gap-2 p-3.5">
         {/* Row 1: LIVE badge | viewers + time (right) */}
         <div className="flex items-center justify-between max-sm:-my-1 max-sm:origin-left">
-          <div className="flex items-center gap-2 max-sm:scale-75">
+          <div className="flex items-center gap-2 max-md:scale-90 max-sm:scale-75">
             {isLive && <MatchLiveIndicator label={firstAnchor ? "Stream" : "LIVE"} />}
           </div>
-          <div className="flex items-center gap-1.5 max-sm:scale-75">
+          <div className="flex items-center gap-1.5 max-md:scale-90 max-sm:scale-75">
             {isLive && !!match.onlineNum && match.onlineNum > 0 && (
               <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md">
                 <Users className="size-3.5 shrink-0 text-white/80" aria-hidden />
@@ -260,7 +260,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
         <div className="flex flex-1 items-center justify-between gap-2">
           {/* Home */}
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center max-sm:size-[60px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center max-md:size-[60px] max-sm:size-[60px]">
               <Img
                 src={match.homeLogo}
                 alt={match.homeName ?? ""}
@@ -287,10 +287,10 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
           {/* Score */}
           <div className="flex basis-1/5 flex-col items-center gap-0.5">
             {isUpcoming ? (
-              <Img src={imgVs} alt="VS" width={72} height={72} objectFit="contain" />
+              <Img src={imgVs} alt="VS" width={72} height={72} objectFit="contain" className="max-md:size-14 max-sm:size-10" />
             ) : (
               <>
-                <div className="flex items-center gap-0.5 max-sm:scale-75">
+                <div className="flex items-center gap-0.5 max-md:scale-90 max-sm:scale-75">
                   <Typography
                     as="span"
                     size="60"
@@ -335,7 +335,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
 
           {/* Away */}
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center max-sm:size-[60px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center max-md:size-[60px] max-sm:size-[60px]">
               <Img
                 src={match.awayLogo}
                 alt={match.awayName ?? ""}
@@ -393,7 +393,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
 
         {/* Row 4: Stats (live/finished) */}
         {!isUpcoming && (
-          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.02] px-2 py-1.5 backdrop-blur-[80px] max-sm:scale-75">
+          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.02] px-2 py-1.5 backdrop-blur-[80px] max-md:scale-90 max-sm:scale-75">
             {stats.map((s, i) => (
               <div key={i} className="flex flex-1 items-center">
                 {i > 0 && <div className="h-4 w-px shrink-0 bg-white/20" />}
@@ -420,7 +420,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
 
         {/* Row 5: Bottom bar — league + time */}
         <div className="flex items-center justify-between px-0.5 py-1">
-          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden max-sm:origin-left max-sm:scale-75">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden max-md:origin-left max-md:scale-90 max-sm:origin-left max-sm:scale-75">
             {match.leagueLogo ? (
               <Img
                 src={match.leagueLogo}
