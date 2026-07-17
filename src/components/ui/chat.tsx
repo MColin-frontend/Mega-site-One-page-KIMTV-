@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { Controller, useForm } from "react-hook-form"
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { RefreshCw } from "lucide-react"
+import { ChartBarStacked, ChevronDown, Clock, RefreshCw } from "lucide-react"
 import { z } from "zod"
 
 import {
@@ -163,16 +164,18 @@ function WelcomeMessageItem({
         (message.isSVip || message.isVip) && "bg-gold/5"
       )}
     >
-      <div className="flex items-center gap-2">
-        <div className="relative shrink-0 max-sm:origin-top-left max-sm:scale-75">
-          {message.hasAnchorMe && (
-            <div className="border-gold-hover absolute -top-2 -right-1 z-11 flex size-6 items-center justify-center rounded-full border-[0.5px] bg-black/70 p-[2px]">
-              <Img src={icCrown} alt="crown" width={14} height={14} objectFit="contain" />
-            </div>
-          )}
-          <ChatAvatar message={message} size={48} />
+      <div className="flex items-center gap-2 max-sm:gap-1.5">
+        <div className="relative shrink-0 max-sm:size-8 max-sm:overflow-hidden max-sm:rounded-full">
+          <div className="max-sm:origin-top-left max-sm:scale-[0.64]">
+            {message.hasAnchorMe && (
+              <div className="border-gold-hover absolute -top-2 -right-1 z-11 flex size-6 items-center justify-center rounded-full border-[0.5px] bg-black/70 p-[2px]">
+                <Img src={icCrown} alt="crown" width={14} height={14} objectFit="contain" />
+              </div>
+            )}
+            <ChatAvatar message={message} size={48} />
+          </div>
         </div>
-        <div className="flex w-full min-w-0 flex-col flex-wrap gap-1 max-sm:origin-top-left max-sm:scale-75">
+        <div className="flex w-full min-w-0 flex-col flex-wrap gap-1 max-sm:gap-0.5">
           <div className="flex items-center justify-between gap-1">
             <div className="flex w-full items-center gap-1">
               <Tooltip>
@@ -181,7 +184,10 @@ function WelcomeMessageItem({
                     as="span"
                     variant="body-sm"
                     weight="600"
-                    className={cn("block max-w-48 cursor-pointer truncate", CHAT_CLASSES.username)}
+                    className={cn(
+                      "max-sm:text-12 block max-w-48 cursor-pointer truncate",
+                      CHAT_CLASSES.username
+                    )}
                   >
                     {message.userName}
                   </Typography>
@@ -198,17 +204,20 @@ function WelcomeMessageItem({
                   height={32}
                   unoptimized
                   objectFit="contain"
-                  className="h-auto"
+                  className="h-auto max-sm:!size-5"
                 />
               )}
             </div>
             {message.sendTime && (
-              <Typography variant="overline" className="text-muted ml-auto shrink-0 tabular-nums">
+              <Typography
+                variant="overline"
+                className="text-muted max-sm:text-10 ml-auto shrink-0 tabular-nums"
+              >
                 {formatMatchTime(message.sendTime)}
               </Typography>
             )}
           </div>
-          <Typography as="span" variant="body-sm" className="text-muted">
+          <Typography as="span" variant="body-sm" className="text-muted max-sm:text-12">
             {t("chat.welcome")}
           </Typography>
         </div>
@@ -231,7 +240,7 @@ function MessageItem({
       <div
         onDoubleClick={() => onDoubleClick(message)}
         className={cn(
-          "text-14 bg-chat-gift/5 flex items-center gap-1 py-2.5 text-white",
+          "text-14 bg-chat-gift/5 flex items-center gap-1 py-2.5 text-white max-sm:!px-2",
           CHAT_MSG_PADDING
         )}
       >
@@ -243,7 +252,7 @@ function MessageItem({
             height={32}
             unoptimized
             objectFit="contain"
-            className="h-auto"
+            className="h-auto max-sm:!size-5"
           />
         )}
         <span dangerouslySetInnerHTML={{ __html: message.content }} />
@@ -258,25 +267,30 @@ function MessageItem({
   return (
     <div
       onDoubleClick={() => onDoubleClick(message)}
-      className={cn("flex gap-2 py-1.5 max-sm:gap-1 max-sm:!px-2 max-sm:py-0.5", CHAT_MSG_PADDING)}
+      className={cn(
+        "flex gap-2 py-1.5 max-sm:gap-1.5 max-sm:!px-2 max-sm:py-0.5",
+        CHAT_MSG_PADDING
+      )}
     >
-      <div className="relative shrink-0 max-sm:origin-top-left max-sm:scale-75">
-        {message.hasAnchorMe && (
-          <div className="border-gold-hover absolute -top-2 -right-1 z-10 flex size-6 items-center justify-center rounded-full border-[0.5px] bg-black/70 p-[2px]">
-            <Img src={icCrown} alt="crown" width={14} height={14} objectFit="contain" />
-          </div>
-        )}
-        <ChatAvatar message={message} size={48} />
+      <div className="relative shrink-0 max-sm:size-8 max-sm:overflow-hidden max-sm:rounded-full">
+        <div className="max-sm:origin-top-left max-sm:scale-[0.64]">
+          {message.hasAnchorMe && (
+            <div className="border-gold-hover absolute -top-2 -right-1 z-10 flex size-6 items-center justify-center rounded-full border-[0.5px] bg-black/70 p-[2px]">
+              <Img src={icCrown} alt="crown" width={14} height={14} objectFit="contain" />
+            </div>
+          )}
+          <ChatAvatar message={message} size={48} />
+        </div>
       </div>
 
-      <div className="min-w-0 flex-1 max-sm:origin-top-left max-sm:scale-75">
+      <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
             <Typography
               as="span"
               variant="body-sm"
               weight="600"
-              className={cn("cursor-pointer truncate", CHAT_CLASSES.username)}
+              className={cn("max-sm:text-12 cursor-pointer truncate", CHAT_CLASSES.username)}
             >
               {message.userName}
             </Typography>
@@ -289,19 +303,22 @@ function MessageItem({
                 height={32}
                 unoptimized
                 objectFit="contain"
-                className="h-auto"
+                className="h-auto max-sm:!size-5"
               />
             )}
           </div>
           {formatMatchTime(message?.sendTime ?? 0) && (
-            <Typography variant="overline" className="text-muted shrink-0 tabular-nums">
+            <Typography
+              variant="overline"
+              className="text-muted max-sm:text-10 shrink-0 tabular-nums"
+            >
               {formatMatchTime(message?.sendTime ?? 0)}
             </Typography>
           )}
         </div>
         <Typography
           variant="body-sm"
-          className={cn("break-words text-white", `[&_a]:${CHAT_CLASSES.link}`)}
+          className={cn("max-sm:text-12 break-words text-white", `[&_a]:${CHAT_CLASSES.link}`)}
           dangerouslySetInnerHTML={{ __html: message.content }}
         />
       </div>
@@ -449,31 +466,25 @@ function UserPopup({
           </>
         )}
 
-        {/* Admin actions */}
+        {/* Admin actions — ADMIN + HOUSING_MANAGEMENT */}
         {(userRole === CHAT_USER_ROLE.ADMIN ||
-          userRole === CHAT_USER_ROLE.ANCHOR ||
           userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT) && (
           <div className="flex items-start justify-around border-t border-white/[0.06] px-3 py-4">
-            {userRole === CHAT_USER_ROLE.ADMIN && message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
-              <button
-                onClick={() => {
-                  onBanAll?.(message, true)
-                  onClose()
-                }}
-                className="flex flex-col items-center gap-2 transition-transform active:scale-90"
-              >
-                <Img src={icBlacklist} alt="" width={40} height={40} objectFit="contain" />
-                <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
-                  {t("chat.actions.ban-all")}
-                </span>
-              </button>
-            )}
+            {userRole === CHAT_USER_ROLE.ADMIN &&
+              message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
+                <button
+                  onClick={() => { onBanAll?.(message, true); onClose() }}
+                  className="flex flex-col items-center gap-2 transition-transform active:scale-90"
+                >
+                  <Img src={icBlacklist} alt="" width={40} height={40} objectFit="contain" />
+                  <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
+                    {t("chat.actions.ban-all")}
+                  </span>
+                </button>
+              )}
             {message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
               <button
-                onClick={() => {
-                  onBanRoom?.(message, true)
-                  onClose()
-                }}
+                onClick={() => { onBanRoom?.(message, true); onClose() }}
                 className="flex flex-col items-center gap-2 transition-transform active:scale-90"
               >
                 <Img src={icRestriction} alt="" width={40} height={40} objectFit="contain" />
@@ -483,10 +494,7 @@ function UserPopup({
               </button>
             )}
             <button
-              onClick={() => {
-                onDelete?.(message)
-                onClose()
-              }}
+              onClick={() => { onDelete?.(message); onClose() }}
               className="flex flex-col items-center gap-2 transition-transform active:scale-90"
             >
               <Img src={icRemove} alt="" width={40} height={40} objectFit="contain" />
@@ -494,64 +502,228 @@ function UserPopup({
                 {t("chat.actions.delete")}
               </span>
             </button>
-            {message.type !== CHAT_MESSAGE_TYPE.VIRTUAL &&
-              (userRole === CHAT_USER_ROLE.ADMIN ||
-                userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT) && (
-                <button
-                  onClick={() => {
-                    if (isPinned) onUnpin?.(message)
-                    else onPin?.(message)
-                    onClose()
-                  }}
-                  className="flex flex-col items-center gap-2 transition-transform active:scale-90"
-                >
-                  <Img
-                    src={icPinImg}
-                    alt=""
-                    width={40}
-                    height={40}
-                    objectFit="contain"
-                    className={isPinned ? "opacity-100" : "opacity-50"}
-                  />
-                  <span
-                    className={cn(
-                      "text-12 font-600 w-16 text-center leading-tight",
-                      isPinned ? "text-gold/80" : "text-white/80"
-                    )}
-                  >
-                    {isPinned ? t("chat.actions.unpin") : t("chat.actions.pin")}
-                  </span>
-                </button>
-              )}
-            {userRole === CHAT_USER_ROLE.ANCHOR && message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
+            {message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
               <button
-                onClick={() => {
-                  onSetManager?.(message, true)
-                  onClose()
-                }}
+                onClick={() => { if (isPinned) onUnpin?.(message); else onPin?.(message); onClose() }}
                 className="flex flex-col items-center gap-2 transition-transform active:scale-90"
               >
                 <Img
-                  src={icRestriction}
+                  src={icPinImg}
                   alt=""
                   width={40}
                   height={40}
                   objectFit="contain"
-                  className="opacity-50"
+                  className={isPinned ? "opacity-100" : "opacity-50"}
                 />
-                <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
-                  {t("chat.actions.set-manager")}
+                <span className={cn("text-12 font-600 w-16 text-center leading-tight", isPinned ? "text-gold/80" : "text-white/80")}>
+                  {isPinned ? t("chat.actions.unpin") : t("chat.actions.pin")}
                 </span>
               </button>
             )}
           </div>
         )}
 
+        {/* Anchor actions — ANCHOR only */}
+        {userRole === CHAT_USER_ROLE.ANCHOR &&
+          message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
+            <div className="flex items-start justify-around border-t border-white/[0.06] px-3 py-4">
+              <button
+                onClick={() => { onSetManager?.(message, true); onClose() }}
+                className="flex flex-col items-center gap-2 transition-transform active:scale-90"
+              >
+                <Img src={icRestriction} alt="" width={40} height={40} objectFit="contain" className="opacity-50" />
+                <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
+                  {t("chat.actions.set-manager")}
+                </span>
+              </button>
+            </div>
+          )}
+
         {/* Safe area bottom — mobile */}
         <div className="h-safe-area-bottom sm:hidden" />
       </div>
     </div>,
     document.body
+  )
+}
+
+/* ── Poll ────────────────────────────────────────────────── */
+
+interface PollOption {
+  id: number
+  label: string
+  votes: number
+}
+
+interface PollData {
+  question: string
+  options: PollOption[]
+  durationSeconds: number
+}
+
+
+interface PollFormValues {
+  optionId: number | null
+}
+
+function ChatPoll({ poll }: { poll: PollData }) {
+  const { watch, setValue, handleSubmit } = useForm<PollFormValues>({
+    defaultValues: { optionId: null },
+  })
+
+  const selected = watch("optionId")
+  const hasVoted = selected !== null
+
+  function onSubmit(data: PollFormValues) {
+    // TODO: call vote API with data.optionId
+    console.log("voted:", data.optionId)
+  }
+
+  const totalVotes = poll.options.reduce((s, o) => s + o.votes, 0)
+  const expired = poll.durationSeconds <= 0
+
+  return (
+    <div className="card-gold rounded-8 mx-2 my-1.5 overflow-hidden">
+      <AccordionPrimitive.Root>
+        <AccordionPrimitive.Item value="poll">
+          {/* Header = Trigger */}
+          <AccordionPrimitive.Header>
+            <AccordionPrimitive.Trigger className="group flex w-full items-center justify-between px-3 pt-2.5 pb-2 outline-none">
+              <div className="flex items-center gap-1.5">
+                <ChartBarStacked className="text-gold/60 size-3 shrink-0" />
+                <Typography
+                  as="span"
+                  variant="caption"
+                  weight="600"
+                  color="white/90"
+                  className="leading-none"
+                >
+                  {poll.question}
+                </Typography>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className={cn(
+                    "flex items-center gap-0.5 rounded-full px-1.5 py-[3px] tabular-nums",
+                    expired
+                      ? "bg-white/5"
+                      : "bg-gold/15 ring-gold/25 shadow-[0_0_8px_rgba(246,195,67,0.2)] ring-1"
+                  )}
+                >
+                  <Clock className="mr-0.5 size-2.5" />
+                  <Typography
+                    as="span"
+                    size="10"
+                    weight="600"
+                    color={expired ? "white/30" : "gold"}
+                    className="leading-none"
+                  >
+                    {/* TODO: hiển thị thời gian từ API */}
+                  </Typography>
+                </div>
+                <ChevronDown className="size-3 text-white/30 transition-transform duration-200 group-aria-expanded:rotate-180" />
+              </div>
+            </AccordionPrimitive.Trigger>
+          </AccordionPrimitive.Header>
+
+          {/* Options = Panel */}
+          <AccordionPrimitive.Panel className="data-open:animate-accordion-down data-closed:animate-accordion-up overflow-hidden">
+            <div className="h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0">
+              {/* Options form */}
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="flex flex-col gap-1.5 px-3 pb-3">
+                  {poll.options.map((opt) => {
+                    const pct = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0
+                    const isSelected = selected === opt.id
+                    return (
+                      <button
+                        key={opt.id}
+                        type="submit"
+                        disabled={expired}
+                        onClick={() => setValue("optionId", opt.id, { shouldDirty: true })}
+                        className={cn(
+                          "group rounded-6 relative flex h-8 w-full items-center justify-between overflow-hidden px-2.5 text-left transition-all duration-200",
+                          isSelected
+                            ? "border-gold/40 bg-gold/10 border shadow-[0_0_12px_rgba(246,195,67,0.12)]"
+                            : hasVoted
+                              ? "border border-white/6 bg-white/[0.025]"
+                              : "hover:border-gold/20 hover:bg-gold/5 border border-white/8 bg-white/[0.03] active:scale-[0.98]"
+                        )}
+                      >
+                        {/* Progress fill */}
+                        {hasVoted && (
+                          <div
+                            className={cn(
+                              "rounded-l-6 absolute inset-y-0 left-0 transition-[width] duration-700 ease-out",
+                              isSelected ? "bg-gold/18" : "bg-white/4"
+                            )}
+                            style={{ width: `${pct}%` }}
+                          />
+                        )}
+
+                        {/* Left: radio + label */}
+                        <div className="relative flex items-center gap-2">
+                          <div
+                            className={cn(
+                              "flex size-[14px] shrink-0 items-center justify-center rounded-full border-[1.5px] transition-all duration-200",
+                              isSelected
+                                ? "border-gold bg-gold shadow-[0_0_6px_rgba(246,195,67,0.5)]"
+                                : "border-white/20 group-hover:border-white/35"
+                            )}
+                          >
+                            {isSelected && (
+                              <div className="size-1.5 rounded-full bg-[#080e1c]/80" />
+                            )}
+                          </div>
+                          <Typography
+                            as="span"
+                            variant="caption"
+                            weight={isSelected ? "600" : "500"}
+                            color={isSelected ? "gold" : hasVoted ? "white/50" : "white/75"}
+                            className="leading-none"
+                          >
+                            {opt.label}
+                          </Typography>
+                        </div>
+
+                        {/* Right: percentage */}
+                        {hasVoted && (
+                          <Typography
+                            as="span"
+                            size="10"
+                            weight="600"
+                            color={isSelected ? "gold/90" : "white/30"}
+                            className="relative leading-none tabular-nums"
+                          >
+                            {pct}%
+                          </Typography>
+                        )}
+                      </button>
+                    )
+                  })}
+
+                  {!hasVoted && !expired && (
+                    <Typography
+                      as="p"
+                      size="10"
+                      color="white/20"
+                      className="pt-0.5 text-center italic"
+                    >
+                      Chọn một đáp án để bình chọn
+                    </Typography>
+                  )}
+                  {expired && (
+                    <Typography as="p" size="10" color="white/15" className="pt-0.5 text-center">
+                      Poll đã kết thúc
+                    </Typography>
+                  )}
+                </div>
+              </form>
+            </div>
+          </AccordionPrimitive.Panel>
+        </AccordionPrimitive.Item>
+      </AccordionPrimitive.Root>
+    </div>
   )
 }
 
@@ -603,6 +775,7 @@ export function Chat({
   /* ── Internal state ──────────────────────────────────────── */
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [pinnedMessages, setPinnedMessages] = useState<ChatMessage[]>([])
+  const [activePoll, _setActivePoll] = useState<PollData | null>(null) // TODO: set từ API khi có
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     CHAT_CONNECTION_STATUS.DISCONNECTED
   )
@@ -886,31 +1059,31 @@ export function Chat({
   return (
     <div
       className={cn(
-        "card-glow rounded-12 relative flex h-full min-h-0 w-full flex-1 flex-col gap-4 overflow-hidden p-4 backdrop-blur-2xl",
+        "card-glow rounded-12 relative flex h-full min-h-0 w-full flex-1 flex-col gap-4 overflow-hidden p-4 backdrop-blur-2xl max-sm:p-2",
         className
       )}
     >
       {/* Social buttons */}
-      <div className="flex shrink-0 items-center gap-1.5 max-sm:origin-right max-sm:scale-75">
+      <div className="flex shrink-0 items-center gap-1.5 max-sm:gap-1">
         {mergedSocials.telegram && (
           <a
             href={mergedSocials.telegram}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#2aabee] py-1.5 no-underline shadow-[0_2px_8px_rgba(42,171,238,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(42,171,238,0.45)] hover:brightness-110 active:scale-95"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#2aabee] py-1.5 no-underline shadow-[0_2px_8px_rgba(42,171,238,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(42,171,238,0.45)] hover:brightness-110 active:scale-95 max-sm:gap-1 max-sm:px-2 max-sm:py-1"
           >
             <Img
               src={icTele.src}
               alt=""
               width={14}
               height={14}
-              className="size-3.5 shrink-0 object-contain"
+              className="size-3.5 shrink-0 object-contain max-sm:size-3"
             />
             <Typography
               as="span"
               variant="caption"
               weight="600"
-              className="leading-none text-white"
+              className="max-sm:text-10 leading-none text-white"
             >
               {CHAT_SOCIAL_NAMES.TELEGRAM}
             </Typography>
@@ -921,20 +1094,20 @@ export function Chat({
             href={mergedSocials.facebook}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#1877f2] py-1.5 no-underline shadow-[0_2px_8px_rgba(24,119,242,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(24,119,242,0.45)] hover:brightness-110 active:scale-95"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#1877f2] py-1.5 no-underline shadow-[0_2px_8px_rgba(24,119,242,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(24,119,242,0.45)] hover:brightness-110 active:scale-95 max-sm:gap-1 max-sm:px-2 max-sm:py-1"
           >
             <Img
               src={icFacebook.src}
               alt=""
               width={14}
               height={14}
-              className="size-3.5 shrink-0 object-contain"
+              className="size-3.5 shrink-0 object-contain max-sm:size-3"
             />
             <Typography
               as="span"
               variant="caption"
               weight="600"
-              className="leading-none text-white"
+              className="max-sm:text-10 leading-none text-white"
             >
               {CHAT_SOCIAL_NAMES.FACEBOOK}
             </Typography>
@@ -945,20 +1118,20 @@ export function Chat({
             href={mergedSocials.zalo}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#0068ff] py-1.5 no-underline shadow-[0_2px_8px_rgba(0,104,255,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,104,255,0.45)] hover:brightness-110 active:scale-95"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[#0068ff] py-1.5 no-underline shadow-[0_2px_8px_rgba(0,104,255,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,104,255,0.45)] hover:brightness-110 active:scale-95 max-sm:gap-1 max-sm:px-2 max-sm:py-1"
           >
             <Img
               src={icZalo.src}
               alt=""
               width={14}
               height={14}
-              className="size-3.5 shrink-0 object-contain"
+              className="size-3.5 shrink-0 object-contain max-sm:size-3"
             />
             <Typography
               as="span"
               variant="caption"
               weight="600"
-              className="leading-none text-white"
+              className="max-sm:text-10 leading-none text-white"
             >
               {CHAT_SOCIAL_NAMES.ZALO}
             </Typography>
@@ -1030,12 +1203,12 @@ export function Chat({
                     className={cn("text-14 shrink-0 leading-none", CHAT_CLASSES.pin)}
                     onClick={(e) => {
                       e.stopPropagation()
-                      if (userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.ANCHOR)
+                      if (userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT)
                         handleUnpin(msg)
                       else setExpandedPinId(expandedPinId === msg.id ? null : msg.id)
                     }}
                   >
-                    {userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.ANCHOR
+                    {userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT
                       ? CHAT_SYMBOLS.CLOSE
                       : expandedPinId === msg.id
                         ? CHAT_SYMBOLS.COLLAPSE
@@ -1066,6 +1239,8 @@ export function Chat({
             ))}
           </div>
         )}
+
+        {activePoll && <ChatPoll poll={activePoll} />}
 
         {/* Message list */}
         <div
@@ -1120,20 +1295,19 @@ export function Chat({
         {/* New message button */}
         {showNewMsg && (
           <Button
-            variant="destructive"
-            size="sm"
+            variant="gradient"
             onClick={() => {
               scrollToBottom()
               setShowNewMsg(false)
             }}
-            className="absolute bottom-[58px] left-1/2 z-10 -translate-x-1/2 rounded-full"
+            className="absolute bottom-[58px] left-1/2 z-10 -translate-x-1/2 max-sm:zoom-75"
           >
             {t("chat.new-messages")}
           </Button>
         )}
       </div>
       {/* Input */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 max-sm:zoom-75">
         <Controller
           name="content"
           control={control}

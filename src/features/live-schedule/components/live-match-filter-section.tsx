@@ -50,12 +50,12 @@ export function LiveMatchFilterSection() {
   const skeletonCount = 10
 
   return (
-    <section className="card-glow rounded-12 flex flex-col gap-4 p-5">
+    <section className="card-glow rounded-12 flex flex-col gap-4 p-5 max-sm:p-3 max-sm:gap-3">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 max-sm:flex-col max-sm:items-start">
         <MatchStatusLabel type="live" />
 
-        <div className="rounded-10 flex items-center gap-0.5 bg-white/5 p-1">
+        <div className="rounded-10 flex items-center gap-0.5 bg-white/5 p-1 max-sm:w-full max-sm:overflow-x-auto max-sm:scrollbar-none">
           {LIVE_SCHEDULE_FILTER_OPTIONS.map((o) => {
             const iconSrc = TAB_ICONS[o.value]
             const isActive = tab === o.value
@@ -64,7 +64,8 @@ export function LiveMatchFilterSection() {
                 key={o.value}
                 onClick={() => setParams({ [LIVE_SCHEDULE_TAB_PARAM]: o.value }, { scroll: false })}
                 className={cn(
-                  "rounded-8 text-13 font-500 flex items-center gap-1.5 px-3 py-1.5 transition-all duration-150",
+                  "rounded-8 font-500 flex shrink-0 items-center gap-1 px-2.5 py-1.5 transition-all duration-150 max-sm:flex-1 max-sm:flex-col max-sm:gap-0.5 max-sm:px-2 max-sm:py-1",
+                  "text-13 max-sm:text-10",
                   isActive
                     ? "bg-amber-400/15 text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.15)]"
                     : "text-white/50 hover:bg-white/6 hover:text-white/80"
@@ -76,9 +77,9 @@ export function LiveMatchFilterSection() {
                   width={20}
                   height={20}
                   unoptimized
-                  className={cn("size-5 shrink-0", isActive ? "opacity-100" : "opacity-50")}
+                  className={cn("shrink-0 max-sm:size-4 size-5", isActive ? "opacity-100" : "opacity-50")}
                 />
-                <span>{t(o.labelKey as Parameters<typeof t>[0])}</span>
+                <span className="whitespace-nowrap">{t(o.labelKey as Parameters<typeof t>[0])}</span>
               </button>
             )
           })}

@@ -209,7 +209,8 @@ export function VideoPlayer({
           />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
-            <div className="rounded-12 border-gold/20 border bg-black/50 px-8 py-5 backdrop-blur-md max-sm:scale-50">
+            <div className="card-gold relative overflow-hidden rounded-8 px-8 py-5 max-sm:scale-50">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
               <Typography variant="body" weight="700" className="text-gold drop-shadow-gold">
                 {t("video.no-source.title")}
               </Typography>

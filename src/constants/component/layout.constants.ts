@@ -1,5 +1,5 @@
 import type { ElementType } from "react"
-import { MonitorPlay, SlidersHorizontal } from "lucide-react"
+import { CalendarDays, Clapperboard, Home, MonitorPlay, Newspaper, Radio, SlidersHorizontal } from "lucide-react"
 
 import type { TranslationKey } from "@/i18n"
 import type { Routes } from "@/config/routes"
@@ -41,11 +41,11 @@ export const HEADER_DROPDOWN_ITEMS: DropdownItemInterface[] = [
 ]
 
 export const MAIN_NAV_ITEMS: NavI18nItemInterface[] = [
-  { labelKey: "header.nav.home", getHref: (r) => r.home },
-  { labelKey: "header.nav.schedule", getHref: (r) => r.schedule },
-  { labelKey: "header.nav.live-schedule", getHref: (r) => r.liveSchedule },
-  { labelKey: "header.nav.news", getHref: (r) => r.news.index },
-  { labelKey: "header.nav.highlight", getHref: (r) => r.video.index },
+  { labelKey: "header.nav.home", getHref: (r) => r.home, icon: Home },
+  { labelKey: "header.nav.schedule", getHref: (r) => r.schedule, icon: CalendarDays },
+  { labelKey: "header.nav.live-schedule", getHref: (r) => r.liveSchedule, icon: Radio, badge: true },
+  { labelKey: "header.nav.news", getHref: (r) => r.news.index, icon: Newspaper },
+  { labelKey: "header.nav.highlight", getHref: (r) => r.video.index, icon: Clapperboard },
 ]
 
 export const FOOTER_SOCIAL_LINKS = {

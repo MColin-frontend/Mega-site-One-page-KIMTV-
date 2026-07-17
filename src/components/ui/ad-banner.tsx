@@ -39,7 +39,7 @@ function AdMedia({
         loop
         muted
         playsInline
-        className="w-full"
+        className={cn("w-full", rounded)}
         onError={() => fallback && !errored && setErrored(true)}
       >
         <source src={url as string} />

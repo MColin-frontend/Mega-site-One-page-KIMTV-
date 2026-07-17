@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LogOut, Menu, UserRound, X } from "lucide-react"
@@ -239,6 +239,94 @@ function AvatarDropdown({ user, userId, onLogout }: AvatarDropdownProps) {
 //   )
 // }
 
+/* ── Desktop Nav ─────────────────────────────────────────── */
+
+function DesktopNav({
+  items,
+  isActive,
+  t,
+}: {
+  items: typeof import("@/constants/component/layout.constants").MAIN_NAV_ITEMS
+  isActive: (href: string) => boolean
+  t: (key: Parameters<ReturnType<typeof useTranslation>["t"]>[0]) => string
+}) {
+  const navRef = useRef<HTMLElement>(null)
+  const pathname = usePathname()
+  const [indicator, setIndicator] = useState({ left: 0, opacity: 0 })
+
+  useEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+    const active = nav.querySelector<HTMLElement>("[data-active='true']")
+    if (active) {
+      const navRect = nav.getBoundingClientRect()
+      const rect = active.getBoundingClientRect()
+      setIndicator({ left: rect.left - navRect.left + rect.width / 2 - 16, opacity: 1 })
+    } else {
+      setIndicator((s) => ({ ...s, opacity: 0 }))
+    }
+  }, [pathname])
+
+  return (
+    <nav ref={navRef} className="relative flex flex-1 items-center justify-center max-lg:hidden">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 h-[2px] w-8 rounded-full bg-gradient-to-r from-transparent via-gold to-transparent transition-[left,opacity] duration-300 ease-out"
+        style={{ left: indicator.left, opacity: indicator.opacity }}
+      />
+      {items.map((item) => {
+        const locale = (pathname.split("/")[1] ?? "vi") as Parameters<typeof getRoutes>[0]
+        const routes = getRoutes(locale)
+        const href = item.getHref(routes)
+        const active = isActive(href)
+        const Icon = item.icon
+        return (
+          <Link
+            key={item.labelKey}
+            href={href}
+            data-active={active}
+            className={cn(
+              "group relative flex flex-col items-center gap-2 px-6 pb-3 pt-2.5 transition-colors duration-200 max-sm:gap-1 max-sm:px-3 max-sm:pb-2 max-sm:pt-2",
+              active ? "text-gold" : "text-white/50 hover:text-white/80"
+            )}
+          >
+            {Icon && (
+              <div className="relative">
+                <Icon className={cn(
+                  "size-[18px] transition-all duration-200 max-sm:size-[12px]",
+                  active
+                    ? "text-gold drop-shadow-[0_0_4px_rgba(246,195,67,1)] drop-shadow-[0_0_12px_rgba(246,195,67,0.7)] drop-shadow-[0_0_24px_rgba(246,195,67,0.4)]"
+                    : "text-white/45 group-hover:text-white/70"
+                )} />
+                {item.badge && (
+                  <span className="absolute -top-0.5 -right-0.5 flex size-[7px]">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                    <span className="relative inline-flex size-[7px] rounded-full bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.8)]" />
+                  </span>
+                )}
+              </div>
+            )}
+            <Typography
+              as="span"
+              variant="body-sm"
+              weight="500"
+              color={active ? "gold" : "white/50"}
+              className={cn(
+                "whitespace-nowrap leading-none transition-colors duration-200 max-sm:!text-10",
+                active
+                  ? "drop-shadow-[0_0_6px_rgba(246,195,67,0.9)] drop-shadow-[0_0_16px_rgba(246,195,67,0.5)]"
+                  : "group-hover:text-white/75"
+              )}
+            >
+              {t(item.labelKey)}
+            </Typography>
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
 /* ── Main ────────────────────────────────────────────────── */
 export function Header() {
   const { t, locale } = useTranslation()
@@ -267,28 +355,11 @@ export function Header() {
               priority
               objectFit="contain"
               style={{ height: "auto" }}
+              className="max-sm:w-[55px]"
             />
           </Link>
 
-          <nav className="flex flex-1 items-center justify-center gap-8 px-8 max-lg:hidden">
-            {MAIN_NAV_ITEMS.map((item) => {
-              const href = item.getHref(routes)
-              const active = isActive(href)
-              return (
-                <Link key={href} href={href} className="nav-link" data-active={active}>
-                  <Typography
-                    variant="h6"
-                    className={cn(
-                      "whitespace-nowrap transition-colors",
-                      active ? "text-gold" : "hover:text-gold text-white/85"
-                    )}
-                  >
-                    {t(item.labelKey)}
-                  </Typography>
-                </Link>
-              )
-            })}
-          </nav>
+          <DesktopNav items={MAIN_NAV_ITEMS} isActive={isActive} t={t} />
 
           <div className="ml-auto flex shrink-0 items-center gap-3">
             {/* TODO: restore search */}
@@ -308,7 +379,7 @@ export function Header() {
                 state.mobileMenu ? t("header.mobile-menu.close") : t("header.mobile-menu.open")
               }
               onClick={() => toggle("mobileMenu")}
-              className="text-muted relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] shadow-[0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white lg:hidden"
+              className="text-muted relative hidden h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] shadow-[0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               <Menu
                 className={cn(
@@ -354,6 +425,7 @@ export function Header() {
           {MAIN_NAV_ITEMS.map((item) => {
             const href = item.getHref(routes)
             const active = isActive(href)
+            const Icon = item.icon
             return (
               <Link
                 key={href}
@@ -364,12 +436,15 @@ export function Header() {
                   active ? "text-gold" : "text-muted hover:text-white"
                 )}
               >
-                <span
-                  className={cn(
-                    "h-4 w-[3px] rounded-full transition-all duration-200",
-                    active ? "bg-gold" : "bg-transparent"
-                  )}
-                />
+                <span className={cn("h-4 w-[3px] rounded-full transition-all duration-200", active ? "bg-gold" : "bg-transparent")} />
+                {Icon && (
+                  <div className="relative">
+                    <Icon className="size-4 shrink-0" />
+                    {item.badge && (
+                      <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-red-500" />
+                    )}
+                  </div>
+                )}
                 <Typography variant="label" className="text-inherit">
                   {t(item.labelKey)}
                 </Typography>

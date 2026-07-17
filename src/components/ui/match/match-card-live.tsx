@@ -79,14 +79,31 @@ function StatItem({
   label: string
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center gap-1">
+    <div className="flex flex-1 flex-col items-center gap-1 max-sm:gap-0.5">
       <div className="flex items-center gap-1">
-        <Img src={icon} alt={alt} width={20} height={20} objectFit="contain" />
-        <Typography as="span" variant="body" weight="700" className="text-white tabular-nums">
+        <Img
+          src={icon}
+          alt={alt}
+          width={20}
+          height={20}
+          objectFit="contain"
+          className="max-md:!size-3.5 max-sm:!size-3.5"
+        />
+        <Typography
+          as="span"
+          variant="body"
+          weight="700"
+          className="max-md:text-12 max-sm:text-12 text-white tabular-nums"
+        >
           {value}
         </Typography>
       </div>
-      <Typography as="span" size="14" weight="500" className="text-white">
+      <Typography
+        as="span"
+        size="14"
+        weight="500"
+        className="max-md:text-10 max-sm:text-10 text-white"
+      >
         {label}
       </Typography>
     </div>
@@ -136,6 +153,7 @@ export function MatchCardLive({
       onClick={handleClick}
       className={cn(
         "card-match-bg rounded-12 relative w-full overflow-hidden transition-all",
+        "max-sm:origin-top-left",
         isLive ? "hover:shadow-card-hover cursor-pointer" : "cursor-default",
         "shadow-none",
         className
@@ -200,16 +218,16 @@ export function MatchCardLive({
       )}
 
       {/* ── Content overlay ── */}
-      <div className="relative z-[3] flex min-h-[360px] flex-col justify-between gap-2 p-3.5 max-sm:min-h-[216px] max-sm:origin-top-left max-sm:scale-[0.6]">
+      <div className="relative z-[3] flex min-h-[300px] flex-col justify-between gap-2 p-3.5 max-md:gap-1.5 max-md:p-2.5 max-sm:gap-1.5 max-sm:p-2">
         {/* Row 1: LIVE | HD + viewers */}
-        <div className="flex items-start justify-between max-sm:-my-1 max-sm:origin-left max-sm:scale-75">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-1.5 max-sm:gap-1">
             {isLive && (
               <>
                 <div className="relative flex items-center gap-1.5 overflow-visible">
                   <div className="pointer-events-none absolute inset-0 -z-10 scale-150 animate-pulse rounded-full bg-red-600/40 blur-md" />
-                  <div className="rounded-6 shadow-live-red relative flex h-[30px] items-center gap-1.5 bg-red-600 px-2.5">
-                    <span className="relative flex size-2.5 shrink-0">
+                  <div className="rounded-6 shadow-live-red relative flex h-[30px] items-center gap-1.5 bg-red-600 px-2.5 max-md:h-6 max-md:gap-1 max-md:px-2 max-sm:h-5 max-sm:gap-1 max-sm:px-2">
+                    <span className="relative flex size-2.5 shrink-0 max-md:size-2 max-sm:size-2">
                       <span
                         className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"
                         style={{ animationDuration: "0.8s" }}
@@ -218,16 +236,20 @@ export function MatchCardLive({
                         className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-40"
                         style={{ animationDuration: "1.2s", animationDelay: "0.2s" }}
                       />
-                      <span className="shadow-white-dot relative inline-flex size-2.5 rounded-full bg-white" />
+                      <span className="shadow-white-dot relative inline-flex size-2.5 rounded-full bg-white max-md:size-2 max-sm:size-2" />
                     </span>
-                    <span className="text-12 font-800 tracking-widest text-white uppercase">
+                    <span className="text-12 font-800 max-md:text-10 max-sm:text-10 tracking-widest text-white uppercase">
                       {hasAnchor ? "Stream" : "LIVE"}
                     </span>
                   </div>
                 </div>
                 {match.gameTime != null && (
-                  <div className="rounded-4 border-gold/50 bg-gold/20 flex h-[30px] items-center border px-1.5 shadow-[0_0_12px_rgba(245,197,24,0.5),0_2px_8px_rgba(0,0,0,0.6)] backdrop-blur-sm">
-                    <Typography variant="label" weight="700" className="text-gold drop-shadow-gold">
+                  <div className="rounded-4 border-gold/50 bg-gold/20 flex h-[30px] items-center border px-1.5 shadow-[0_0_12px_rgba(245,197,24,0.5),0_2px_8px_rgba(0,0,0,0.6)] backdrop-blur-sm max-md:h-6 max-sm:h-6">
+                    <Typography
+                      variant="label"
+                      weight="700"
+                      className="text-gold drop-shadow-gold max-sm:text-10"
+                    >
                       {formatFootballGameTime(match.gameTime)}
                       <span className="animate-blink">&apos;</span>
                     </Typography>
@@ -243,22 +265,26 @@ export function MatchCardLive({
               </div>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 max-sm:gap-1">
             {match.language && (
-              <div className="rounded-4 border-gold/50 bg-gold/20 flex h-[30px] items-center border px-2 shadow-[0_0_16px_rgba(245,197,24,0.6),0_2px_8px_rgba(0,0,0,0.6)] backdrop-blur-md">
+              <div className="rounded-4 border-gold/50 bg-gold/20 flex h-[30px] items-center border px-2 shadow-[0_0_16px_rgba(245,197,24,0.6),0_2px_8px_rgba(0,0,0,0.6)] backdrop-blur-md max-md:h-6 max-md:px-1.5 max-sm:h-6 max-sm:px-1.5">
                 <Typography
                   size="14"
                   weight="800"
-                  className="text-gold drop-shadow-gold leading-none uppercase"
+                  className="text-gold drop-shadow-gold max-sm:text-12 leading-none uppercase"
                 >
                   {match.language}
                 </Typography>
               </div>
             )}
             {(match.onlineNum ?? 0) > 0 && (
-              <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md">
-                <Users className="size-3.5 text-white/80" />
-                <Typography size="14" weight="500" className="leading-none text-white tabular-nums">
+              <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md max-md:h-6 max-md:px-1.5 max-sm:h-6 max-sm:px-1.5">
+                <Users className="size-3.5 text-white/80 max-sm:size-3" />
+                <Typography
+                  size="14"
+                  weight="500"
+                  className="max-sm:text-12 leading-none text-white tabular-nums"
+                >
                   {formatViewers(match.onlineNum)}
                 </Typography>
               </div>
@@ -269,7 +295,7 @@ export function MatchCardLive({
         {/* Row 2: BLV | minute */}
         <div className="flex items-center justify-between">
           {hasAnchor ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 max-md:origin-left max-md:zoom-75 max-sm:origin-left max-sm:zoom-75">
               {match.anchorAvatar && (
                 <div className="relative shrink-0">
                   <Avatar
@@ -318,7 +344,7 @@ export function MatchCardLive({
         {/* Row 3: Teams + Score */}
         <div className="flex flex-1 items-center justify-between gap-2">
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-sm:size-[56px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-md:size-[60px] max-sm:size-[60px]">
               <Img
                 src={match.homeLogo}
                 alt={match.homeName ?? ""}
@@ -333,7 +359,7 @@ export function MatchCardLive({
                   as="span"
                   variant="label"
                   weight="500"
-                  className="max-sm:text-10 line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
+                  className="max-md:text-10 max-sm:text-10 line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
                 >
                   {match.homeName}
                 </Typography>
@@ -350,7 +376,7 @@ export function MatchCardLive({
                 width={72}
                 height={72}
                 objectFit="contain"
-                className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-sm:size-[50px]"
+                className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-md:size-10 max-sm:size-10"
               />
             ) : (
               <>
@@ -359,7 +385,7 @@ export function MatchCardLive({
                     as="span"
                     size="72"
                     weight="700"
-                    className="text-gold drop-shadow-gold-score max-sm:!text-48 leading-none tabular-nums"
+                    className="text-gold drop-shadow-gold-score max-md:!text-48 max-sm:!text-36 leading-none tabular-nums"
                   >
                     {match.homeScore ?? 0}
                   </Typography>
@@ -367,7 +393,7 @@ export function MatchCardLive({
                     as="span"
                     size="30"
                     weight="500"
-                    className="text-gold/60 max-sm:!text-20 px-0.5 leading-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
+                    className="text-gold/60 max-md:!text-20 max-sm:!text-16 px-0.5 leading-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
                   >
                     :
                   </Typography>
@@ -375,7 +401,7 @@ export function MatchCardLive({
                     as="span"
                     size="72"
                     weight="700"
-                    className="text-gold drop-shadow-gold-score max-sm:!text-48 leading-none tabular-nums"
+                    className="text-gold drop-shadow-gold-score max-md:!text-48 max-sm:!text-36 leading-none tabular-nums"
                   >
                     {match.awayScore ?? 0}
                   </Typography>
@@ -386,7 +412,7 @@ export function MatchCardLive({
           </div>
 
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-sm:size-[56px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-md:size-[60px] max-sm:size-[60px]">
               <Img
                 src={match.awayLogo}
                 alt={match.awayName ?? ""}
@@ -401,7 +427,7 @@ export function MatchCardLive({
                   as="span"
                   variant="label"
                   weight="500"
-                  className="max-sm:text-10 line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
+                  className="max-md:text-10 max-sm:text-10 line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
                 >
                   {match.awayName}
                 </Typography>
@@ -413,7 +439,7 @@ export function MatchCardLive({
 
         {/* Row 4: Stats bar */}
         {!isUpcoming && (
-          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.06] px-3 py-2 backdrop-blur-2xl">
+          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.06] px-3 py-2 backdrop-blur-2xl max-md:px-2 max-md:py-1 max-sm:px-2 max-sm:py-1">
             {[
               {
                 icon: icYellowCardV2,
@@ -449,7 +475,7 @@ export function MatchCardLive({
 
         {/* Row 5: League + time */}
         <div className="flex items-center justify-between px-0.5">
-          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden max-md:gap-1 max-sm:gap-1">
             {match.leagueLogo ? (
               <Img
                 src={match.leagueLogo}
@@ -457,18 +483,18 @@ export function MatchCardLive({
                 width={16}
                 height={16}
                 objectFit="contain"
-                className="shrink-0"
+                className="shrink-0 max-md:!size-3 max-sm:!size-3"
               />
             ) : (
-              <Trophy className="text-gold size-3.5 shrink-0" />
+              <Trophy className="text-gold size-3.5 shrink-0 max-sm:size-3" />
             )}
             <Tooltip>
-              <TooltipTrigger className="block min-w-0 overflow-hidden">
+              <TooltipTrigger className="block min-w-0 flex-1 overflow-hidden">
                 <Typography
                   as="span"
                   variant="caption"
                   weight="500"
-                  className="min-w-0 truncate text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
+                  className="max-md:!text-10 max-sm:!text-10 block truncate text-left text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
                 >
                   {match.leagueName}
                 </Typography>
@@ -477,13 +503,13 @@ export function MatchCardLive({
             </Tooltip>
           </div>
           {match.startTime && (
-            <div className="flex shrink-0 items-center gap-1">
-              <Calendar className="size-3 shrink-0 text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]" />
+            <div className="flex shrink-0 items-center gap-1 max-sm:gap-0.5">
+              <Calendar className="size-3 shrink-0 text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] max-sm:size-2.5" />
               <Typography
                 as="span"
                 variant="caption"
                 weight="500"
-                className="text-white/90 tabular-nums drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
+                className="max-md:!text-10 max-sm:!text-10 text-white/90 tabular-nums drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
               >
                 {formatMatchTime(match.startTime)}
                 <span className="mx-1 inline-block h-2.5 w-px bg-white/30 align-middle" />

@@ -56,7 +56,7 @@ function svgSrc(mod: unknown): string {
 }
 
 const menuIconClass =
-  "size-5 shrink-0 [&>div]:flex [&>div]:items-center [&>div]:justify-center [&_svg]:h-5! [&_svg]:w-5!"
+  "size-5 shrink-0 [&>div]:flex [&>div]:items-center [&>div]:justify-center [&_svg]:h-5! [&_svg]:w-5! max-md:size-4 max-md:[&_svg]:h-4! max-md:[&_svg]:w-4!"
 
 // ─── Static icon maps (module-level, không re-create mỗi render) ─────────────
 const FILTER_ICON: Record<FeedMenu, string> = {
@@ -406,8 +406,8 @@ export function HighlightsFeed({
     const vw = window.innerWidth
     const vh = window.innerHeight
     const headerH = document.getElementById("site-header")?.offsetHeight ?? 78
-    const isMobile = vw <= 768
-    const bottomNavH = isMobile ? 56 : 0
+    const isMobile = vw < 1024
+    const bottomNavH = isMobile ? 72 : 0  // 64px bar + 8px buffer
     const sideMenuW = isMobile ? 0 : 96
     const railW = isMobile ? 0 : 60
     const gap = 12
@@ -1033,8 +1033,8 @@ export function HighlightsFeed({
       style={{ height: stageHeight, minHeight: stageHeight }}
     >
       {/* ── Side menu (desktop) / Bottom nav (mobile) ───────────────────── */}
-      <aside className="feed-menu sticky w-24 shrink-0 self-start pt-6 max-md:fixed max-md:right-0 max-md:bottom-0 max-md:left-0 max-md:z-30 max-md:w-full max-md:pt-0">
-        <nav className="card-glow panel-news flex flex-col gap-0.5 rounded-2xl px-2 py-2.5 max-md:flex-row max-md:gap-0 max-md:rounded-none max-md:border-0 max-md:border-t max-md:border-white/10 max-md:px-0 max-md:py-0 max-md:shadow-none">
+      <aside className="feed-menu sticky top-0 w-24 shrink-0 self-start pt-6 max-md:fixed max-md:left-0 max-md:top-1/2 max-md:-translate-y-1/2 max-md:z-40 max-md:w-16 max-md:pt-0">
+        <nav className="card-glow panel-news flex flex-col gap-0.5 rounded-2xl px-2 py-2.5">
           {/* Filter group */}
           <div className="flex flex-col gap-0.5 max-md:contents">
             {filterMenuItems.map(({ key, label, iconSrc }) => (
@@ -1047,7 +1047,7 @@ export function HighlightsFeed({
                 className={cn(
                   "group relative h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 px-1 py-2.5 text-[11px] leading-tight font-medium shadow-none transition-colors",
                   "active:translate-y-0 active:scale-95 active:bg-transparent",
-                  "max-md:min-h-0 max-md:flex-1 max-md:rounded-none max-md:px-1 max-md:py-3",
+                  "max-md:min-h-10 max-md:gap-1 max-md:py-1.5 max-md:px-0.5",
                   activeMenu === key
                     ? "bg-transparent text-[#ffd220] opacity-100 hover:bg-transparent hover:text-[#ffd220]"
                     : "bg-transparent text-white/60 opacity-60 hover:bg-transparent hover:text-[#ffd220] hover:opacity-100"
@@ -1057,7 +1057,7 @@ export function HighlightsFeed({
                 <Typography
                   as="span"
                   variant="caption"
-                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit"
+                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit max-md:text-[9px]"
                 >
                   {label}
                 </Typography>
@@ -1091,7 +1091,7 @@ export function HighlightsFeed({
                 <Typography
                   as="span"
                   variant="caption"
-                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit"
+                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit max-md:text-[9px]"
                 >
                   {label}
                 </Typography>

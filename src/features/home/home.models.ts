@@ -5,9 +5,11 @@ export interface BannerItem {
   height?: number
 }
 
+import { HTTP_METHOD } from "@/lib/match.utils"
+
 export interface ApiConfig {
   endpoint: string
-  method: "GET" | "POST"
+  method: (typeof HTTP_METHOD)[keyof typeof HTTP_METHOD]
   params: Record<string, unknown>
   /** false = không truyền page/pageSize vào request (endpoint tự trả toàn bộ) */
   paginate?: false

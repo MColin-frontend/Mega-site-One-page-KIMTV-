@@ -49,7 +49,7 @@ const CONFIG = {
 
 function LiveDot() {
   return (
-    <span className="relative flex size-[22px] shrink-0 items-center justify-center">
+    <span className="relative flex size-[22px] shrink-0 items-center justify-center max-sm:size-[11px]">
       <span
         className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"
         style={{ animationDuration: "0.8s" }}
@@ -58,7 +58,7 @@ function LiveDot() {
         className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-40"
         style={{ animationDuration: "1.2s", animationDelay: "0.2s" }}
       />
-      <span className="shadow-live-red relative inline-flex size-[14px] rounded-full bg-red-600" />
+      <span className="shadow-live-red relative inline-flex size-[14px] rounded-full bg-red-600 max-sm:size-[7px]" />
     </span>
   )
 }
@@ -71,7 +71,7 @@ export function MatchStatusLabel({ type, label, className }: MatchStatusLabelPro
   return (
     <div
       className={cn(
-        "relative inline-flex h-[56px] w-fit items-stretch overflow-hidden rounded-l-[6px] rounded-r-full border max-sm:origin-left max-sm:scale-[0.6]",
+        "relative inline-flex h-[56px] w-fit items-stretch overflow-hidden rounded-l-[6px] rounded-r-full border max-sm:h-[28px]",
         config.wrapperClass,
         className
       )}
@@ -80,7 +80,7 @@ export function MatchStatusLabel({ type, label, className }: MatchStatusLabelPro
       <div className={cn("absolute top-0 left-0 h-full w-[3px]", config.leftAccentClass)} />
 
       {/* Icon + label */}
-      <div className="flex shrink-0 items-center gap-3 pr-5 pl-5">
+      <div className="flex shrink-0 items-center gap-3 pr-5 pl-5 max-sm:gap-1.5 max-sm:px-2">
         {/* Left-pointing triangle */}
         <div
           className={cn(
@@ -91,27 +91,27 @@ export function MatchStatusLabel({ type, label, className }: MatchStatusLabelPro
 
         {type === "live" && <LiveDot />}
         {type === "upcoming" && (
-          <Clock className="text-gold size-[22px] shrink-0 drop-shadow-[0_0_8px_rgba(246,195,67,0.9)]" />
+          <Clock className="text-gold size-[22px] shrink-0 drop-shadow-[0_0_8px_rgba(246,195,67,0.9)] max-sm:size-[11px]" />
         )}
-        {type === "finished" && <Flag className="size-[22px] shrink-0 text-white/35" />}
+        {type === "finished" && <Flag className="size-[22px] shrink-0 text-white/35 max-sm:size-[11px]" />}
 
         <Typography
           as="span"
           size="20"
           weight="700"
-          className={cn("tracking-4 whitespace-nowrap uppercase", config.textClass)}
+          className={cn("tracking-4 whitespace-nowrap uppercase max-sm:!text-10 max-sm:tracking-1", config.textClass)}
         >
           {label ?? defaultLabel}
         </Typography>
       </div>
 
       {/* Badge */}
-      <div className={cn("flex shrink-0 items-center px-5", config.badgeClass)}>
+      <div className={cn("flex shrink-0 items-center px-5 max-sm:px-2", config.badgeClass)}>
         <Typography
           as="span"
           size="14"
           weight="700"
-          className="tracking-2 whitespace-nowrap uppercase"
+          className="tracking-2 whitespace-nowrap uppercase max-sm:!text-10 max-sm:tracking-1"
         >
           {config.badge}
         </Typography>
