@@ -1,12 +1,13 @@
 "use client"
 
+import NextImage from "next/image"
 import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
+
 import { cn } from "@/lib/utils"
 import { useRouter } from "@/hooks/useRouter"
 
 import { useTranslation } from "@/i18n"
-import { LiveScheduleTabEnum } from "@/features/live-schedule/live-schedule.enums"
 
 import { liveMatchesGridQueryOptions } from "@/features/live-schedule/live-schedule.api"
 import {
@@ -15,13 +16,12 @@ import {
   LIVE_SCHEDULE_TAB_PARAM,
   type LiveScheduleTab,
 } from "@/features/live-schedule/live-schedule.constants"
-import NextImage from "next/image"
-
+import { LiveScheduleTabEnum } from "@/features/live-schedule/live-schedule.enums"
 import CarouselInfinity from "@/components/ui/carousel/carousel-infinity"
 import { Empty } from "@/components/ui/empty"
 import { MatchCardLive } from "@/components/ui/match/match-card-live"
+import { MatchStatusLabel } from "@/components/ui/match/match-status-label"
 import { MatchCardLiveSkeleton } from "@/components/ui/match/skeleton"
-import { Typography } from "@/components/ui/typography"
 
 const TAB_ICONS: Record<LiveScheduleTabEnum, string> = {
   [LiveScheduleTabEnum.ALL]: "/icons/anchor/ic-all.svg",
@@ -53,7 +53,7 @@ export function LiveMatchFilterSection() {
     <section className="card-glow rounded-12 flex flex-col gap-4 p-5">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 max-sm:flex-col max-sm:items-start">
-        <Typography variant="h2">Trực tiếp</Typography>
+        <MatchStatusLabel type="live" />
 
         <div className="rounded-10 flex items-center gap-0.5 bg-white/5 p-1">
           {LIVE_SCHEDULE_FILTER_OPTIONS.map((o) => {
@@ -64,7 +64,7 @@ export function LiveMatchFilterSection() {
                 key={o.value}
                 onClick={() => setParams({ [LIVE_SCHEDULE_TAB_PARAM]: o.value }, { scroll: false })}
                 className={cn(
-                  "rounded-8 flex items-center gap-1.5 px-3 py-1.5 text-13 font-500 transition-all duration-150",
+                  "rounded-8 text-13 font-500 flex items-center gap-1.5 px-3 py-1.5 transition-all duration-150",
                   isActive
                     ? "bg-amber-400/15 text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.15)]"
                     : "text-white/50 hover:bg-white/6 hover:text-white/80"

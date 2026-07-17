@@ -185,11 +185,11 @@ export default function CarouselInfinity<T>({
         className={`overflow-x-hidden overflow-y-visible${viewportClassName ? ` ${viewportClassName}` : ""}`}
         ref={emblaRef}
       >
-        <div className="-ml-4 flex items-stretch">
+        <div className="-ml-4 flex items-stretch max-sm:-ml-2">
           {(Array.isArray(items) ? items : []).map((item, index) => (
             <div
               key={keyExtractor ? keyExtractor(item, index) : index}
-              className={`shrink-0 pl-4 ${slideClassName}`}
+              className={`shrink-0 pl-4 max-sm:pl-2 ${slideClassName}`}
             >
               {renderItem(item, index)}
             </div>

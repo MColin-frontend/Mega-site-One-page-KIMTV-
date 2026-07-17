@@ -79,18 +79,7 @@ async function FeaturedSection({
   const items = await fetchFeaturedNewsAction()
   if (isEmpty(items)) return null
   return (
-    <div
-      className="card-glow rounded-12 flex flex-col gap-2 p-4"
-      style={{
-        background: [
-          "radial-gradient(ellipse at 10% 0%, rgba(74,140,255,0.16) 0%, transparent 55%)",
-          "radial-gradient(ellipse at 90% 100%, rgba(30,80,180,0.13) 0%, transparent 50%)",
-          "radial-gradient(ellipse at 50% 50%, rgba(20,50,120,0.08) 0%, transparent 70%)",
-          "rgba(8,15,30,0.85)",
-        ].join(", "),
-        backdropFilter: "blur(32px)",
-      }}
-    >
+    <div className="card-glow rounded-12 flex flex-col gap-2 p-4">
       <SectionHeader title={title} href={viewAllHref} viewAllLabel={viewAllLabel} />
       <NewsListContent items={items.slice(0, 5)} categoryLabel={categoryLabel} getHref={getHref} />
     </div>

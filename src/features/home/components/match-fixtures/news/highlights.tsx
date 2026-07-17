@@ -10,10 +10,10 @@ import { useTranslation } from "@/i18n"
 import { getRoutes } from "@/config/routes"
 
 import type { NewsItem } from "@/features/home/home.api"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import CarouselInfinity, {
   type CarouselInfinityApi,
 } from "@/components/ui/carousel/carousel-infinity"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
@@ -125,18 +125,7 @@ export function HighlightsCarousel({ items }: HighlightsCarouselProps) {
   if (!items.length) return null
 
   return (
-    <div
-      className="card-glow rounded-12 flex flex-col gap-3 p-4"
-      style={{
-        background: [
-          "radial-gradient(ellipse at 10% 0%, rgba(74,140,255,0.16) 0%, transparent 55%)",
-          "radial-gradient(ellipse at 90% 100%, rgba(30,80,180,0.13) 0%, transparent 50%)",
-          "radial-gradient(ellipse at 50% 50%, rgba(20,50,120,0.08) 0%, transparent 70%)",
-          "rgba(8,15,30,0.85)",
-        ].join(", "),
-        backdropFilter: "blur(32px)",
-      }}
-    >
+    <div className="card-glow rounded-12 flex flex-col gap-3 p-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Typography variant="h2">Highlights</Typography>

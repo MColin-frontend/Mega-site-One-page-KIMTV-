@@ -3,7 +3,7 @@
 import type { ReactNode } from "react"
 import { isEmpty } from "lodash"
 
-import { formatKickOff } from "@/lib/date"
+import { formatKickOff, formatMatchDate } from "@/lib/date"
 import { cn } from "@/lib/utils"
 import { useLiveNavigate } from "@/hooks/use-live-navigate"
 
@@ -21,7 +21,7 @@ import icRedCard from "@assets/icons/match/ic-red-card-v2.svg"
 import icYellowCard from "@assets/icons/match/ic-yellow-card-v2.svg"
 import imgEmpty from "@assets/images/common/img-empty.png"
 
-import { FixtureStatus, ScoreBadge, StatCell } from "./parts/match-fixture-cells"
+import { ScoreBadge, StatCell } from "./parts/match-fixture-cells"
 import { FIXTURE_ROW_CLASS, FixtureListSkeleton } from "./skeleton"
 
 export interface ExtraColumnInterface {
@@ -157,21 +157,19 @@ export function FixtureRow({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-1">
-          {match.status !== MatchStatusEnum.FINISHED &&
-            match.status !== MatchStatusEnum.POSTPONED &&
-            match.status !== MatchStatusEnum.CANCELLED && (
-              <Typography
-                as="span"
-                variant="label"
-                weight="600"
-                color="foreground/80"
-                className="tabular-nums"
-              >
-                {match.startTime ? formatKickOff(match.startTime) : "—"}
-              </Typography>
-            )}
-          <FixtureStatus match={match} />
+        <div className="flex flex-col items-center gap-0.5">
+          <Typography as="span" variant="caption" color="foreground/50" className="tabular-nums">
+            {match.startTime ? formatMatchDate(match.startTime) : "—"}
+          </Typography>
+          <Typography
+            as="span"
+            variant="label"
+            weight="600"
+            color="foreground/80"
+            className="tabular-nums"
+          >
+            {match.startTime ? formatKickOff(match.startTime) : "—"}
+          </Typography>
         </div>
 
         <ScoreBadge match={match} />
@@ -199,7 +197,7 @@ export function FixtureRow({
         className={cn(
           "rounded-10 fixture-row-bg mb-1.5 border border-white/8 px-3 py-2.5",
           onSelect || isLive ? "cursor-pointer hover:bg-white/[0.06]" : "cursor-default",
-          "transition-colors flex flex-col gap-1.5 lg:hidden"
+          "flex flex-col gap-1.5 transition-colors lg:hidden"
         )}
       >
         <div className="flex items-center gap-2">
@@ -216,10 +214,14 @@ export function FixtureRow({
           <Typography variant="caption" color="foreground/45" className="flex-1 truncate">
             {match.leagueName}
           </Typography>
-          <Typography variant="caption" color="foreground/50" className="tabular-nums">
-            {match.startTime ? formatKickOff(match.startTime) : "—"}
-          </Typography>
-          <FixtureStatus match={match} />
+          <div className="flex flex-col items-end gap-0.5">
+            <Typography variant="caption" color="foreground/45" className="tabular-nums">
+              {match.startTime ? formatMatchDate(match.startTime) : "—"}
+            </Typography>
+            <Typography variant="caption" color="foreground/70" className="tabular-nums">
+              {match.startTime ? formatKickOff(match.startTime) : "—"}
+            </Typography>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -271,9 +273,7 @@ export function FixtureRow({
         </div>
 
         {extraColumn && (
-          <div className="flex items-center justify-end">
-            {extraColumn.render(match)}
-          </div>
+          <div className="flex items-center justify-end">{extraColumn.render(match)}</div>
         )}
 
         {isStarted && (

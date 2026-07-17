@@ -7,6 +7,7 @@ import { getEndpointByDate } from "@/features/home/home.api"
 import CarouselInfinityApi from "@/components/ui/carousel/carousel-infinity-api"
 import { Img } from "@/components/ui/image"
 import { MatchCard } from "@/components/ui/match/match-card"
+import { MatchStatusLabel } from "@/components/ui/match/match-status-label"
 import { Typography } from "@/components/ui/typography"
 
 import imgEmpty from "@assets/images/common/img-empty.png"
@@ -16,7 +17,7 @@ export function MatchSchedule() {
 
   return (
     <section className="rounded-12 card-glow flex flex-col gap-4 p-5">
-      <Typography variant="h2">Đang diễn ra</Typography>
+      <MatchStatusLabel type="live" />
 
       <CarouselInfinityApi<MatchInterface>
         endpoint={getEndpointByDate(null)}

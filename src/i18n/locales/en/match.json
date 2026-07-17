@@ -21,6 +21,11 @@
       "yellow-card": "Yellow",
       "red-card": "Red",
       "corner": "Corners"
+    },
+    "status": {
+      "live": "Live Now",
+      "upcoming": "Upcoming",
+      "finished": "Finished"
     }
   },
   "fixture": {

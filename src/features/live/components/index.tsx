@@ -1,6 +1,5 @@
 "use client"
 
-import { useTranslation } from "@/i18n"
 import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
 
 import { Chat } from "@/components/ui/chat"
@@ -9,6 +8,7 @@ import { MatchLiveInfoBar } from "@/components/ui/match/match-live-info-bar"
 
 import { LIVE_SECTION_CONFIG } from "../live.constants"
 import type { LiveMatchInterface } from "../live.models"
+import { LiveBanner } from "./live-banner"
 import { LiveVideoPlayer } from "./live-video-player"
 
 export interface LivePageProps {
@@ -16,8 +16,6 @@ export interface LivePageProps {
 }
 
 export function LivePage({ match }: LivePageProps) {
-  const { t } = useTranslation()
-
   const liveUrls = (() => {
     if (match?.liveUrls?.length) return match.liveUrls
     const firstAnchor = match?.anchorRoom?.[0]
@@ -46,11 +44,13 @@ export function LivePage({ match }: LivePageProps) {
         </div>
       </div>
 
+      <LiveBanner />
+
       {[LIVE_SECTION_CONFIG.LIVE, LIVE_SECTION_CONFIG.UPCOMING, LIVE_SECTION_CONFIG.FINISHED].map(
         (cfg) => (
           <MatchCarousel
             key={cfg.i18nKey}
-            title={t(cfg.i18nKey as Parameters<typeof t>[0])}
+            statusType={cfg.statusType}
             endpoint={cfg.endpoint}
             method={cfg.method}
             params={{ ...cfg.params }}

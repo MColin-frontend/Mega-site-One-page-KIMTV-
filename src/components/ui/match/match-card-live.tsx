@@ -200,7 +200,7 @@ export function MatchCardLive({
       )}
 
       {/* ── Content overlay ── */}
-      <div className="relative z-[3] flex min-h-[360px] flex-col justify-between gap-2 p-3.5">
+      <div className="relative z-[3] flex min-h-[360px] flex-col justify-between gap-2 p-3.5 max-sm:min-h-[216px] max-sm:origin-top-left max-sm:scale-[0.6]">
         {/* Row 1: LIVE | HD + viewers */}
         <div className="flex items-start justify-between max-sm:-my-1 max-sm:origin-left max-sm:scale-75">
           <div className="flex items-center gap-1.5">
@@ -318,7 +318,7 @@ export function MatchCardLive({
         {/* Row 3: Teams + Score */}
         <div className="flex flex-1 items-center justify-between gap-2">
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-sm:size-[56px]">
               <Img
                 src={match.homeLogo}
                 alt={match.homeName ?? ""}
@@ -333,7 +333,7 @@ export function MatchCardLive({
                   as="span"
                   variant="label"
                   weight="500"
-                  className="line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
+                  className="max-sm:text-10 line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
                 >
                   {match.homeName}
                 </Typography>
@@ -350,7 +350,7 @@ export function MatchCardLive({
                 width={72}
                 height={72}
                 objectFit="contain"
-                className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+                className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-sm:size-[50px]"
               />
             ) : (
               <>
@@ -359,7 +359,7 @@ export function MatchCardLive({
                     as="span"
                     size="72"
                     weight="700"
-                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
+                    className="text-gold drop-shadow-gold-score max-sm:!text-48 leading-none tabular-nums"
                   >
                     {match.homeScore ?? 0}
                   </Typography>
@@ -367,7 +367,7 @@ export function MatchCardLive({
                     as="span"
                     size="30"
                     weight="500"
-                    className="text-gold/60 px-0.5 leading-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
+                    className="text-gold/60 max-sm:!text-20 px-0.5 leading-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]"
                   >
                     :
                   </Typography>
@@ -375,7 +375,7 @@ export function MatchCardLive({
                     as="span"
                     size="72"
                     weight="700"
-                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
+                    className="text-gold drop-shadow-gold-score max-sm:!text-48 leading-none tabular-nums"
                   >
                     {match.awayScore ?? 0}
                   </Typography>
@@ -386,7 +386,7 @@ export function MatchCardLive({
           </div>
 
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-sm:size-[56px]">
               <Img
                 src={match.awayLogo}
                 alt={match.awayName ?? ""}
@@ -401,7 +401,7 @@ export function MatchCardLive({
                   as="span"
                   variant="label"
                   weight="500"
-                  className="line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
+                  className="max-sm:text-10 line-clamp-1 w-full text-center text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
                 >
                   {match.awayName}
                 </Typography>
