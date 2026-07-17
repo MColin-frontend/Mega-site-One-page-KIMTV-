@@ -12,7 +12,7 @@ import {
   fetchChatMessagesAction,
   fetchPinnedMessagesAction,
 } from "@/server/actions/chat.action"
-import { getTokenFromCookie } from "@/lib/auth-cookie"
+import { getTokenFromCookie, type KimtvUser } from "@/lib/auth-cookie"
 import { formatMatchTime } from "@/lib/date"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
@@ -158,13 +158,13 @@ function WelcomeMessageItem({
     <div
       onDoubleClick={() => onDoubleClick(message)}
       className={cn(
-        "flex flex-col gap-2 py-1.5",
+        "flex flex-col gap-2 py-1.5 max-sm:gap-0.5 max-sm:!px-2 max-sm:py-0.5",
         CHAT_MSG_PADDING,
         (message.isSVip || message.isVip) && "bg-gold/5"
       )}
     >
       <div className="flex items-center gap-2">
-        <div className="relative shrink-0">
+        <div className="relative shrink-0 max-sm:origin-top-left max-sm:scale-75">
           {message.hasAnchorMe && (
             <div className="border-gold-hover absolute -top-2 -right-1 z-11 flex size-6 items-center justify-center rounded-full border-[0.5px] bg-black/70 p-[2px]">
               <Img src={icCrown} alt="crown" width={14} height={14} objectFit="contain" />
@@ -172,7 +172,7 @@ function WelcomeMessageItem({
           )}
           <ChatAvatar message={message} size={48} />
         </div>
-        <div className="flex w-full min-w-0 flex-col flex-wrap gap-1">
+        <div className="flex w-full min-w-0 flex-col flex-wrap gap-1 max-sm:origin-top-left max-sm:scale-75">
           <div className="flex items-center justify-between gap-1">
             <div className="flex w-full items-center gap-1">
               <Tooltip>
@@ -195,9 +195,10 @@ function WelcomeMessageItem({
                   src={message?.vip99Icon || ""}
                   alt="vip99 icon"
                   width={32}
-                  height={16}
+                  height={32}
                   unoptimized
                   objectFit="contain"
+                  className="h-auto"
                 />
               )}
             </div>
@@ -239,9 +240,10 @@ function MessageItem({
             src={message?.vip99Icon || ""}
             alt="vip99 icon"
             width={32}
-            height={16}
+            height={32}
             unoptimized
             objectFit="contain"
+            className="h-auto"
           />
         )}
         <span dangerouslySetInnerHTML={{ __html: message.content }} />
@@ -256,9 +258,9 @@ function MessageItem({
   return (
     <div
       onDoubleClick={() => onDoubleClick(message)}
-      className={cn("flex gap-2 py-1.5", CHAT_MSG_PADDING)}
+      className={cn("flex gap-2 py-1.5 max-sm:gap-1 max-sm:!px-2 max-sm:py-0.5", CHAT_MSG_PADDING)}
     >
-      <div className="relative shrink-0">
+      <div className="relative shrink-0 max-sm:origin-top-left max-sm:scale-75">
         {message.hasAnchorMe && (
           <div className="border-gold-hover absolute -top-2 -right-1 z-10 flex size-6 items-center justify-center rounded-full border-[0.5px] bg-black/70 p-[2px]">
             <Img src={icCrown} alt="crown" width={14} height={14} objectFit="contain" />
@@ -267,7 +269,7 @@ function MessageItem({
         <ChatAvatar message={message} size={48} />
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 max-sm:origin-top-left max-sm:scale-75">
         <div className="flex items-baseline justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
             <Typography
@@ -284,9 +286,10 @@ function MessageItem({
                 src={message?.vip99Icon || ""}
                 alt="vip99 icon"
                 width={32}
-                height={16}
+                height={32}
                 unoptimized
                 objectFit="contain"
+                className="h-auto"
               />
             )}
           </div>
@@ -492,7 +495,8 @@ function UserPopup({
               </span>
             </button>
             {message.type !== CHAT_MESSAGE_TYPE.VIRTUAL &&
-              (userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.ANCHOR) && (
+              (userRole === CHAT_USER_ROLE.ADMIN ||
+                userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT) && (
                 <button
                   onClick={() => {
                     if (isPinned) onUnpin?.(message)
@@ -551,6 +555,29 @@ function UserPopup({
   )
 }
 
+/* ── Role resolution ─────────────────────────────────────── */
+
+/**
+ * Map roleType từ backend Java → CHAT_USER_ROLE.
+ * Kimtvpc convention: 1=ADMIN, 2=ANCHOR(BLV), 3=HOUSING_MANAGEMENT(CSKH).
+ * Hỗ trợ cả field `roleType` lẫn `type` vì backend có thể dùng khác nhau.
+ * Chỉ ADMIN và HOUSING_MANAGEMENT (CSKH) được ghim tin nhắn — ANCHOR (BLV) không được.
+ */
+function resolveChatRole(user: KimtvUser | null, isLoggedIn: boolean): UserRole {
+  if (!isLoggedIn || !user) return CHAT_USER_ROLE.NOT_LOGIN
+  const raw = (user.roleType ?? user.type) as number | undefined
+  switch (raw) {
+    case 1:
+      return CHAT_USER_ROLE.ADMIN
+    case 2:
+      return CHAT_USER_ROLE.ANCHOR
+    case 3:
+      return CHAT_USER_ROLE.HOUSING_MANAGEMENT
+    default:
+      return CHAT_USER_ROLE.ORDINARY
+  }
+}
+
 /* ── Main Component ──────────────────────────────────────── */
 
 const DEFAULT_SOCIALS: ChatSocials = {
@@ -569,10 +596,9 @@ export function Chat({
 }: ChatProps) {
   const { t } = useTranslation()
   const { getParam, pathname } = useRouter()
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn, user } = useAuth()
 
-  // TODO: remove hardcode — dùng tạm để test ghim
-  const userRole = (!isLoggedIn ? CHAT_USER_ROLE.NOT_LOGIN : CHAT_USER_ROLE.ADMIN) as UserRole
+  const userRole = resolveChatRole(user, isLoggedIn)
 
   /* ── Internal state ──────────────────────────────────────── */
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -811,7 +837,6 @@ export function Chat({
 
   const handleDoubleClick = useCallback(
     (msg: ChatMessage) => {
-      console.log("[Chat] double-click:", { type: msg.type, userRole })
       if (userRole === CHAT_USER_ROLE.NOT_LOGIN) return
       if (msg.type === CHAT_MESSAGE_TYPE.ORDINARY || msg.type === CHAT_MESSAGE_TYPE.VIRTUAL)
         setPopupMessage(msg)
@@ -866,7 +891,7 @@ export function Chat({
       )}
     >
       {/* Social buttons */}
-      <div className="flex shrink-0 items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1.5 max-sm:origin-right max-sm:scale-75">
         {mergedSocials.telegram && (
           <a
             href={mergedSocials.telegram}

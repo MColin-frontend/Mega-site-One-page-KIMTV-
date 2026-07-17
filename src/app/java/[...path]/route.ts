@@ -35,16 +35,6 @@ async function proxyToJava(req: NextRequest, context: RouteContext) {
     cookieHeader,
   })
 
-  if (env.isDev) {
-    console.log("[java proxy → backend]", `${env.apiBaseUrl}${backendPath}`, {
-      origin: headers.Origin,
-      referer: headers.Referer,
-      hasToken: Boolean(token),
-      hasUserInfo: Boolean(req.cookies.get("userInfo")?.value),
-      hasCookieHeader: Boolean(cookieHeader),
-    })
-  }
-
   try {
     let data: unknown
     const extraHeaders: Record<string, string> = {}

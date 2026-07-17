@@ -4,7 +4,7 @@ import dynamic from "next/dynamic"
 
 import { useAdPlacements } from "@/hooks/tanstack/use-ad-placements"
 
-import heroBanner1 from "@assets/images/home/img-mockup-banner-1.png"
+import heroBanner from "@assets/images/common/img-wc-banner.mp4"
 
 const AdBanner = dynamic(() => import("@/components/ui/ad-banner").then((m) => m.AdBanner), {
   ssr: false,
@@ -18,7 +18,7 @@ export function HeroBanner() {
     <AdBanner
       src={homeBanner?.enabled ? homeBanner.mediaPc : null}
       href={homeBanner?.jumpUrl || null}
-      fallback={heroBanner1.src}
+      fallback={heroBanner}
       isLoading={isLoading}
       skeletonClassName="aspect-[1660/132]"
       className="w-full"

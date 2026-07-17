@@ -21,6 +21,11 @@
       "yellow-card": "Thẻ vàng",
       "red-card": "Thẻ đỏ",
       "corner": "Phạt góc"
+    },
+    "status": {
+      "live": "Đang diễn ra",
+      "upcoming": "Sắp diễn ra",
+      "finished": "Đã kết thúc"
     }
   },
   "fixture": {

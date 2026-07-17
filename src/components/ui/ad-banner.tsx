@@ -39,7 +39,7 @@ function AdMedia({
         loop
         muted
         playsInline
-        className={cn("w-full", rounded)}
+        className="w-full"
         onError={() => fallback && !errored && setErrored(true)}
       >
         <source src={url as string} />
@@ -53,6 +53,7 @@ function AdMedia({
       alt=""
       width={0}
       height={0}
+      sizes="100vw"
       className={cn("h-auto w-full", rounded)}
       onError={() => fallback && !errored && setErrored(true)}
     />

@@ -1,6 +1,13 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    rules: {
+      "*.mp4": { type: "asset" },
+      "*.mov": { type: "asset" },
+      "*.webm": { type: "asset" },
+    },
+  },
   reactStrictMode: false,
   // Bundle server tối giản cho Docker — chỉ copy `.next/standalone` vào image runner.
   output: "standalone",

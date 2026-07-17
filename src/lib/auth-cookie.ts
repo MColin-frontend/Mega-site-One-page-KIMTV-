@@ -7,6 +7,13 @@ export interface KimtvUser {
   avatar?: string
   phone?: string
   email?: string
+  /**
+   * Role từ backend Java:
+   * 1 = ADMIN | 2 = ANCHOR (BLV) | 3 = HOUSING_MANAGEMENT (CSKH)
+   * Tên field backend có thể là roleType hoặc type — đọc cả hai.
+   */
+  roleType?: number
+  type?: number
   [key: string]: unknown
 }
 

@@ -7,12 +7,13 @@ import type { MatchInterface } from "@/models/match.models"
 
 import CarouselInfinityApi from "@/components/ui/carousel/carousel-infinity-api"
 import { Empty } from "@/components/ui/empty"
-import { Typography } from "@/components/ui/typography"
 
 import { MatchCard } from "./match-card"
+import { MatchStatusLabel, type MatchStatusType } from "./match-status-label"
 
 interface MatchCarouselProps {
-  title: string
+  title?: string
+  statusType?: MatchStatusType
   endpoint: string
   method?: (typeof HTTP_METHOD)[keyof typeof HTTP_METHOD]
   params?: Record<string, unknown>
@@ -20,7 +21,7 @@ interface MatchCarouselProps {
 }
 
 export function MatchCarousel({
-  title,
+  statusType,
   endpoint,
   method = HTTP_METHOD.POST,
   params = MATCH_QUERY_PARAMS.ALL_GAMES,
@@ -29,8 +30,8 @@ export function MatchCarousel({
   const { t } = useTranslation()
 
   return (
-    <section className="card-glow rounded-12 flex flex-col gap-4 p-5">
-      <Typography variant="h2">{title}</Typography>
+    <section className="card-glow rounded-12 flex flex-col gap-4 p-5 max-sm:gap-2 max-sm:p-3">
+      <MatchStatusLabel type={statusType || LIVE_MATCH_TYPE.LIVE} />
 
       <CarouselInfinityApi<MatchInterface>
         endpoint={endpoint}

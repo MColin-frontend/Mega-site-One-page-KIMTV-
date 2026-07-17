@@ -40,7 +40,7 @@ function NewsSectionCard({
 }: NewsSectionCardProps) {
   if (isEmpty(items)) return null
   return (
-    <div className="panel-news rounded-12 flex flex-col gap-2 p-4">
+    <div className="card-glow rounded-12 flex flex-col gap-2 p-4">
       <div className="flex items-center justify-between">
         <Typography variant="h2" color="primary">
           {title}

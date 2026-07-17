@@ -12,12 +12,12 @@ const AdBanner = dynamic(() => import("@/components/ui/ad-banner").then((m) => m
 
 export function LiveBanner() {
   const { data: ads, isLoading } = useAdPlacements()
-  const scheduleBanner = ads?.scheduleBanner
+  const liveBanner = ads?.liveBanner
 
   return (
     <AdBanner
-      src={scheduleBanner?.enabled ? scheduleBanner.mediaPc : null}
-      href={scheduleBanner?.jumpUrl || null}
+      src={liveBanner?.enabled ? liveBanner?.mediaPc : null}
+      href={liveBanner?.jumpUrl || null}
       fallback={heroBanner}
       isLoading={isLoading}
       skeletonClassName="aspect-[1660/132]"

@@ -18,6 +18,8 @@ export const LIVE_MATCH_TYPE = {
   FINISHED: "finished",
 } as const
 
+export type MatchStatusType = (typeof LIVE_MATCH_TYPE)[keyof typeof LIVE_MATCH_TYPE]
+
 export const HTTP_METHOD = {
   GET: "GET",
   POST: "POST",

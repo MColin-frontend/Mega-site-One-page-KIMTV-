@@ -159,7 +159,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
     <div
       onClick={handleClick}
       className={cn(
-        "rounded-b-12 relative flex shrink-0 cursor-pointer flex-col gap-3 overflow-hidden p-2 transition-opacity hover:opacity-95 max-lg:gap-2 max-sm:gap-1.5 max-sm:p-1.5",
+        "rounded-b-12 relative flex w-full shrink-0 cursor-pointer flex-col gap-3 overflow-hidden p-2 transition-opacity hover:opacity-95 max-lg:gap-2 max-sm:gap-1.5 max-sm:p-1.5",
         className
       )}
     >
@@ -224,32 +224,25 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
         {/* Row 1: live + time + share — ẩn trên mobile */}
         <div className="flex w-full items-center justify-between max-sm:-my-1 max-sm:origin-left">
           <div className="flex items-center gap-2 max-sm:scale-75">
-            {isLive && <MatchLiveIndicator />}
-            {isFinished && (
-              <Typography as="span" variant="caption" weight="600" className="text-muted">
-                {t("match.card.finished")}
-              </Typography>
-            )}
+            <MatchLiveIndicator />
           </div>
           <div className="flex items-center gap-1.5 max-sm:scale-75">
-            {isLive && (
-              <div className="flex items-center gap-1.5">
-                <MatchPeriodBadge label={periodLabel} className="sm:hidden" />
-                {displayMinute != null && (
-                  <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5">
-                    <Typography
-                      as="span"
-                      variant="label"
-                      weight="700"
-                      className="text-gold drop-shadow-gold"
-                    >
-                      {formatFootballGameTime(displayMinute)}
-                      <span className="animate-blink">&apos;</span>
-                    </Typography>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="flex items-center gap-1.5">
+              <MatchPeriodBadge label={periodLabel} className="sm:hidden" />
+              {displayMinute != null && displayMinute !== 0 && (
+                <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5">
+                  <Typography
+                    as="span"
+                    variant="label"
+                    weight="700"
+                    className="text-gold drop-shadow-gold"
+                  >
+                    {formatFootballGameTime(displayMinute)}
+                    <span className="animate-blink">&apos;</span>
+                  </Typography>
+                </div>
+              )}
+            </div>
             <ShareButton />
           </div>
         </div>
@@ -266,8 +259,8 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
             >
               {homeName}
             </Typography>
-            <div className="flex size-[48px] shrink-0 items-center justify-center max-lg:size-9 max-sm:size-7">
-              <Img src={homeLogo} alt={homeName ?? ""} width={48} height={48} objectFit="contain" />
+            <div className="flex size-[64px] shrink-0 items-center justify-center max-lg:size-12 max-sm:size-9">
+              <Img src={homeLogo} alt={homeName ?? ""} width={64} height={64} objectFit="contain" />
             </div>
           </div>
 
@@ -322,8 +315,8 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
 
           {/* Away */}
           <div className="flex min-w-0 flex-1 items-center gap-3 max-sm:gap-1.5">
-            <div className="flex size-[48px] shrink-0 items-center justify-center max-lg:size-9 max-sm:size-7">
-              <Img src={awayLogo} alt={awayName ?? ""} width={48} height={48} objectFit="contain" />
+            <div className="flex size-[64px] shrink-0 items-center justify-center max-lg:size-12 max-sm:size-9">
+              <Img src={awayLogo} alt={awayName ?? ""} width={64} height={64} objectFit="contain" />
             </div>
             <Typography
               as="span"
@@ -338,7 +331,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
 
         {/* Row 3: stats + anchors */}
         {showStats && (
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3 max-sm:origin-center max-sm:scale-75">
             <div className="rounded-8 flex items-center gap-1 bg-white/10 px-2 py-1 backdrop-blur-2xl">
               {stats.map((s, i) => (
                 <div key={i} className="flex items-center">
@@ -415,7 +408,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
             </Typography>
           </div>
           {match.startTime && (
-            <div className="flex shrink-0 items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1 max-sm:origin-right max-sm:scale-75">
               <Calendar className="size-3 shrink-0 text-white/50" />
               <Typography
                 as="span"

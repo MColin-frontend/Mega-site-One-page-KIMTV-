@@ -209,7 +209,7 @@ export function VideoPlayer({
           />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
-            <div className="rounded-12 border-gold/20 border bg-black/50 px-8 py-5 backdrop-blur-md">
+            <div className="rounded-12 border-gold/20 border bg-black/50 px-8 py-5 backdrop-blur-md max-sm:scale-50">
               <Typography variant="body" weight="700" className="text-gold drop-shadow-gold">
                 {t("video.no-source.title")}
               </Typography>

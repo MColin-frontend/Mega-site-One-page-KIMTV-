@@ -4,7 +4,7 @@ import { Suspense } from "react"
 
 import { useTranslation } from "@/i18n"
 
-import { LIVE_SECTION_CONFIG } from "@/features/live/live.constants"
+import { LIVE_MATCH_TYPE, LIVE_SECTION_CONFIG } from "@/features/live/live.constants"
 import { MatchCarousel } from "@/components/ui/match/match-carousel"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
@@ -32,6 +32,7 @@ export function LiveSchedulePage() {
             method={cfg.method}
             params={{ ...cfg.params }}
             matchType={cfg.matchType}
+            statusType={LIVE_MATCH_TYPE.UPCOMING}
           />
         </ScrollReveal>
       ))}
