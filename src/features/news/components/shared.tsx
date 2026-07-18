@@ -14,12 +14,12 @@ interface NewsPanelHeaderProps {
 export function NewsPanelHeader({ title, viewAllHref, viewAllLabel }: NewsPanelHeaderProps) {
   return (
     <div className="flex items-center justify-between">
-      <Typography variant="h2" className="text-white uppercase">
+      <Typography variant="h2" className="max-sm:!text-14 text-white uppercase">
         {title}
       </Typography>
       <Link
         href={viewAllHref}
-        className="group/btn text-gold text-13 font-500 flex items-center gap-1 overflow-hidden pr-1 transition-opacity hover:opacity-80"
+        className="group/btn text-gold text-13 font-500 max-sm:text-10 flex items-center gap-1 overflow-hidden pr-1 transition-opacity hover:opacity-80"
       >
         <span className="transition-all duration-200 group-hover/btn:italic">{viewAllLabel}</span>
         <ArrowRight className="size-4 -translate-x-4 opacity-0 transition-all duration-200 group-hover/btn:translate-x-0 group-hover/btn:opacity-100" />

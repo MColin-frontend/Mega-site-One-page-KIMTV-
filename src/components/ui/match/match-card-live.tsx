@@ -153,7 +153,6 @@ export function MatchCardLive({
       onClick={handleClick}
       className={cn(
         "card-match-bg rounded-12 relative w-full overflow-hidden transition-all",
-        "max-sm:origin-top-left",
         isLive ? "hover:shadow-card-hover cursor-pointer" : "cursor-default",
         "shadow-none",
         className
@@ -218,10 +217,10 @@ export function MatchCardLive({
       )}
 
       {/* ── Content overlay ── */}
-      <div className="relative z-[3] flex min-h-[300px] flex-col justify-between gap-2 p-3.5 max-md:gap-1.5 max-md:p-2.5 max-sm:gap-1.5 max-sm:p-2">
+      <div className="relative z-[3] flex h-full min-h-[300px] flex-col justify-between gap-2 p-3.5 max-md:gap-1.5 max-md:p-2.5 max-sm:gap-1.5 max-sm:p-2">
         {/* Row 1: LIVE | HD + viewers */}
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-1.5 max-sm:gap-1">
+          <div className="flex items-center gap-1.5 max-md:gap-1 max-sm:gap-1">
             {isLive && (
               <>
                 <div className="relative flex items-center gap-1.5 overflow-visible">
@@ -265,7 +264,7 @@ export function MatchCardLive({
               </div>
             )}
           </div>
-          <div className="flex items-center gap-1.5 max-sm:gap-1">
+          <div className="flex items-center gap-1.5 max-md:gap-1 max-sm:gap-1">
             {match.language && (
               <div className="rounded-4 border-gold/50 bg-gold/20 flex h-[30px] items-center border px-2 shadow-[0_0_16px_rgba(245,197,24,0.6),0_2px_8px_rgba(0,0,0,0.6)] backdrop-blur-md max-md:h-6 max-md:px-1.5 max-sm:h-6 max-sm:px-1.5">
                 <Typography
@@ -503,8 +502,8 @@ export function MatchCardLive({
             </Tooltip>
           </div>
           {match.startTime && (
-            <div className="flex shrink-0 items-center gap-1 max-sm:gap-0.5">
-              <Calendar className="size-3 shrink-0 text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] max-sm:size-2.5" />
+            <div className="flex shrink-0 items-center gap-1 max-md:gap-0.5 max-sm:gap-0.5">
+              <Calendar className="size-3 shrink-0 text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] max-md:size-2.5 max-sm:size-2.5" />
               <Typography
                 as="span"
                 variant="caption"

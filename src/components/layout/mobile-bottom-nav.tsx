@@ -12,42 +12,38 @@ import { MAIN_NAV_ITEMS } from "@/constants/component/layout.constants"
 
 const BAR_COLOR = "#111d35" // noticeably lighter than page (#091320) so notch is visible
 const BAR_H = 64
-const CIRCLE_R = 28
-const NOTCH_R = 40 // tight around circle: gap = 40-28 = 12px
+const CIRCLE_R = 35
+const NOTCH_R = 39 // tight around circle: gap = 39-35 = 4px
 const CURVE_S = 8
-const CORNER_R = 20
+const CORNER_R = 0
 
-/** SVG path: bar with true circular arc notch (W = D = R) */
+/** SVG path: bar with true circular notch using 2-segment bezier approximation */
 function buildPath(W: number, cx: number): string {
   const H = BAR_H
-  const cr = CORNER_R
   const R = NOTCH_R
-  const s = CURVE_S
+  const k = 0.5523 // magic number for quarter-circle bezier
 
-  const lx = cx - R // arc left x (at y=0)
-  const rx = cx + R // arc right x (at y=0)
+  const lx = cx - R
+  const rx = cx + R
 
-  // Use SVG arc: radius R, clockwise sweep → true semicircle, D = R
   return [
     `M 0,${H}`,
-    `L 0,${cr}`,
-    `Q 0,0 ${cr},0`,
-    // Approach bar to notch with small smooth Q
-    `L ${lx - s},0`,
-    `Q ${lx},0 ${lx},${s}`,
-    // True circular arc (W = D = R → perfect semicircle depth)
-    `A ${R},${R} 0 0,1 ${rx},${s}`,
-    // Exit notch smoothly
-    `Q ${rx},0 ${rx + s},0`,
-    `L ${W - cr},0`,
-    `Q ${W},0 ${W},${cr}`,
+    `L 0,0`,
+    `L ${lx},0`,
+    // Left quarter-circle: (lx,0) → (cx,R)
+    // CP1: go down from lx (vertical tangent)
+    // CP2: approach from left at depth R (horizontal tangent)
+    `C ${lx},${R * k} ${cx - R * k},${R} ${cx},${R}`,
+    // Right quarter-circle: (cx,R) → (rx,0)
+    `C ${cx + R * k},${R} ${rx},${R * k} ${rx},0`,
+    `L ${W},0`,
     `L ${W},${H}`,
     `Z`,
   ].join(" ")
 }
 
 export function MobileBottomNav() {
-  const { locale } = useTranslation()
+  const { locale, t } = useTranslation()
   const pathname = usePathname()
   const routes = getRoutes(locale)
   const navRef = useRef<HTMLDivElement>(null)
@@ -55,11 +51,13 @@ export function MobileBottomNav() {
   const [W, setW] = useState(375)
   const [ready, setReady] = useState(false)
 
-  function isActive(href: string): boolean {
+  function isActive(href: string, relatedSlugs?: string[]): boolean {
     if (href === `/${locale}`) return pathname === `/${locale}`
     const viSlug = href.split("/")[2] ?? ""
     const localizedSlugs = Object.values(SLUG_MAP[viSlug] ?? {})
-    return pathname.includes(`/${viSlug}`) || localizedSlugs.some((s) => pathname.includes(`/${s}`))
+    if (pathname.includes(`/${viSlug}`) || localizedSlugs.some((s) => pathname.includes(`/${s}`)))
+      return true
+    return !!relatedSlugs?.some((s) => pathname.includes(`/${s}`))
   }
 
   useEffect(() => {
@@ -97,7 +95,7 @@ export function MobileBottomNav() {
         <div className="relative flex h-full items-center justify-around">
           {MAIN_NAV_ITEMS.map((item) => {
             const href = item.getHref(routes)
-            const active = isActive(href)
+            const active = isActive(href, item.relatedSlugs)
             const Icon = item.icon
             if (!Icon) return null
 
@@ -106,12 +104,12 @@ export function MobileBottomNav() {
                 key={item.labelKey}
                 href={href}
                 data-active={active}
-                className="group relative flex flex-1 flex-col items-center justify-center"
+                className="group relative flex flex-1 flex-col items-center justify-center gap-1"
               >
                 <div
                   className={cn(
                     "relative flex items-center justify-center transition-all duration-300 ease-out",
-                    active ? "-translate-y-7" : "translate-y-0"
+                    active ? "-translate-y-9" : "translate-y-0"
                   )}
                 >
                   {/* Circle wrapper — only for active */}
@@ -121,12 +119,12 @@ export function MobileBottomNav() {
                       style={{
                         background: BAR_COLOR,
                         boxShadow: [
-                          "0 16px 32px -4px rgba(0,0,0,0.95)",   // deep shadow dưới → tạo depth
-                          "0 6px 12px -2px rgba(0,0,0,0.8)",     // shadow gần hơn
+                          "0 20px 48px -4px rgba(0,0,0,0.95)",
+                          "0 10px 20px -2px rgba(0,0,0,0.85)",
                           "inset 0 1px 0 rgba(255,255,255,0.08)", // top highlight
                         ].join(", "),
-                        width: CIRCLE_R * 2 + 4,
-                        height: CIRCLE_R * 2 + 4,
+                        width: CIRCLE_R * 2,
+                        height: CIRCLE_R * 2,
                         left: "50%",
                         top: "50%",
                         transform: "translate(-50%, -50%)",
@@ -136,27 +134,48 @@ export function MobileBottomNav() {
 
                   {/* Icon */}
                   <div className="relative z-10">
-                    <Icon
-                      className={cn(
-                        "transition-all duration-300",
-                        active
-                          ? "text-gold size-[34px]"
-                          : "size-[24px] text-white/35 group-hover:text-white/65"
-                      )}
-                      style={
-                        active
-                          ? {
-                              filter: [
-                                "drop-shadow(0 0 2px rgba(246,195,67,1))",
-                                "drop-shadow(0 0 10px rgba(246,195,67,1))",
-                                "drop-shadow(0 0 24px rgba(246,195,67,0.85))",
-                                "drop-shadow(0 0 48px rgba(246,195,67,0.6))",
-                                "drop-shadow(0 0 80px rgba(246,195,67,0.35))",
-                              ].join(" "),
-                            }
-                          : undefined
-                      }
-                    />
+                    {item.iconSrc ? (
+                      <img
+                        src={item.iconSrc}
+                        alt=""
+                        className={cn(
+                          "object-contain transition-all duration-300",
+                          active ? "size-[26px]" : "size-[22px] opacity-55 group-hover:opacity-80"
+                        )}
+                        style={
+                          active
+                            ? {
+                                filter: [
+                                  "drop-shadow(0 0 2px rgba(246,195,67,1))",
+                                  "drop-shadow(0 0 10px rgba(246,195,67,1))",
+                                  "drop-shadow(0 0 24px rgba(246,195,67,0.85))",
+                                  "brightness(1.2) sepia(1) saturate(3) hue-rotate(5deg)",
+                                ].join(" "),
+                              }
+                            : undefined
+                        }
+                      />
+                    ) : Icon ? (
+                      <Icon
+                        weight={active ? "fill" : "regular"}
+                        size={active ? 28 : 22}
+                        className={cn(
+                          "transition-all duration-300",
+                          active ? "text-gold" : "text-white/55 group-hover:text-white/80"
+                        )}
+                        style={
+                          active
+                            ? {
+                                filter: [
+                                  "drop-shadow(0 0 2px rgba(246,195,67,1))",
+                                  "drop-shadow(0 0 10px rgba(246,195,67,1))",
+                                  "drop-shadow(0 0 24px rgba(246,195,67,0.85))",
+                                ].join(" "),
+                              }
+                            : undefined
+                        }
+                      />
+                    ) : null}
                     {item.badge && (
                       <span className="absolute -top-1 -right-1 flex size-2">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
@@ -165,6 +184,11 @@ export function MobileBottomNav() {
                     )}
                   </div>
                 </div>
+                {!active && (
+                  <span className="font-500 text-[9px] leading-none text-white/40 transition-colors group-hover:text-white/65">
+                    {t(item.labelKey)}
+                  </span>
+                )}
               </Link>
             )
           })}
