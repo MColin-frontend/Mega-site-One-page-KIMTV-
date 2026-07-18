@@ -377,6 +377,14 @@ export function HighlightsFeed({
   const isStackAnimatingRef = useRef(false)
   const [dragOffsetY, setDragOffsetY] = useState(0)
   const [isStackAnimating, setIsStackAnimating] = useState(false)
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null)
+  const menuDragRef = useRef({
+    active: false,
+    startClientY: 0,
+    startClientX: 0,
+    startTop: 0,
+    startLeft: 0,
+  })
   const gestureRef = useRef<{
     shouldIgnoreNavGesture: (target: EventTarget | null) => boolean
     handleNavByDelta: (deltaY: number, target: EventTarget | null) => void
@@ -407,7 +415,7 @@ export function HighlightsFeed({
     const vh = window.innerHeight
     const headerH = document.getElementById("site-header")?.offsetHeight ?? 78
     const isMobile = vw < 1024
-    const bottomNavH = isMobile ? 72 : 0  // 64px bar + 8px buffer
+    const bottomNavH = isMobile ? 72 : 0 // 64px bar + 8px buffer
     const sideMenuW = isMobile ? 0 : 96
     const railW = isMobile ? 0 : 60
     const gap = 12
@@ -1033,51 +1041,94 @@ export function HighlightsFeed({
       style={{ height: stageHeight, minHeight: stageHeight }}
     >
       {/* ── Side menu (desktop) / Bottom nav (mobile) ───────────────────── */}
-      <aside className="feed-menu sticky top-0 w-24 shrink-0 self-start pt-6 max-md:fixed max-md:left-0 max-md:top-1/2 max-md:-translate-y-1/2 max-md:z-40 max-md:w-16 max-md:pt-0">
-        <nav className="card-glow panel-news flex flex-col gap-0.5 rounded-2xl px-2 py-2.5">
+      <aside
+        className="feed-menu sticky top-0 w-24 shrink-0 self-start pt-6 max-md:fixed max-md:top-1/2 max-md:left-0 max-md:z-40 max-md:w-16 max-md:-translate-y-1/2 max-md:touch-none max-md:pt-0 max-md:select-none"
+        style={
+          menuPos !== null
+            ? { top: menuPos.top, left: menuPos.left, transform: "translateY(-50%)" }
+            : undefined
+        }
+        onPointerDown={(e) => {
+          if (window.innerWidth >= 768) return
+          const rect = e.currentTarget.getBoundingClientRect()
+          menuDragRef.current = {
+            active: true,
+            startClientY: e.clientY,
+            startClientX: e.clientX,
+            startTop: rect.top + rect.height / 2,
+            startLeft: rect.left,
+          }
+          e.currentTarget.setPointerCapture(e.pointerId)
+          e.stopPropagation()
+        }}
+        onPointerMove={(e) => {
+          if (!menuDragRef.current.active) return
+          const { startClientY, startClientX, startTop, startLeft } = menuDragRef.current
+          const menuW = 64 // max-md:w-16
+          const newTop = Math.max(
+            60,
+            Math.min(window.innerHeight - 60, startTop + (e.clientY - startClientY))
+          )
+          const newLeft = Math.max(
+            0,
+            Math.min(window.innerWidth - menuW, startLeft + (e.clientX - startClientX))
+          )
+          setMenuPos({ top: newTop, left: newLeft })
+          e.stopPropagation()
+        }}
+        onPointerUp={(e) => {
+          menuDragRef.current.active = false
+          e.stopPropagation()
+        }}
+      >
+        <nav className="overflow-hidden rounded-2xl bg-[#101622] shadow-[0_16px_56px_rgba(0,0,0,0.95)] backdrop-blur-2xl">
+          {/* Drag handle — mobile only */}
+          <div className="hidden cursor-grab items-center justify-center py-2 active:cursor-grabbing max-md:flex">
+            <div className="h-[3px] w-7 rounded-full bg-white/15" />
+          </div>
+
           {/* Filter group */}
-          <div className="flex flex-col gap-0.5 max-md:contents">
-            {filterMenuItems.map(({ key, label, iconSrc }) => (
-              <Button
-                key={key}
-                type="button"
-                variant="ghost"
-                disabled={loading}
-                onClick={() => onMenuChange(key)}
-                className={cn(
-                  "group relative h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 px-1 py-2.5 text-[11px] leading-tight font-medium shadow-none transition-colors",
-                  "active:translate-y-0 active:scale-95 active:bg-transparent",
-                  "max-md:min-h-10 max-md:gap-1 max-md:py-1.5 max-md:px-0.5",
-                  activeMenu === key
-                    ? "bg-transparent text-[#ffd220] opacity-100 hover:bg-transparent hover:text-[#ffd220]"
-                    : "bg-transparent text-white/60 opacity-60 hover:bg-transparent hover:text-[#ffd220] hover:opacity-100"
-                )}
-              >
-                <ReactSVG src={iconSrc} className={menuIconClass} />
-                <Typography
-                  as="span"
-                  variant="caption"
-                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit max-md:text-[9px]"
+          <div className="flex flex-col gap-px py-2 max-md:py-1">
+            {filterMenuItems.map(({ key, label, iconSrc }) => {
+              const isActive = activeMenu === key
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => onMenuChange(key)}
+                  className={cn(
+                    "flex w-full flex-col items-center justify-center gap-1.5 px-2 py-3.5 transition-all duration-150 active:scale-95",
+                    "max-md:py-2.5",
+                    isActive ? "text-[#ffd220]" : "text-white/50 hover:text-white/80"
+                  )}
                 >
-                  {label}
-                </Typography>
-                {activeMenu === key && (
-                  <span className="absolute bottom-1 left-1/2 h-[3px] w-7 -translate-x-1/2 rounded-full bg-[#ffd220] max-md:bottom-0" />
-                )}
-              </Button>
-            ))}
+                  <ReactSVG src={iconSrc} className={menuIconClass} />
+                  <div className="flex flex-col items-center gap-1">
+                    <span
+                      className={cn(
+                        "line-clamp-1 text-center text-[11px] leading-none text-inherit max-md:text-[9px]",
+                        isActive ? "font-700" : "font-500"
+                      )}
+                    >
+                      {label}
+                    </span>
+                    {isActive && <span className="h-[2px] w-4 rounded-full bg-[#ffd220]" />}
+                  </div>
+                </button>
+              )
+            })}
           </div>
 
           {/* Divider */}
-          <div className="mx-1.5 my-2 h-px bg-linear-to-r from-transparent via-white/14 to-transparent max-md:hidden" />
+          <div className="mx-3 h-px bg-white/[0.06]" />
 
           {/* Link group */}
-          <div className="flex flex-col gap-0.5 max-md:contents">
+          <div className="flex flex-col gap-px py-2 max-md:py-1">
             {linkMenuItems.map(({ key, label, iconSrc, url, external }) => (
-              <Button
+              <button
                 key={key}
                 type="button"
-                variant="ghost"
                 onClick={() => {
                   if (external || /^https?:\/\//i.test(url)) {
                     window.open(url, "_blank", "noopener,noreferrer")
@@ -1085,17 +1136,13 @@ export function HighlightsFeed({
                     window.location.href = url
                   }
                 }}
-                className="group h-auto min-h-16 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-0 bg-transparent px-1 py-2.5 text-white/60 opacity-60 shadow-none transition-colors hover:bg-transparent hover:text-[#ffd220] hover:opacity-100 active:translate-y-0 active:scale-95 active:bg-transparent max-md:min-h-0 max-md:flex-1 max-md:rounded-none max-md:px-1 max-md:py-3"
+                className="flex w-full flex-col items-center justify-center gap-1.5 px-2 py-3.5 text-white/50 transition-all duration-150 hover:text-white/80 active:scale-95 max-md:py-2.5"
               >
                 <ReactSVG src={iconSrc} className={menuIconClass} />
-                <Typography
-                  as="span"
-                  variant="caption"
-                  className="line-clamp-1 text-center text-[11px] leading-tight font-medium text-inherit max-md:text-[9px]"
-                >
+                <span className="font-500 line-clamp-1 text-center text-[11px] leading-none text-inherit max-md:text-[9px]">
                   {label}
-                </Typography>
-              </Button>
+                </span>
+              </button>
             ))}
           </div>
         </nav>

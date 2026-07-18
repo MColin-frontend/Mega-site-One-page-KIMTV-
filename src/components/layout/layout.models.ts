@@ -8,7 +8,9 @@ interface NavI18nItemInterface {
   labelKey: TranslationKey
   getHref: (r: Routes) => string
   icon?: ElementType
+  iconSrc?: string // path to SVG/image asset
   badge?: boolean
+  relatedSlugs?: string[] // additional slugs that should activate this item
 }
 
 interface FooterSocialInterface {

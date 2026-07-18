@@ -247,7 +247,7 @@ function DesktopNav({
   t,
 }: {
   items: typeof import("@/constants/component/layout.constants").MAIN_NAV_ITEMS
-  isActive: (href: string) => boolean
+  isActive: (href: string, relatedSlugs?: string[]) => boolean
   t: (key: Parameters<ReturnType<typeof useTranslation>["t"]>[0]) => string
 }) {
   const navRef = useRef<HTMLElement>(null)
@@ -271,14 +271,14 @@ function DesktopNav({
     <nav ref={navRef} className="relative flex flex-1 items-center justify-center max-lg:hidden">
       <span
         aria-hidden
-        className="pointer-events-none absolute bottom-0 h-[2px] w-8 rounded-full bg-gradient-to-r from-transparent via-gold to-transparent transition-[left,opacity] duration-300 ease-out"
+        className="via-gold pointer-events-none absolute bottom-0 h-[2px] w-8 rounded-full bg-gradient-to-r from-transparent to-transparent transition-[left,opacity] duration-300 ease-out"
         style={{ left: indicator.left, opacity: indicator.opacity }}
       />
       {items.map((item) => {
         const locale = (pathname.split("/")[1] ?? "vi") as Parameters<typeof getRoutes>[0]
         const routes = getRoutes(locale)
         const href = item.getHref(routes)
-        const active = isActive(href)
+        const active = isActive(href, item.relatedSlugs)
         const Icon = item.icon
         return (
           <Link
@@ -286,37 +286,70 @@ function DesktopNav({
             href={href}
             data-active={active}
             className={cn(
-              "group relative flex flex-col items-center gap-2 px-6 pb-3 pt-2.5 transition-colors duration-200 max-sm:gap-1 max-sm:px-3 max-sm:pb-2 max-sm:pt-2",
-              active ? "text-gold" : "text-white/50 hover:text-white/80"
+              "group rounded-12 relative flex flex-col items-center gap-2 px-6 pt-2.5 pb-3 transition-all duration-200",
+              active ? "text-gold" : "text-white/45 hover:text-white/75"
             )}
           >
-            {Icon && (
-              <div className="relative">
-                <Icon className={cn(
-                  "size-[18px] transition-all duration-200 max-sm:size-[12px]",
-                  active
-                    ? "text-gold drop-shadow-[0_0_4px_rgba(246,195,67,1)] drop-shadow-[0_0_12px_rgba(246,195,67,0.7)] drop-shadow-[0_0_24px_rgba(246,195,67,0.4)]"
-                    : "text-white/45 group-hover:text-white/70"
-                )} />
-                {item.badge && (
-                  <span className="absolute -top-0.5 -right-0.5 flex size-[7px]">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
-                    <span className="relative inline-flex size-[7px] rounded-full bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.8)]" />
-                  </span>
-                )}
-              </div>
-            )}
+            <div className="relative z-10">
+              {item.iconSrc ? (
+                <img
+                  src={item.iconSrc}
+                  alt=""
+                  className={cn(
+                    "size-5 object-contain transition-all duration-200",
+                    active ? "" : "opacity-45 group-hover:opacity-65"
+                  )}
+                  style={
+                    active
+                      ? {
+                          filter:
+                            "drop-shadow(0 0 3px rgba(246,195,67,1)) drop-shadow(0 0 10px rgba(246,195,67,0.7)) brightness(1.1) sepia(1) saturate(3) hue-rotate(5deg)",
+                        }
+                      : undefined
+                  }
+                />
+              ) : Icon ? (
+                <Icon
+                  weight={active ? "fill" : "regular"}
+                  size={20}
+                  className={cn(
+                    "transition-all duration-200",
+                    active ? "text-gold" : "text-white/40 group-hover:text-white/65"
+                  )}
+                  style={
+                    active
+                      ? {
+                          filter:
+                            "drop-shadow(0 0 3px rgba(246,195,67,1)) drop-shadow(0 0 10px rgba(246,195,67,0.7)) drop-shadow(0 0 22px rgba(246,195,67,0.4))",
+                        }
+                      : undefined
+                  }
+                />
+              ) : null}
+              {item.badge && (
+                <span className="absolute -top-0.5 -right-0.5 flex size-[7px]">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                  <span className="relative inline-flex size-[7px] rounded-full bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.8)]" />
+                </span>
+              )}
+            </div>
             <Typography
               as="span"
-              variant="body-sm"
+              variant="caption"
               weight="500"
-              color={active ? "gold" : "white/50"}
+              color={active ? "gold" : "white/45"}
               className={cn(
-                "whitespace-nowrap leading-none transition-colors duration-200 max-sm:!text-10",
-                active
-                  ? "drop-shadow-[0_0_6px_rgba(246,195,67,0.9)] drop-shadow-[0_0_16px_rgba(246,195,67,0.5)]"
-                  : "group-hover:text-white/75"
+                "relative z-10 leading-none whitespace-nowrap transition-colors duration-200",
+                active ? "" : "group-hover:text-white/70"
               )}
+              style={
+                active
+                  ? {
+                      filter:
+                        "drop-shadow(0 0 5px rgba(246,195,67,0.8)) drop-shadow(0 0 12px rgba(246,195,67,0.4))",
+                    }
+                  : undefined
+              }
             >
               {t(item.labelKey)}
             </Typography>
@@ -335,11 +368,13 @@ export function Header() {
   const { state, toggle, close } = useDisclosure("mobileMenu")
   const { user, isLoggedIn, login, logout } = useAuth()
 
-  function isActive(href: string): boolean {
+  function isActive(href: string, relatedSlugs?: string[]): boolean {
     if (href === `/${locale}`) return pathname === `/${locale}`
     const viSlug = href.split("/")[2] ?? ""
     const localizedSlugs = Object.values(SLUG_MAP[viSlug] ?? {})
-    return pathname.includes(`/${viSlug}`) || localizedSlugs.some((s) => pathname.includes(`/${s}`))
+    if (pathname.includes(`/${viSlug}`) || localizedSlugs.some((s) => pathname.includes(`/${s}`)))
+      return true
+    return !!relatedSlugs?.some((s) => pathname.includes(`/${s}`))
   }
 
   return (
@@ -424,7 +459,7 @@ export function Header() {
         <nav className="container divide-y divide-white/6 py-2">
           {MAIN_NAV_ITEMS.map((item) => {
             const href = item.getHref(routes)
-            const active = isActive(href)
+            const active = isActive(href, item.relatedSlugs)
             const Icon = item.icon
             return (
               <Link
@@ -436,7 +471,12 @@ export function Header() {
                   active ? "text-gold" : "text-muted hover:text-white"
                 )}
               >
-                <span className={cn("h-4 w-[3px] rounded-full transition-all duration-200", active ? "bg-gold" : "bg-transparent")} />
+                <span
+                  className={cn(
+                    "h-4 w-[3px] rounded-full transition-all duration-200",
+                    active ? "bg-gold" : "bg-transparent"
+                  )}
+                />
                 {Icon && (
                   <div className="relative">
                     <Icon className="size-4 shrink-0" />

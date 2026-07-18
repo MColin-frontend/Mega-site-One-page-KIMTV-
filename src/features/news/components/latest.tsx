@@ -20,10 +20,10 @@ export function NewsLatestPanel({
   const sideItems = items.slice(1)
 
   return (
-    <div className="card-glow rounded-12 flex flex-col gap-5 p-5">
+    <div className="card-glow rounded-12 flex flex-col gap-5 p-5 max-md:gap-3 max-md:p-3">
       <NewsPanelHeader title={title} viewAllHref={viewAllHref} viewAllLabel={viewAllLabel} />
 
-      <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
+      <div className="grid grid-cols-1 items-stretch gap-5 max-md:gap-3 md:grid-cols-2">
         <ScrollReveal variant="fade-up" duration={550} distance={20}>
           <a
             href={getHref(String(featured.newsId))}

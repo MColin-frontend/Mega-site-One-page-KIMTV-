@@ -76,16 +76,20 @@ export function NewsHeroCarousel({ items }: { items: NewsItem[] }) {
           href={routes.news.article(String(activeItem.newsId))}
           className="absolute inset-0 z-10 flex items-center"
         >
-          <div className="flex max-w-[860px] flex-col gap-3 p-5 md:gap-4 md:p-10">
-            <Typography variant="overline" className="text-gold">
+          <div className="flex max-w-[860px] flex-col gap-2 p-4 md:gap-4 md:p-10">
+            <Typography variant="overline" className="text-gold max-sm:text-[10px]">
               {t("news.category")}
             </Typography>
-            <Typography as="h1" variant="h1" className="line-clamp-3 text-white">
+            <Typography
+              as="h1"
+              variant="h1"
+              className="max-sm:!text-18 line-clamp-3 text-white max-sm:leading-138"
+            >
               {activeItem.title}
             </Typography>
             {activeItem.summary && (
               <Typography
-                variant="body"
+                variant="body-sm"
                 weight="600"
                 className="line-clamp-2 hidden text-white md:block"
               >
@@ -93,7 +97,10 @@ export function NewsHeroCarousel({ items }: { items: NewsItem[] }) {
               </Typography>
             )}
             <span
-              className={cn(buttonVariants({ variant: "gradient" }), "pointer-events-none w-fit")}
+              className={cn(
+                buttonVariants({ variant: "gradient" }),
+                "max-sm:text-12 pointer-events-none w-fit max-sm:h-7 max-sm:px-3"
+              )}
             >
               {t("news.read-more")}
             </span>
@@ -142,13 +149,13 @@ export function NewsHeroCarousel({ items }: { items: NewsItem[] }) {
                   }}
                 />
                 <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-0.5 p-2.5 md:p-3">
-                  <Typography variant="overline" className="text-gold">
+                  <Typography variant="overline" className="text-gold max-sm:!text-10">
                     {t("news.category")}
                   </Typography>
                   <Typography
                     variant="body"
                     weight="700"
-                    className="group-hover:text-gold line-clamp-2 text-white transition-colors"
+                    className="group-hover:text-gold max-sm:!text-12 line-clamp-2 text-white transition-colors max-sm:leading-150"
                   >
                     {item.title}
                   </Typography>
