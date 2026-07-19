@@ -63,14 +63,31 @@ function deleteCookie(name: string): void {
   document.cookie = domain ? `${base}; domain=${domain}` : base
 }
 
+const USER_INFO_STORAGE_KEY = "kimtv_user_info"
+
 export function saveAuthCookies(token: string, user: KimtvUser): void {
   setCookie("token", token)
   setCookie("userInfo", JSON.stringify(user))
+  try {
+    localStorage.setItem(USER_INFO_STORAGE_KEY, JSON.stringify(user))
+  } catch {}
 }
 
 export function clearAuthCookies(): void {
   deleteCookie("token")
   deleteCookie("userInfo")
+  try {
+    localStorage.removeItem(USER_INFO_STORAGE_KEY)
+  } catch {}
+}
+
+/** Lấy user info từ localStorage — dùng để hiển thị ngay trước khi token được xác nhận. */
+export function getCachedUserInfo(): KimtvUser | null {
+  try {
+    return parseUserInfoCookie(localStorage.getItem(USER_INFO_STORAGE_KEY))
+  } catch {
+    return null
+  }
 }
 
 export function getTokenFromCookie(): string | null {
