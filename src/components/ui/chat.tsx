@@ -898,6 +898,15 @@ export function Chat({
       setConnectionStatus(CHAT_CONNECTION_STATUS.CONNECTING)
       try {
         const token = getTokenFromCookie() ?? ""
+        if (!env.wsBaseUrl)
+          console.error("[chat] NEXT_PUBLIC_WS_BASE_URL is not set — check env config")
+        if (!token)
+          console.warn(
+            "[chat] token is empty — server may reject (code 1000). Check login state or env mismatch (dev token vs prod WS)"
+          )
+        console.log(
+          `[chat] connecting — url: ${env.wsBaseUrl}/chat?chatroom_id=${cId}&game_id=${gId}&token=***&lan=vi`
+        )
         const ws = new WebSocket(
           `${env.wsBaseUrl}/chat?chatroom_id=${cId}&game_id=${gId}&token=${token}&lan=vi`
         )
@@ -943,7 +952,15 @@ export function Chat({
 
         ws.addEventListener("close", (ev) => {
           if (ws !== wsRef.current) return
-          console.error("[chat] ws closed — code:", ev.code, "reason:", ev.reason || "(none)")
+          const hint =
+            ev.code === 1000
+              ? " — server đóng bình thường (có thể do token sai môi trường: dev token → prod WS)"
+              : ev.code === 1006
+                ? " — mất kết nối bất thường (sai URL hoặc server không phản hồi)"
+                : ""
+          console.error(
+            `[chat] ws closed — code: ${ev.code} reason: ${ev.reason || "(none)"}${hint}`
+          )
           setConnectionStatus(CHAT_CONNECTION_STATUS.DISCONNECTED)
           clearHeartbeat()
           wsRef.current = null
@@ -952,6 +969,10 @@ export function Chat({
               reconnectCountRef.current++
               initWsRef.current?.(cId, gId)
             }, WS_RECONNECT_DELAY)
+          } else {
+            console.error(
+              `[chat] max reconnect (4) reached — chatroom_id: ${cId}, game_id: ${gId}, wsBaseUrl: ${env.wsBaseUrl}`
+            )
           }
         })
         ws.addEventListener("error", (ev) => {
@@ -1006,7 +1027,12 @@ export function Chat({
 
   /* ── WebSocket: reconnect khi chatroom đổi hoặc auth đổi ── */
   useEffect(() => {
-    if (!chatroomId) return
+    if (!chatroomId) {
+      console.warn(
+        "[chat] chatroomId is undefined — WebSocket will not connect. Check URL params (match_id / game_id) or prop drilling from parent."
+      )
+      return
+    }
     reconnectCountRef.current = 0
     // eslint-disable-next-line react-hooks/set-state-in-effect
     initWs(chatroomId, gameId)

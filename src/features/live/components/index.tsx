@@ -40,7 +40,7 @@ export function LivePage({ match }: LivePageProps) {
           )}
         </div>
         <div className="flex w-[420px] shrink-0 flex-col overflow-hidden max-lg:h-[500px] max-lg:w-full">
-          <Chat />
+          <Chat chatroomId={match?.matchId} gameId={match?.gameId} />
         </div>
       </div>
 
