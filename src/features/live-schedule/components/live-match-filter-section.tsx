@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { Fragment } from "react"
 import NextImage from "next/image"
 import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
@@ -130,7 +131,7 @@ export function LiveMatchFilterSection({ renderCard }: LiveMatchFilterSectionPro
           <div className="grid grid-cols-4 gap-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:hidden">
             {matches.map((match, i) =>
               renderCard ? (
-                renderCard(match)
+                <Fragment key={`${match.matchId}-${i}`}>{renderCard(match)}</Fragment>
               ) : (
                 <MatchCardLive key={`${match.matchId}-${i}`} match={match} />
               )
