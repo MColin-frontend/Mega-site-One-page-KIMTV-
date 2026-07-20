@@ -33,15 +33,27 @@ export function ScoreBadge({ match }: { match: MatchInterface }) {
 
   return (
     <div className="flex h-9 w-full items-center justify-center">
-      <Typography
-        as="span"
-        variant="label"
-        weight="600"
-        color="foreground"
-        className="tabular-nums"
-      >
-        {match.homeScore ?? 0}&nbsp;-&nbsp;{match.awayScore ?? 0}
-      </Typography>
+      <div className="flex items-center max-md:scale-90 max-sm:scale-75">
+        <Typography
+          as="span"
+          variant="h3"
+          weight="700"
+          className="text-gold drop-shadow-gold-score tracking-0 leading-none tabular-nums"
+        >
+          {match.homeScore ?? 0}
+        </Typography>
+        <Typography variant="body" weight="500" className="text-gold/60 px-0.5 leading-100">
+          -
+        </Typography>
+        <Typography
+          as="span"
+          variant="h3"
+          weight="700"
+          className="text-gold drop-shadow-gold-score tracking-0 leading-none tabular-nums"
+        >
+          {match.awayScore ?? 0}
+        </Typography>
+      </div>
     </div>
   )
 }
@@ -103,12 +115,7 @@ export function StatCell({
   away: number | null | undefined
 }) {
   return (
-    <Typography
-      as="span"
-      variant="body-sm"
-      color="foreground/50"
-      className="text-center tabular-nums"
-    >
+    <Typography as="span" variant="body-sm" color="white" className="text-center tabular-nums">
       {`${home ?? 0}-${away ?? 0}`}
     </Typography>
   )

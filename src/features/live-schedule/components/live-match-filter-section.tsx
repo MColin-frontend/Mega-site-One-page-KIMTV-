@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import NextImage from "next/image"
 import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
@@ -13,22 +14,15 @@ import { liveMatchesGridQueryOptions } from "@/features/live-schedule/live-sched
 import {
   LIVE_SCHEDULE_DEFAULT_TAB,
   LIVE_SCHEDULE_FILTER_OPTIONS,
+  LIVE_SCHEDULE_TAB_ICONS,
   LIVE_SCHEDULE_TAB_PARAM,
   type LiveScheduleTab,
 } from "@/features/live-schedule/live-schedule.constants"
-import { LiveScheduleTabEnum } from "@/features/live-schedule/live-schedule.enums"
 import CarouselInfinity from "@/components/ui/carousel/carousel-infinity"
 import { Empty } from "@/components/ui/empty"
-import { MatchCardLive } from "@/components/ui/match/match-card-live"
+import { MatchCardLive, type LiveSearchMatchInterface } from "@/components/ui/match/match-card-live"
 import { MatchStatusLabel } from "@/components/ui/match/match-status-label"
-import { MatchCardLiveSkeleton } from "@/components/ui/match/skeleton"
-
-const TAB_ICONS: Record<LiveScheduleTabEnum, string> = {
-  [LiveScheduleTabEnum.ALL]: "/icons/anchor/ic-all.svg",
-  [LiveScheduleTabEnum.HOT]: "/icons/anchor/ic-hot.svg",
-  [LiveScheduleTabEnum.LIVE]: "/icons/anchor/ic-live.svg",
-  [LiveScheduleTabEnum.TV]: "/icons/anchor/ic-television.svg",
-}
+import { MatchCardLiveSkeleton, MatchCardSkeleton } from "@/components/ui/match/skeleton"
 
 function getTypeScreen(tab: LiveScheduleTab): number {
   return LIVE_SCHEDULE_FILTER_OPTIONS.find((o) => o.value === tab)?.typeScreen ?? 0
@@ -36,7 +30,11 @@ function getTypeScreen(tab: LiveScheduleTab): number {
 
 /* ── Main component ───────────────────────────────────────── */
 
-export function LiveMatchFilterSection() {
+interface LiveMatchFilterSectionProps {
+  renderCard?: (match: LiveSearchMatchInterface) => React.ReactNode
+}
+
+export function LiveMatchFilterSection({ renderCard }: LiveMatchFilterSectionProps = {}) {
   const { t } = useTranslation()
   const { setParams } = useRouter()
   const searchParams = useSearchParams()
@@ -50,14 +48,14 @@ export function LiveMatchFilterSection() {
   const skeletonCount = 10
 
   return (
-    <section className="card-glow rounded-12 flex flex-col gap-4 p-5 max-sm:p-3 max-sm:gap-3">
+    <section className="card-glow rounded-12 flex flex-col gap-4 p-5 max-sm:gap-3 max-sm:p-3">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 max-sm:flex-col max-sm:items-start">
         <MatchStatusLabel type="live" />
 
-        <div className="rounded-10 flex items-center gap-0.5 bg-white/5 p-1 max-sm:w-full max-sm:overflow-x-auto max-sm:scrollbar-none">
+        <div className="rounded-10 flex items-center gap-0.5 bg-white/5 p-1 max-sm:w-full max-sm:scrollbar-none max-sm:overflow-x-auto">
           {LIVE_SCHEDULE_FILTER_OPTIONS.map((o) => {
-            const iconSrc = TAB_ICONS[o.value]
+            const iconSrc = LIVE_SCHEDULE_TAB_ICONS[o.value]
             const isActive = tab === o.value
             return (
               <button
@@ -77,9 +75,14 @@ export function LiveMatchFilterSection() {
                   width={20}
                   height={20}
                   unoptimized
-                  className={cn("shrink-0 max-sm:size-4 size-5", isActive ? "opacity-100" : "opacity-50")}
+                  className={cn(
+                    "size-5 shrink-0 max-sm:size-4",
+                    isActive ? "opacity-100" : "opacity-50"
+                  )}
                 />
-                <span className="whitespace-nowrap">{t(o.labelKey as Parameters<typeof t>[0])}</span>
+                <span className="whitespace-nowrap">
+                  {t(o.labelKey as Parameters<typeof t>[0])}
+                </span>
               </button>
             )
           })}
@@ -94,16 +97,16 @@ export function LiveMatchFilterSection() {
             <div className="-ml-4 flex overflow-x-hidden">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="shrink-0 basis-[85vw] pl-4">
-                  <MatchCardLiveSkeleton />
+                  {renderCard ? <MatchCardSkeleton /> : <MatchCardLiveSkeleton />}
                 </div>
               ))}
             </div>
           </div>
           {/* Desktop skeleton grid */}
           <div className="grid grid-cols-4 gap-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:hidden">
-            {Array.from({ length: skeletonCount }).map((_, i) => (
-              <MatchCardLiveSkeleton key={i} />
-            ))}
+            {Array.from({ length: skeletonCount }).map((_, i) =>
+              renderCard ? <MatchCardSkeleton key={i} /> : <MatchCardLiveSkeleton key={i} />
+            )}
           </div>
         </>
       ) : matches.length > 0 ? (
@@ -112,18 +115,26 @@ export function LiveMatchFilterSection() {
           <div className="hidden max-sm:block">
             <CarouselInfinity
               items={matches}
-              renderItem={(match, i) => (
-                <MatchCardLive key={`${match.matchId}-${i}`} match={match} />
-              )}
+              renderItem={(match, i) =>
+                renderCard ? (
+                  renderCard(match)
+                ) : (
+                  <MatchCardLive key={`${match.matchId}-${i}`} match={match} />
+                )
+              }
               slideClassName="basis-[85vw]"
               keyExtractor={(m, i) => `${m.matchId}-${i}`}
             />
           </div>
           {/* Desktop grid */}
           <div className="grid grid-cols-4 gap-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:hidden">
-            {matches.map((match, i) => (
-              <MatchCardLive key={`${match.matchId}-${i}`} match={match} />
-            ))}
+            {matches.map((match, i) =>
+              renderCard ? (
+                renderCard(match)
+              ) : (
+                <MatchCardLive key={`${match.matchId}-${i}`} match={match} />
+              )
+            )}
           </div>
         </>
       ) : (

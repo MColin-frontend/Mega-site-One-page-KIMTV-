@@ -73,6 +73,8 @@ export interface Dictionary {
       finished: string
       "watch-preview": string
       "blv-label": string
+      "stream-label": string
+      "live-label": string
       watching: string
       "watching-tooltip": string
       period: {
@@ -251,6 +253,8 @@ export interface Dictionary {
     "page-title": string
     subtitle: string
     "latest-news": string
+    "header-suffix": string
+    "header-desc": string
   }
   video: {
     title: string

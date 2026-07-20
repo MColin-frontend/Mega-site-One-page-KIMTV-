@@ -154,6 +154,15 @@ interface MatchInterface
   hasPro: Nullable<boolean>
   hasLivePro: Nullable<boolean>
   menu: number[]
+  // Anchor / BLV stream fields
+  anchor?: boolean
+  roomId?: Nullable<number>
+  anchorName?: Nullable<string>
+  anchorAvatar?: Nullable<string>
+  anchorTitle?: Nullable<string>
+  liveUrl?: Nullable<string>
+  liveUrlFlv?: Nullable<string>
+  liveImage?: Nullable<string>
 }
 
 /** Body cho `get-pc-game-match-by-condition`. */

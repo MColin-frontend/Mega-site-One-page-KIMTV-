@@ -1,21 +1,8 @@
-"use client"
-
-import { useEffect } from "react"
-import dynamic from "next/dynamic"
-
-import { cn } from "@/lib/utils"
-import { useRouter } from "@/hooks/useRouter"
-
-import { HERO_VIDEO_PARAMS } from "@/constants/component/home.constants"
-import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
-
-import { Chat, type UserRole } from "@/components/ui/chat"
-import { MatchLiveInfoBar } from "@/components/ui/match/match-live-info-bar"
+import { fetchLiveScheduleMatches } from "@/features/live-schedule/live-schedule.api"
+import { buildStreamSources, fetchAnchorLiveData } from "@/features/live/api/live.api"
 import type { VideoSource } from "@/components/ui/video"
 
-const VideoPlayer = dynamic(() => import("@/components/ui/video").then((m) => m.VideoPlayer), {
-  ssr: false,
-})
+import { HeroVideoClient } from "./hero-video-client"
 
 /* ── Types ───────────────────────────────────────────────── */
 
@@ -45,72 +32,85 @@ export interface LiveMatch {
   poster?: string
 }
 
-export interface HeroVideoProps {
-  matches: LiveMatch[]
-  defaultMatchId?: string | number
-  isLoggedIn?: boolean
-  userRole?: UserRole
-  onLogin?: () => void
-  className?: string
-}
+/* ── Server Component ────────────────────────────────────── */
 
-/* ── Main Component ──────────────────────────────────────── */
+export async function HeroVideo({ className }: { className?: string }) {
+  const liveList = await fetchLiveScheduleMatches()
 
-export function HeroVideo({ matches, defaultMatchId, className }: HeroVideoProps) {
-  const { getParam, setParams } = useRouter()
+  const matches: LiveMatch[] = await Promise.all(
+    liveList.map(async (m) => {
+      // Anchor stream → gọi /v2/live/detail?roomId=xxx (giống trang /live/[id])
+      if (m.anchor && m.roomId) {
+        const detail = await fetchAnchorLiveData(String(m.roomId)).catch(() => null)
+        const dm = detail?.match
 
-  const activeIdFromUrl =
-    getParam(HERO_VIDEO_PARAMS.MATCH_ID) ?? String(defaultMatchId ?? matches[0]?.id ?? "")
-  const activeMatch = matches.find((m) => String(m.id) === activeIdFromUrl) ?? matches[0]
+        const anchorSources =
+          dm?.anchorRoom?.flatMap((a, i) =>
+            buildStreamSources(a.liveUrl, a.liveUrlFlv, `BLV ${i + 1}`)
+          ) ?? buildStreamSources(m.liveUrl, m.liveUrlFlv, "BLV")
 
-  // Sync URL params so Chat component can read chatroomId + gameId
-  useEffect(() => {
-    if (!activeMatch) return
-    const currentId = getParam(HERO_VIDEO_PARAMS.MATCH_ID)
-    if (!currentId) {
-      setParams(
-        {
-          [HERO_VIDEO_PARAMS.MATCH_ID]: String(activeMatch.id),
-          [HERO_VIDEO_PARAMS.GAME_ID]: String(activeMatch.gameId),
-        },
-        { scroll: false }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeMatch?.id])
+        return {
+          id: m.matchId,
+          chatroomId: m.matchId,
+          gameId: m.gameId ?? 0,
+          homeName: dm?.homeName ?? m.homeName ?? "",
+          homeLogo: dm?.homeLogo ?? m.homeLogo ?? "",
+          awayName: dm?.awayName ?? m.awayName ?? "",
+          awayLogo: dm?.awayLogo ?? m.awayLogo ?? "",
+          homeScore: dm?.homeScore ?? m.homeScore ?? undefined,
+          awayScore: dm?.awayScore ?? m.awayScore ?? undefined,
+          period: dm?.gameTime ?? m.gameTime ?? undefined,
+          state: dm?.state ?? m.state ?? null,
+          startTime: dm?.startTime ?? m.startTime ?? null,
+          leagueName: dm?.leagueName ?? m.leagueName ?? undefined,
+          leagueLogo: dm?.leagueLogo ?? m.leagueLogo ?? undefined,
+          homeCornerKick: dm?.homeCornerKick ?? m.homeCornerKick ?? undefined,
+          awayCornerKick: dm?.awayCornerKick ?? m.awayCornerKick ?? undefined,
+          homeYellowCard: dm?.homeYellowCard ?? m.homeYellowCard ?? undefined,
+          awayYellowCard: dm?.awayYellowCard ?? m.awayYellowCard ?? undefined,
+          homeRedCard: dm?.homeRedCard ?? m.homeRedCard ?? undefined,
+          awayRedCard: dm?.awayRedCard ?? m.awayRedCard ?? undefined,
+          anchors:
+            dm?.anchorRoom?.map((a) => ({
+              userAvatar: a.userAvatar ?? "",
+              userName: a.userName ?? "",
+            })) ??
+            (m.anchorName ? [{ userAvatar: m.anchorAvatar ?? "", userName: m.anchorName }] : []),
+          sources: anchorSources,
+          poster: dm?.anchorRoom?.[0]?.cover ?? m.liveImage ?? undefined,
+        } satisfies LiveMatch
+      }
 
-  if (!activeMatch) return null
+      // Match thường (không có anchor) → dùng sources trực tiếp từ list
+      const matchSources = buildStreamSources(m.liveUrl, m.liveUrlFlv, "Nguồn 1")
 
-  return (
-    <div
-      className={cn(
-        "flex h-[min(76vh,880px)] w-full gap-4 max-lg:h-auto max-lg:flex-col",
-        className
-      )}
-    >
-      {/* Left: video + match info bar */}
-      <div className="card-glow rounded-12 flex min-w-0 flex-1 flex-col overflow-hidden max-lg:h-auto">
-        <VideoPlayer
-          key={activeMatch.id.toString()}
-          sources={activeMatch.sources}
-          poster={activeMatch.poster}
-          isLive
-          autoplay
-        />
-        <MatchLiveInfoBar
-          match={{
-            ...(activeMatch as unknown as MatchInterface),
-            matchId: Number(activeMatch.id),
-            gameTime: typeof activeMatch.period === "number" ? activeMatch.period : null,
-            anchorRoomVos: (activeMatch.anchors as unknown as AnchorRoomVo[]) ?? null,
-          }}
-        />
-      </div>
-
-      {/* Right: chat */}
-      <div className="flex w-[420px] shrink-0 flex-col overflow-hidden max-lg:hidden">
-        <Chat />
-      </div>
-    </div>
+      return {
+        id: m.matchId,
+        chatroomId: m.matchId,
+        gameId: m.gameId ?? 0,
+        homeName: m.homeName ?? "",
+        homeLogo: m.homeLogo ?? "",
+        awayName: m.awayName ?? "",
+        awayLogo: m.awayLogo ?? "",
+        homeScore: m.homeScore ?? undefined,
+        awayScore: m.awayScore ?? undefined,
+        period: m.gameTime ?? undefined,
+        state: m.state ?? null,
+        startTime: m.startTime ?? null,
+        leagueName: m.leagueName ?? undefined,
+        leagueLogo: m.leagueLogo ?? undefined,
+        homeCornerKick: m.homeCornerKick ?? undefined,
+        awayCornerKick: m.awayCornerKick ?? undefined,
+        homeYellowCard: m.homeYellowCard ?? undefined,
+        awayYellowCard: m.awayYellowCard ?? undefined,
+        homeRedCard: m.homeRedCard ?? undefined,
+        awayRedCard: m.awayRedCard ?? undefined,
+        anchors: [],
+        sources: matchSources,
+        poster: m.liveImage ?? undefined,
+      } satisfies LiveMatch
+    })
   )
+
+  return <HeroVideoClient matches={matches} className={className} />
 }

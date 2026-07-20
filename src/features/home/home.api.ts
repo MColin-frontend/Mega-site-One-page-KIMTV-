@@ -56,7 +56,7 @@ function getEndpointByDate(date: string | null): string {
 }
 
 function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
-  return postRequest<unknown[]>(MATCH_API.LIVE, { gameId: [] })
+  return postRequest<unknown[]>(HOME_API?.MATCH_LIVE, { gameId: [] })
     .then((data) => {
       if (!Array.isArray(data)) return []
 
@@ -75,8 +75,6 @@ function fetchLiveMatchesAction(): Promise<LiveMatch[]> {
               result.push({ url: wrapUrl(u.liveUrlFlv), name: `Nguồn ${i + 1} FLV` })
             return result
           })
-
-          if (sources.length === 0) return null
 
           return {
             id: m.matchId as number,

@@ -1,13 +1,12 @@
 import { Suspense } from "react"
 import { isEmpty } from "lodash"
-import { ArrowRight } from "lucide-react"
 
 import { getTranslation } from "@/i18n/get-locale"
 import { getRoutes } from "@/config/routes"
 
 import { HighlightsCarousel } from "@/features/home/components/match-fixtures/news/highlights"
-import { NewsCard } from "@/features/home/components/match-fixtures/news/news-card"
 import { NewsCarouselMobile } from "@/features/home/components/match-fixtures/news/news-carousel-mobile"
+import { NewsSectionHeader } from "@/features/home/components/match-fixtures/news/news-section-header"
 import {
   HighlightsSkeleton,
   NewsSectionSkeleton,
@@ -18,8 +17,8 @@ import {
   fetchPopularNewsAction,
 } from "@/features/home/home.api"
 import type { NewsItem } from "@/features/home/home.api"
+import { NewsItemRow } from "@/features/news/components/item"
 import { NewsSectionPropsInterface } from "@/features/news/news.models"
-import { Typography } from "@/components/ui/typography"
 
 interface NewsSectionCardProps {
   title: string
@@ -41,40 +40,16 @@ function NewsSectionCard({
   if (isEmpty(items)) return null
   return (
     <div className="card-glow rounded-12 flex flex-col gap-2 p-4">
-      <div className="flex items-center justify-between">
-        <Typography variant="h2" color="primary">
-          {title}
-        </Typography>
-        <a
-          href={viewAllHref}
-          className="group/btn flex items-center gap-1 overflow-hidden pr-1 transition-colors hover:text-white"
-        >
-          <Typography
-            as="span"
-            variant="caption"
-            weight="500"
-            color="muted"
-            className="transition-all duration-200 group-hover/btn:italic"
-          >
-            {viewAllLabel}
-          </Typography>
-          <ArrowRight
-            size={16}
-            className="-translate-x-4 opacity-0 transition-all duration-200 group-hover/btn:translate-x-0 group-hover/btn:opacity-100"
-            aria-hidden
-          />
-        </a>
-      </div>
+      <NewsSectionHeader title={title} href={viewAllHref} viewAllLabel={viewAllLabel} />
 
       <div className="hidden flex-col lg:flex">
         {items.slice(0, 5).map((item) => (
-          <div key={String(item.newsId)} className="mb-2">
-            <NewsCard
-              item={item}
-              categoryLabel={categoryLabel}
-              href={getHref(String(item.newsId))}
-            />
-          </div>
+          <NewsItemRow
+            key={String(item.newsId)}
+            item={item}
+            categoryLabel={categoryLabel}
+            href={getHref(String(item.newsId))}
+          />
         ))}
       </div>
 

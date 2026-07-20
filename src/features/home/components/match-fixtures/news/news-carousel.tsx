@@ -11,6 +11,8 @@ import CarouselInfinity from "@/components/ui/carousel/carousel-infinity"
 import { Img } from "@/components/ui/image"
 import { Typography } from "@/components/ui/typography"
 
+import { NewsSectionHeader } from "./news-section-header"
+
 interface NewsCarouselProps {
   featured: NewsItem[]
   latest: NewsItem[]
@@ -83,16 +85,7 @@ function NewsSection({
   if (!items.length) return null
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <Typography variant="h2">{title}</Typography>
-        <Link
-          href={viewAllHref}
-          className="group/btn text-blue text-13 font-500 flex items-center gap-1 overflow-hidden pr-1 transition-colors"
-        >
-          <span className="transition-all duration-200 group-hover/btn:italic">{viewAllLabel}</span>
-          <ArrowRight className="size-4 -translate-x-4 opacity-0 transition-all duration-200 group-hover/btn:translate-x-0 group-hover/btn:opacity-100" />
-        </Link>
-      </div>
+      <NewsSectionHeader title={title} href={viewAllHref} viewAllLabel={viewAllLabel} />
       <CarouselInfinity
         items={items}
         renderItem={(item) => (

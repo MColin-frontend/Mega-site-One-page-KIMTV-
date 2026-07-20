@@ -12,9 +12,17 @@ const LIVE_SCHEDULE_FILTER_OPTIONS = [
 
 export type LiveScheduleTab = LiveScheduleTabEnum
 
+const LIVE_SCHEDULE_TAB_ICONS: Record<LiveScheduleTabEnum, string> = {
+  [LiveScheduleTabEnum.ALL]: "/icons/anchor/ic-all.svg",
+  [LiveScheduleTabEnum.HOT]: "/icons/anchor/ic-hot.svg",
+  [LiveScheduleTabEnum.LIVE]: "/icons/anchor/ic-live.svg",
+  [LiveScheduleTabEnum.TV]: "/icons/anchor/ic-television.svg",
+}
+
 export {
   LiveScheduleTabEnum,
   LIVE_SCHEDULE_TAB_PARAM,
   LIVE_SCHEDULE_DEFAULT_TAB,
   LIVE_SCHEDULE_FILTER_OPTIONS,
+  LIVE_SCHEDULE_TAB_ICONS,
 }

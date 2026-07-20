@@ -39,6 +39,8 @@ export const COUNTDOWN_I18N_KEYS = {
 export const MATCH_CARD_I18N_KEYS = {
   finished: "match.card.finished",
   blvLabel: "match.card.blv-label",
+  streamLabel: "match.card.stream-label",
+  liveLabel: "match.card.live-label",
   watching: "match.card.watching",
   watchingTooltip: "match.card.watching-tooltip",
 } as const

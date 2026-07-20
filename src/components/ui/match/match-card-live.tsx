@@ -63,6 +63,7 @@ export interface LiveSearchMatchInterface {
   anchorAvatar: string | null
   anchorTitle: string | null
   hotValue: number | null
+  roomId?: number | null
 }
 
 /* ── Stat item ────────────────────────────────────────────── */
@@ -122,12 +123,11 @@ export function MatchCardLive({
   const { t } = useTranslation()
   const navigateToLive = useLiveNavigate()
 
-  const isLive =
-    match.isLive === true ||
-    match.status === MatchStatusEnum.LIVE ||
-    (match.status === 2 &&
-      match.state !== MatchFootballStateEnum.NOT_STARTED &&
-      match.state !== MatchFootballStateEnum.END)
+  const isMatchLive = match.status === MatchStatusEnum.LIVE || match.status === 2
+  // BLV đang stream → "Stream" (bất kể status trận)
+  const isStream = !!match.anchor
+  // Trận live nhưng không có BLV → "LIVE"
+  const isLive = isMatchLive && !isStream
 
   const isUpcoming =
     match.status === MatchStatusEnum.UPCOMING ||
@@ -142,18 +142,16 @@ export function MatchCardLive({
   const periodLabel = periodI18nKey ? t(periodI18nKey as Parameters<typeof t>[0]) : halfLabel
 
   function handleClick() {
-    if (!isLive || !match.matchId || !match.gameId) return
+    if (!match.matchId || !match.gameId) return
     navigateToLive(match.matchId, match.gameId)
   }
-
-  const hasAnchor = match.anchor && match.anchorName
 
   return (
     <div
       onClick={handleClick}
       className={cn(
         "card-match-bg rounded-12 relative w-full overflow-hidden transition-all",
-        isLive ? "hover:shadow-card-hover cursor-pointer" : "cursor-default",
+        match.matchId && match.gameId ? "hover:shadow-card-hover cursor-pointer" : "cursor-default",
         "shadow-none",
         className
       )}
@@ -221,7 +219,7 @@ export function MatchCardLive({
         {/* Row 1: LIVE | HD + viewers */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-1.5 max-md:gap-1 max-sm:gap-1">
-            {isLive && (
+            {(isStream || isLive) && (
               <>
                 <div className="relative flex items-center gap-1.5 overflow-visible">
                   <div className="pointer-events-none absolute inset-0 -z-10 scale-150 animate-pulse rounded-full bg-red-600/40 blur-md" />
@@ -238,7 +236,9 @@ export function MatchCardLive({
                       <span className="shadow-white-dot relative inline-flex size-2.5 rounded-full bg-white max-md:size-2 max-sm:size-2" />
                     </span>
                     <span className="text-12 font-800 max-md:text-10 max-sm:text-10 tracking-widest text-white uppercase">
-                      {hasAnchor ? "Stream" : "LIVE"}
+                      {isStream
+                        ? t(MATCH_CARD_I18N_KEYS.streamLabel as Parameters<typeof t>[0])
+                        : t(MATCH_CARD_I18N_KEYS.liveLabel as Parameters<typeof t>[0])}
                     </span>
                   </div>
                 </div>
@@ -293,7 +293,7 @@ export function MatchCardLive({
 
         {/* Row 2: BLV | minute */}
         <div className="flex items-center justify-between">
-          {hasAnchor ? (
+          {isStream ? (
             <div className="flex items-center gap-2.5 max-md:origin-left max-md:zoom-75 max-sm:origin-left max-sm:zoom-75">
               {match.anchorAvatar && (
                 <div className="relative shrink-0">
@@ -317,7 +317,7 @@ export function MatchCardLive({
                     weight="700"
                     className="text-live-green drop-shadow-live-green leading-none uppercase"
                   >
-                    {t(MATCH_CARD_I18N_KEYS.blvLabel as Parameters<typeof t>[0])}
+                    {t(MATCH_CARD_I18N_KEYS.streamLabel as Parameters<typeof t>[0])}
                   </Typography>
                 </div>
                 <Tooltip>

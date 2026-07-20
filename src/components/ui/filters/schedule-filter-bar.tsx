@@ -18,7 +18,7 @@ export function ScheduleFilterBar() {
   const groups = buildLeagueGroupsFromApi(leaguesData?.moreLeagus ?? [])
 
   return (
-    <div className="rounded-12 bg-background/90 sticky top-15 z-20 border border-white/10 px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+    <div className="rounded-12 bg-background/90 border-white-linear sticky top-15 z-20 px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl">
       <ScheduleFilter
         groups={groups}
         hotLeagues={hotLeagues}
