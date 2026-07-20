@@ -26,7 +26,7 @@ function Fixtures() {
   const groups = buildLeagueGroupsFromApi(leaguesData?.moreLeagus ?? [])
 
   return (
-    <section className="rounded-12 card-glow panel-news flex flex-col gap-4 p-5">
+    <section className="rounded-12 card-glow flex flex-col gap-4 p-5">
       <HeroFixtures
         groups={groups}
         hotLeagues={hotLeagues}

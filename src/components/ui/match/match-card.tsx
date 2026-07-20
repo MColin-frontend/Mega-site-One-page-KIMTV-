@@ -204,7 +204,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
             {/* Text info */}
             <div className="flex min-w-0 flex-col gap-0.5">
               {/* Label badge */}
-              <div className="border-live-green/60 bg-live-green-bg shadow-live-green-sm flex w-fit items-center gap-1 rounded-full border px-1.5 py-px backdrop-blur-2xl">
+              <div className="border-live-green/60 bg-live-green-bg shadow-live-green-sm flex w-fit items-center gap-1 rounded-full border px-1.5 py-0.5 backdrop-blur-2xl">
                 <Img src={icMic} alt="mic" width={8} height={8} objectFit="contain" />
                 <Typography
                   as="span"
@@ -287,7 +287,14 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
           {/* Score */}
           <div className="flex basis-1/5 flex-col items-center gap-0.5">
             {isUpcoming ? (
-              <Img src={imgVs} alt="VS" width={72} height={72} objectFit="contain" className="max-md:size-14 max-sm:size-10" />
+              <Img
+                src={imgVs}
+                alt="VS"
+                width={72}
+                height={72}
+                objectFit="contain"
+                className="max-md:size-14 max-sm:size-10"
+              />
             ) : (
               <>
                 <div className="flex items-center gap-0.5 max-md:scale-90 max-sm:scale-75">

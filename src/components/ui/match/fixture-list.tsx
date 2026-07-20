@@ -105,7 +105,7 @@ export function FixtureRow({
             {match.leagueLogo && (
               <Img src={match.leagueLogo} alt="" width={36} height={36} objectFit="contain" />
             )}
-            <Typography variant="body-sm" color="foreground/55" className="line-clamp-2">
+            <Typography variant="body-sm" weight="500" color="white" className="line-clamp-2">
               {match.leagueName}
             </Typography>
           </TooltipTrigger>
@@ -124,13 +124,7 @@ export function FixtureRow({
                 className="shrink-0"
               />
             )}
-            <Typography
-              as="span"
-              variant="label"
-              weight="600"
-              color="foreground"
-              className="truncate"
-            >
+            <Typography as="span" variant="label" weight="600" color="white" className="truncate">
               {match.homeName}
             </Typography>
           </div>
@@ -145,13 +139,7 @@ export function FixtureRow({
                 className="shrink-0"
               />
             )}
-            <Typography
-              as="span"
-              variant="label"
-              weight="600"
-              color="foreground"
-              className="truncate"
-            >
+            <Typography as="span" variant="label" weight="600" color="white" className="truncate">
               {match.awayName}
             </Typography>
           </div>
@@ -260,13 +248,7 @@ export function FixtureRow({
                 className="shrink-0"
               />
             )}
-            <Typography
-              as="span"
-              variant="label"
-              weight="600"
-              color="foreground"
-              className="truncate"
-            >
+            <Typography as="span" variant="label" weight="600" color="white" className="truncate">
               {match.awayName}
             </Typography>
           </div>
