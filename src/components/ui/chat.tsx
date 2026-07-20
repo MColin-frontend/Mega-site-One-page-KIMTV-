@@ -990,12 +990,10 @@ export function Chat({
     }
   }, [chatroomId, gameId, hasMoreMessages])
 
-  /* ── Switch chatroom khi URL đổi ────────────────────────── */
+  /* ── Load messages khi chatroom đổi ─────────────────────── */
   useEffect(() => {
     if (!chatroomId) return
-    reconnectCountRef.current = 0
     pageIndexRef.current = 0
-
     Promise.all([
       fetchChatMessagesAction({ chatroomId, gameId, pageIndex: 0 }),
       fetchPinnedMessagesAction({ chatroomId, gameId }),
@@ -1004,11 +1002,16 @@ export function Chat({
       setHasMoreMessages(chatResult.hasMore)
       setPinnedMessages(pinned)
     })
+  }, [chatroomId, gameId])
 
+  /* ── WebSocket: reconnect khi chatroom đổi hoặc auth đổi ── */
+  useEffect(() => {
+    if (!chatroomId) return
+    reconnectCountRef.current = 0
     // eslint-disable-next-line react-hooks/set-state-in-effect
     initWs(chatroomId, gameId)
     return closeWs
-  }, [chatroomId, gameId, initWs, closeWs])
+  }, [chatroomId, gameId, isLoggedIn, initWs, closeWs])
 
   const handleSendMessage = ({ content }: ChatFormType) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return
