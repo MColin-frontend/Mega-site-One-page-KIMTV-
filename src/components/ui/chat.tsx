@@ -467,24 +467,28 @@ function UserPopup({
         )}
 
         {/* Admin actions — ADMIN + HOUSING_MANAGEMENT */}
-        {(userRole === CHAT_USER_ROLE.ADMIN ||
-          userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT) && (
+        {(userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT) && (
           <div className="flex items-start justify-around border-t border-white/[0.06] px-3 py-4">
-            {userRole === CHAT_USER_ROLE.ADMIN &&
-              message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
-                <button
-                  onClick={() => { onBanAll?.(message, true); onClose() }}
-                  className="flex flex-col items-center gap-2 transition-transform active:scale-90"
-                >
-                  <Img src={icBlacklist} alt="" width={40} height={40} objectFit="contain" />
-                  <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
-                    {t("chat.actions.ban-all")}
-                  </span>
-                </button>
-              )}
+            {userRole === CHAT_USER_ROLE.ADMIN && message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
+              <button
+                onClick={() => {
+                  onBanAll?.(message, true)
+                  onClose()
+                }}
+                className="flex flex-col items-center gap-2 transition-transform active:scale-90"
+              >
+                <Img src={icBlacklist} alt="" width={40} height={40} objectFit="contain" />
+                <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
+                  {t("chat.actions.ban-all")}
+                </span>
+              </button>
+            )}
             {message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
               <button
-                onClick={() => { onBanRoom?.(message, true); onClose() }}
+                onClick={() => {
+                  onBanRoom?.(message, true)
+                  onClose()
+                }}
                 className="flex flex-col items-center gap-2 transition-transform active:scale-90"
               >
                 <Img src={icRestriction} alt="" width={40} height={40} objectFit="contain" />
@@ -494,7 +498,10 @@ function UserPopup({
               </button>
             )}
             <button
-              onClick={() => { onDelete?.(message); onClose() }}
+              onClick={() => {
+                onDelete?.(message)
+                onClose()
+              }}
               className="flex flex-col items-center gap-2 transition-transform active:scale-90"
             >
               <Img src={icRemove} alt="" width={40} height={40} objectFit="contain" />
@@ -504,7 +511,11 @@ function UserPopup({
             </button>
             {message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
               <button
-                onClick={() => { if (isPinned) onUnpin?.(message); else onPin?.(message); onClose() }}
+                onClick={() => {
+                  if (isPinned) onUnpin?.(message)
+                  else onPin?.(message)
+                  onClose()
+                }}
                 className="flex flex-col items-center gap-2 transition-transform active:scale-90"
               >
                 <Img
@@ -515,7 +526,12 @@ function UserPopup({
                   objectFit="contain"
                   className={isPinned ? "opacity-100" : "opacity-50"}
                 />
-                <span className={cn("text-12 font-600 w-16 text-center leading-tight", isPinned ? "text-gold/80" : "text-white/80")}>
+                <span
+                  className={cn(
+                    "text-12 font-600 w-16 text-center leading-tight",
+                    isPinned ? "text-gold/80" : "text-white/80"
+                  )}
+                >
                   {isPinned ? t("chat.actions.unpin") : t("chat.actions.pin")}
                 </span>
               </button>
@@ -524,20 +540,29 @@ function UserPopup({
         )}
 
         {/* Anchor actions — ANCHOR only */}
-        {userRole === CHAT_USER_ROLE.ANCHOR &&
-          message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
-            <div className="flex items-start justify-around border-t border-white/[0.06] px-3 py-4">
-              <button
-                onClick={() => { onSetManager?.(message, true); onClose() }}
-                className="flex flex-col items-center gap-2 transition-transform active:scale-90"
-              >
-                <Img src={icRestriction} alt="" width={40} height={40} objectFit="contain" className="opacity-50" />
-                <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
-                  {t("chat.actions.set-manager")}
-                </span>
-              </button>
-            </div>
-          )}
+        {userRole === CHAT_USER_ROLE.ANCHOR && message.type !== CHAT_MESSAGE_TYPE.VIRTUAL && (
+          <div className="flex items-start justify-around border-t border-white/[0.06] px-3 py-4">
+            <button
+              onClick={() => {
+                onSetManager?.(message, true)
+                onClose()
+              }}
+              className="flex flex-col items-center gap-2 transition-transform active:scale-90"
+            >
+              <Img
+                src={icRestriction}
+                alt=""
+                width={40}
+                height={40}
+                objectFit="contain"
+                className="opacity-50"
+              />
+              <span className="text-12 font-600 w-16 text-center leading-tight text-white/80">
+                {t("chat.actions.set-manager")}
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Safe area bottom — mobile */}
         <div className="h-safe-area-bottom sm:hidden" />
@@ -560,7 +585,6 @@ interface PollData {
   options: PollOption[]
   durationSeconds: number
 }
-
 
 interface PollFormValues {
   optionId: number | null
@@ -976,9 +1000,16 @@ export function Chat({
   }, [chatroomId, gameId, initWs, closeWs])
 
   const handleSendMessage = ({ content }: ChatFormType) => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return
-    wsRef.current.send(JSON.stringify({ type: 1, content: content }))
-    resetForm()
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      console.error("[chat] send failed — ws state:", wsRef.current?.readyState ?? "no socket")
+      return
+    }
+    try {
+      wsRef.current.send(JSON.stringify({ type: 1, content: content }))
+      resetForm()
+    } catch (err) {
+      console.error("[chat] send error:", err)
+    }
   }
 
   const handleReconnect = useCallback(() => {
@@ -1203,12 +1234,16 @@ export function Chat({
                     className={cn("text-14 shrink-0 leading-none", CHAT_CLASSES.pin)}
                     onClick={(e) => {
                       e.stopPropagation()
-                      if (userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT)
+                      if (
+                        userRole === CHAT_USER_ROLE.ADMIN ||
+                        userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT
+                      )
                         handleUnpin(msg)
                       else setExpandedPinId(expandedPinId === msg.id ? null : msg.id)
                     }}
                   >
-                    {userRole === CHAT_USER_ROLE.ADMIN || userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT
+                    {userRole === CHAT_USER_ROLE.ADMIN ||
+                    userRole === CHAT_USER_ROLE.HOUSING_MANAGEMENT
                       ? CHAT_SYMBOLS.CLOSE
                       : expandedPinId === msg.id
                         ? CHAT_SYMBOLS.COLLAPSE

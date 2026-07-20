@@ -23,6 +23,7 @@ import { PollModal } from "@/features/live/components/poll-modal"
 import { AvatarWithTooltip } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Img } from "@/components/ui/image"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Typography } from "@/components/ui/typography"
 
 import imgStadiumBg from "@assets/images/common/img-no-source.png"
@@ -348,7 +349,12 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
                     {awayScore ?? 0}
                   </Typography>
                 </div>
-                {isLive && <MatchPeriodBadge label={periodLabel} className="max-md:text-10 max-md:px-1 max-sm:text-10 max-sm:px-1" />}
+                {isLive && (
+                  <MatchPeriodBadge
+                    label={periodLabel}
+                    className="max-md:text-10 max-sm:text-10 max-md:px-1 max-sm:px-1"
+                  />
+                )}
                 {isFinished && (
                   <div className="rounded-4 border-gold/30 bg-gold/10 shadow-gold-glow border px-1.5 py-px">
                     <Typography
@@ -450,14 +456,21 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
             ) : (
               <Trophy className="text-gold size-3.5 shrink-0" />
             )}
-            <Typography
-              as="span"
-              variant="caption"
-              weight="500"
-              className="max-w-[195px] min-w-0 truncate text-white/90"
-            >
-              {leagueName}
-            </Typography>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Typography
+                    as="span"
+                    variant="caption"
+                    weight="500"
+                    className="max-w-[120px] min-w-0 truncate text-white/90 sm:max-w-[160px] md:max-w-[195px] lg:max-w-[260px]"
+                  >
+                    {leagueName}
+                  </Typography>
+                </TooltipTrigger>
+                <TooltipContent>{leagueName}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           {match.startTime && (
             <div className="flex shrink-0 items-center gap-1 max-sm:origin-right max-sm:scale-75">
