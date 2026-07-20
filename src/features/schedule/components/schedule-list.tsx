@@ -58,7 +58,7 @@ export default function ScheduleList() {
           </Typography>
         </div>
       </div>
-      <div className="sticky top-19 z-20">
+      <div className="sticky top-22 z-20">
         <ScheduleFilter
           groups={leagueGroups}
           hotLeagues={hotLeagues}

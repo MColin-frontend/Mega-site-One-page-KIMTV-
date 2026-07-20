@@ -64,6 +64,7 @@ export default function CarouselInfinity<T>({
       loop: true,
       dragFree: false,
       slidesToScroll: 1 as const,
+      duration: 20,
     }),
     []
   )
@@ -85,16 +86,26 @@ export default function CarouselInfinity<T>({
   const [emblaRef, emblaApi] = useEmblaCarousel(carouselOptions, plugins)
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
+  const prevCanScrollPrevRef = useRef(false)
+  const prevCanScrollNextRef = useRef(false)
 
   const updateScrollability = useCallback(() => {
     if (!emblaApi) return
-    setCanScrollPrev(emblaApi.canScrollPrev())
-    setCanScrollNext(emblaApi.canScrollNext())
+    const prev = emblaApi.canScrollPrev()
+    const next = emblaApi.canScrollNext()
+    if (prev !== prevCanScrollPrevRef.current) {
+      prevCanScrollPrevRef.current = prev
+      setCanScrollPrev(prev)
+    }
+    if (next !== prevCanScrollNextRef.current) {
+      prevCanScrollNextRef.current = next
+      setCanScrollNext(next)
+    }
   }, [emblaApi])
 
   useEffect(() => {
     if (!emblaApi) return
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     updateScrollability()
     emblaApi.on("select", updateScrollability)
     emblaApi.on("reInit", updateScrollability)
@@ -169,15 +180,8 @@ export default function CarouselInfinity<T>({
 
   const scrollNext = useCallback(() => {
     emblaApi?.scrollNext()
-    requestAnimationFrame(() => {
-      maybeTriggerReachEnd()
-      maybeTriggerReachEndFromNextClick()
-    })
-    window.setTimeout(() => {
-      maybeTriggerReachEnd()
-      maybeTriggerReachEndFromNextClick()
-    }, 180)
-  }, [emblaApi, maybeTriggerReachEnd, maybeTriggerReachEndFromNextClick])
+    requestAnimationFrame(maybeTriggerReachEndFromNextClick)
+  }, [emblaApi, maybeTriggerReachEndFromNextClick])
 
   return (
     <div className={`group/carousel relative w-full ${className ?? ""}`}>
@@ -185,7 +189,7 @@ export default function CarouselInfinity<T>({
         className={`overflow-x-hidden overflow-y-visible${viewportClassName ? ` ${viewportClassName}` : ""}`}
         ref={emblaRef}
       >
-        <div className="-ml-4 flex items-stretch max-sm:-ml-2">
+        <div className="-ml-4 flex items-stretch will-change-transform max-sm:-ml-2">
           {(Array.isArray(items) ? items : []).map((item, index) => (
             <div
               key={keyExtractor ? keyExtractor(item, index) : index}

@@ -24,7 +24,7 @@ import kimtvLogo from "@assets/icons/layout/ic-kimtv.svg"
 
 /* ── Avatar Dropdown ─────────────────────────────────────── */
 interface AvatarDropdownProps {
-  user: { name?: string | null; avatar?: string | null }
+  user: { name?: string | null; avatar?: string | null; vip99Icon?: string | null }
   userId?: string | number | null
   onLogout: () => void
 }
@@ -87,6 +87,17 @@ function AvatarDropdown({ user, userId, onLogout }: AvatarDropdownProps) {
             </TooltipTrigger>
             <TooltipContent>{user.name ?? t("header.user.fallback-name")}</TooltipContent>
           </Tooltip>
+          {user.vip99Icon && (
+            <Img
+              src={user.vip99Icon}
+              alt="vip"
+              width={32}
+              height={32}
+              unoptimized
+              objectFit="contain"
+              className="shrink-0"
+            />
+          )}
         </div>
 
         {/* Menu items */}
