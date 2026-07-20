@@ -348,7 +348,12 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
                     {awayScore ?? 0}
                   </Typography>
                 </div>
-                {isLive && <MatchPeriodBadge label={periodLabel} className="max-md:text-10 max-md:px-1 max-sm:text-10 max-sm:px-1" />}
+                {isLive && (
+                  <MatchPeriodBadge
+                    label={periodLabel}
+                    className="max-md:text-10 max-sm:text-10 max-md:px-1 max-sm:px-1"
+                  />
+                )}
                 {isFinished && (
                   <div className="rounded-4 border-gold/30 bg-gold/10 shadow-gold-glow border px-1.5 py-px">
                     <Typography
@@ -454,7 +459,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
               as="span"
               variant="caption"
               weight="500"
-              className="max-w-[195px] min-w-0 truncate text-white/90"
+              className="min-w-0 truncate text-white/90"
             >
               {leagueName}
             </Typography>
