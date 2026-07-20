@@ -52,24 +52,29 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
   const countdown = useCountdown(match?.startTime)
 
   function handleClick() {
-    if (!match?.matchId || !match?.gameId || !isLive) return
+    if (!match?.matchId || !match?.gameId) return
     navigateToLive(match.matchId, match.gameId)
   }
 
   if (isLoading || !match) return <MatchCardSkeleton className={className} />
 
+  const anchors: AnchorRoomVo[] = match.anchorRoomVos ?? []
+  const firstAnchor = anchors[0] ?? null
+  const thumbnail = firstAnchor?.cover ?? match.animationUrl ?? null
+
   const isUpcoming =
     match.status === MatchStatusEnum.UPCOMING || match.status === MatchStatusEnum.UNKNOWN
   const isFinished = match.status === MatchStatusEnum.FINISHED
-  const isLive = !isFinished && (!!match.isLive || match.status === MatchStatusEnum.LIVE)
+  const isMatchLive = match.status === MatchStatusEnum.LIVE
+  // BLV đang stream → "Stream" (bất kể status trận)
+  const isStream = !!match.anchor || !!firstAnchor
+  // Trận live nhưng không có BLV → "LIVE"
+  const isLive = isMatchLive && !isStream
   const halfLabel = MATCH_HALF_LABEL[match.state as MatchFootballStateEnum] ?? "LIVE"
   const periodI18nKey = MATCH_HALF_LABEL_I18N_KEY[halfLabel]
   const periodLabel = periodI18nKey ? t(periodI18nKey as Parameters<typeof t>[0]) : halfLabel
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const displayMinute = useFakeGameMinute(match.gameTime, isLive)
-  const anchors: AnchorRoomVo[] = match.anchorRoomVos ?? []
-  const firstAnchor = anchors[0] ?? null
-  const thumbnail = firstAnchor?.cover ?? match.animationUrl ?? null
+  const displayMinute = useFakeGameMinute(match.gameTime, isStream || isLive)
 
   const statValues = [
     0,
@@ -88,7 +93,9 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
       onClick={handleClick}
       className={cn(
         "card-match-bg rounded-12 relative h-full w-full overflow-hidden shadow-none transition-all",
-        isLive ? "hover:shadow-card-hover cursor-pointer" : "cursor-default",
+        match?.matchId && match?.gameId
+          ? "hover:shadow-card-hover cursor-pointer"
+          : "cursor-default",
         className
       )}
     >
@@ -154,7 +161,8 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
         {/* Row 1: LIVE badge | viewers + time (right) */}
         <div className="flex items-center justify-between max-sm:-my-1 max-sm:origin-left">
           <div className="flex items-center gap-2 max-md:scale-90 max-sm:scale-75">
-            {isLive && <MatchLiveIndicator label={firstAnchor ? "Stream" : "LIVE"} />}
+            {isStream && <MatchLiveIndicator label="Stream" />}
+            {isLive && <MatchLiveIndicator label="LIVE" />}
           </div>
           <div className="flex items-center gap-1.5 max-md:scale-90 max-sm:scale-75">
             {isLive && !!match.onlineNum && match.onlineNum > 0 && (
@@ -187,7 +195,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
         </div>
 
         {/* Row 2: BLV info */}
-        {isLive && firstAnchor && (
+        {isStream && firstAnchor && (
           <div className="mt-1 flex items-center gap-1.5">
             {/* Avatar với mic icon overlay */}
             {firstAnchor.userAvatar && (
@@ -204,14 +212,13 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
             {/* Text info */}
             <div className="flex min-w-0 flex-col gap-0.5">
               {/* Label badge */}
-              <div className="border-live-green/60 bg-live-green-bg shadow-live-green-sm flex w-fit items-center gap-1 rounded-full border px-1.5 py-0.5 backdrop-blur-2xl">
-                <Img src={icMic} alt="mic" width={8} height={8} objectFit="contain" />
+              <div className="border-live-green/60 bg-live-green-bg shadow-live-green-sm flex w-fit items-center gap-1 rounded-full border px-2 py-1 backdrop-blur-2xl">
+                <Img src={icMic} alt="mic" width={10} height={10} objectFit="contain" />
                 <Typography
                   as="span"
                   size="10"
                   weight="600"
                   className="text-live-green leading-none uppercase"
-                  style={{ fontSize: "8px" }}
                 >
                   {t(MATCH_CARD_I18N_KEYS.blvLabel)}
                 </Typography>

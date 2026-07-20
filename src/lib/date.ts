@@ -69,13 +69,18 @@ export function formatPublishTime(publishTime: string | number | undefined | nul
   const ts = typeof publishTime === "number" ? publishTime : Number(publishTime)
   if (!ts) return ""
   const date = new Date(ts > 1e10 ? ts : ts * 1000)
-  return date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+  const now = Date.now()
+  const diffMs = now - date.getTime()
+  const diffMins = Math.floor(diffMs / 60_000)
+  const diffHours = Math.floor(diffMs / 3_600_000)
+  const diffDays = Math.floor(diffMs / 86_400_000)
+
+  if (diffMins < 1) return "Vừa xong"
+  if (diffMins < 60) return `${diffMins} phút trước`
+  if (diffHours < 24) return `${diffHours} giờ trước`
+  if (diffDays < 7) return `${diffDays} ngày trước`
+
+  return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })
 }
 
 /** Milliseconds → "mm:ss" hoặc "HH:mm:ss" khi >= 1 giờ. */

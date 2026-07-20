@@ -89,12 +89,14 @@ export function VideoPlayer({
       const activeUrl = url ?? sources?.[0]?.url
       if (!activeUrl) return
 
-      const format = detectFormat(activeUrl)
+      // Detect formats across ALL sources to load correct plugins
+      const allUrls = [url, ...(sources?.map((s) => s.url) ?? [])].filter(Boolean) as string[]
+      const formats = new Set(allUrls.map(detectFormat))
 
       const [xgMod, hlsMod, flvMod] = await Promise.all([
         import("xgplayer"),
-        format === "hls" ? import("xgplayer-hls") : Promise.resolve(null),
-        format === "flv" ? import("xgplayer-flv") : Promise.resolve(null),
+        formats.has("hls") ? import("xgplayer-hls") : Promise.resolve(null),
+        formats.has("flv") ? import("xgplayer-flv") : Promise.resolve(null),
       ])
 
       if (destroyed) return
@@ -209,8 +211,8 @@ export function VideoPlayer({
           />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
-            <div className="card-gold relative overflow-hidden rounded-8 px-8 py-5 max-sm:scale-50">
-              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+            <div className="card-gold rounded-8 relative overflow-hidden px-8 py-5 max-sm:scale-50">
+              <div className="via-gold/50 absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent" />
               <Typography variant="body" weight="700" className="text-gold drop-shadow-gold">
                 {t("video.no-source.title")}
               </Typography>

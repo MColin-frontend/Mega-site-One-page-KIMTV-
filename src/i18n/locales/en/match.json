@@ -7,6 +7,8 @@
     "poll": "Poll",
     "watch-preview": "Preview",
     "blv-label": "Commentator",
+    "stream-label": "Stream",
+    "live-label": "Live",
     "watching": "watching",
     "watching-tooltip": "people watching",
     "period": {

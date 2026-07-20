@@ -153,23 +153,26 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
     anchorRoomVos,
   } = match
 
+  const anchors =
+    anchorRoomVos?.map((a) => ({ userAvatar: a.userAvatar ?? "", userName: a.userName ?? "" })) ??
+    []
+  const firstAnchor = anchorRoomVos?.[0] ?? null
+  const thumbnail = firstAnchor?.cover ?? match.animationUrl ?? null
+
   const isUpcoming =
     match.status === MatchStatusEnum.UPCOMING || match.status === MatchStatusEnum.UNKNOWN
   const isFinished = match.status === MatchStatusEnum.FINISHED
-  const isLive = !isFinished && (!!match.isLive || match.status === MatchStatusEnum.LIVE)
+  const isMatchLive = match.status === MatchStatusEnum.LIVE
+  // BLV đang stream → "Stream"
+  const isStream = !!firstAnchor
+  // Trận live không có BLV → "LIVE"
+  const isLive = isMatchLive && !isStream
 
   const halfLabel = MATCH_HALF_LABEL[match.state as MatchFootballStateEnum] ?? "LIVE"
   const periodI18nKey = MATCH_HALF_LABEL_I18N_KEY[halfLabel]
   const periodLabel = periodI18nKey ? t(periodI18nKey as Parameters<typeof t>[0]) : halfLabel
 
-  const displayMinute = useFakeGameMinute(match.gameTime, isLive)
-
-  const anchors =
-    anchorRoomVos?.map((a) => ({ userAvatar: a.userAvatar ?? "", userName: a.userName ?? "" })) ??
-    []
-
-  const firstAnchor = anchorRoomVos?.[0] ?? null
-  const thumbnail = firstAnchor?.cover ?? match.animationUrl ?? null
+  const displayMinute = useFakeGameMinute(match.gameTime, isStream || isLive)
   const isSoccer = gameId === 202
   const showStats = isSoccer || (gameId != null && gameId > 200)
 
@@ -254,7 +257,8 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
         {/* Row 1: live + time + share — ẩn trên mobile */}
         <div className="flex w-full items-center justify-between max-sm:-my-1 max-sm:origin-left">
           <div className="flex items-center gap-2 max-md:scale-90 max-sm:scale-75">
-            <MatchLiveIndicator />
+            {isStream && <MatchLiveIndicator label="Stream" />}
+            {isLive && <MatchLiveIndicator label="LIVE" />}
           </div>
           <div className="flex items-center gap-1.5">
             <div className="flex items-center gap-1.5">

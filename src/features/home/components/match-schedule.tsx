@@ -1,41 +1,17 @@
 "use client"
 
-import { useTranslation } from "@/i18n"
 import type { MatchInterface } from "@/models/match.models"
 
-import { HTTP_METHOD } from "@/lib/match.utils"
-
-import { HOME_API } from "@/features/home/home.api"
-import CarouselInfinityApi from "@/components/ui/carousel/carousel-infinity-api"
-import { Img } from "@/components/ui/image"
+import { LiveMatchFilterSection } from "@/features/live-schedule/components/live-match-filter-section"
 import { MatchCard } from "@/components/ui/match/match-card"
-import { MatchStatusLabel } from "@/components/ui/match/match-status-label"
-import { Typography } from "@/components/ui/typography"
-
-import imgEmpty from "@assets/images/common/img-empty.png"
+import type { LiveSearchMatchInterface } from "@/components/ui/match/match-card-live"
 
 export function MatchSchedule() {
-  const { t } = useTranslation()
-
   return (
-    <section className="rounded-12 card-glow flex flex-col gap-4 p-5">
-      <MatchStatusLabel type="live" />
-
-      <CarouselInfinityApi<MatchInterface>
-        endpoint={HOME_API.MATCH_LIVE}
-        method={HTTP_METHOD.GET}
-        params={{ gameId: [] }}
-        renderItem={(match, _, isLoading) => <MatchCard match={match} isLoading={isLoading} />}
-        renderEmpty={() => (
-          <div className="flex flex-col items-center justify-center gap-3 py-8">
-            <Img src={imgEmpty.src} alt="" width={140} height={140} objectFit="contain" />
-            <Typography variant="body-sm" className="text-primary">
-              {t("common.empty")}
-            </Typography>
-          </div>
-        )}
-        slideClassName="basis-[350px] max-sm:basis-full"
-      />
-    </section>
+    <LiveMatchFilterSection
+      renderCard={(match: LiveSearchMatchInterface) => (
+        <MatchCard match={match as unknown as MatchInterface} />
+      )}
+    />
   )
 }

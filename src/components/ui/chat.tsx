@@ -87,6 +87,9 @@ export interface ChatProps {
   onSetManager?: (message: ChatMessage, set: boolean) => void
   inputSuffix?: React.ReactNode
   className?: string
+  /** Truyền trực tiếp để tránh phụ thuộc URL param khi dùng trên home page */
+  chatroomId?: string | number
+  gameId?: number
 }
 
 const WS_RECONNECT_DELAY = 2000
@@ -789,6 +792,8 @@ export function Chat({
   onBanAll,
   onSetManager,
   className,
+  chatroomId: chatroomIdProp,
+  gameId: gameIdProp,
 }: ChatProps) {
   const { t } = useTranslation()
   const { getParam, pathname } = useRouter()
@@ -831,12 +836,14 @@ export function Chat({
   const pageIndexRef = useRef(0)
   const loadingMoreRef = useRef(false)
 
-  // Lấy chatroomId từ path segment cuối (vd: /truc-tiep/5171601) trước, fallback về search param
+  // Props được ưu tiên (home page truyền trực tiếp tránh timing issue)
+  // Fallback về path segment hoặc URL param
   const pathLastSegment = pathname.split("/").filter(Boolean).pop() ?? ""
-  const chatroomId = /^\d+$/.test(pathLastSegment)
+  const chatroomIdFromUrl = /^\d+$/.test(pathLastSegment)
     ? pathLastSegment
     : getParam(HERO_VIDEO_PARAMS.MATCH_ID)
-  const gameId = Number(getParam(HERO_VIDEO_PARAMS.GAME_ID) ?? 0)
+  const chatroomId = chatroomIdProp != null ? String(chatroomIdProp) : chatroomIdFromUrl
+  const gameId = gameIdProp ?? Number(getParam(HERO_VIDEO_PARAMS.GAME_ID) ?? 0)
 
   const mergedSocials = { ...DEFAULT_SOCIALS, ...socials }
 

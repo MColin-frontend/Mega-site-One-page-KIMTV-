@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { formatPublishTime } from "@/lib/date"
 import { cn } from "@/lib/utils"
 
 import type { NewsItem } from "@/features/news/news.models"
@@ -33,12 +34,23 @@ export function NewsItemRow({ item, href, categoryLabel, className }: NewsItemRo
         rounded="8"
         objectFit="cover"
         sizes="168px"
-        className="shrink-0"
+        wrapperClassName="shrink-0 overflow-hidden rounded-8"
+        className="transition-transform duration-300 group-hover:scale-105"
       />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Typography variant="overline" className="text-gold">
-          {categoryLabel}
-        </Typography>
+        <div className="flex items-center gap-2">
+          <Typography variant="overline" className="text-gold shrink-0">
+            {categoryLabel}
+          </Typography>
+          {item.publishTime && (
+            <>
+              <span className="text-muted shrink-0">·</span>
+              <Typography variant="caption" className="text-muted truncate">
+                {formatPublishTime(item.publishTime)}
+              </Typography>
+            </>
+          )}
+        </div>
         <Typography
           variant="body-sm"
           weight="600"

@@ -88,9 +88,11 @@ export function FixtureRow({
         onClick={handleClick}
         className={cn(
           extraColumn ? FIXTURE_ROW_CLASS + ` ${extraColumn.width ?? "auto"}` : FIXTURE_ROW_CLASS,
-          "rounded-10 fixture-row-bg mb-1.5 border border-white/8 py-3 last:mb-0",
-          onSelect || isLive ? "cursor-pointer hover:bg-white/[0.06]" : "cursor-default",
-          "transition-colors max-lg:hidden"
+          "rounded-10 fixture-row-bg border-white-linear mb-1.5 py-3 last:mb-0",
+          "transition-all duration-200 hover:bg-white/[0.04] max-lg:hidden",
+          onSelect || isLive
+            ? "cursor-pointer hover:bg-white/[0.08] hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)]"
+            : "cursor-default"
         )}
         style={
           extraColumn
@@ -183,9 +185,9 @@ export function FixtureRow({
       <div
         onClick={handleClick}
         className={cn(
-          "rounded-10 fixture-row-bg mb-1.5 border border-white/8 px-3 py-2.5",
-          onSelect || isLive ? "cursor-pointer hover:bg-white/[0.06]" : "cursor-default",
-          "flex flex-col gap-1.5 transition-colors lg:hidden"
+          "rounded-10 fixture-row-bg border-white-linear mb-1.5 px-3 py-2.5",
+          "flex flex-col gap-1.5 transition-all duration-200 hover:bg-white/[0.04] lg:hidden",
+          onSelect || isLive ? "cursor-pointer hover:bg-white/[0.08]" : "cursor-default"
         )}
       >
         <div className="flex items-center gap-2">
@@ -341,8 +343,8 @@ export function FixtureTableHeader({ extraColumn }: { extraColumn?: ExtraColumnI
         <Img
           src={icCornerKick}
           alt={t("match.fixture.corner-kick")}
-          width={14}
-          height={14}
+          width={16}
+          height={16}
           objectFit="contain"
         />
       </span>
@@ -350,8 +352,8 @@ export function FixtureTableHeader({ extraColumn }: { extraColumn?: ExtraColumnI
         <Img
           src={icYellowCard}
           alt={t("match.fixture.yellow-card")}
-          width={14}
-          height={14}
+          width={16}
+          height={16}
           objectFit="contain"
         />
       </span>
@@ -359,8 +361,8 @@ export function FixtureTableHeader({ extraColumn }: { extraColumn?: ExtraColumnI
         <Img
           src={icRedCard}
           alt={t("match.fixture.red-card")}
-          width={14}
-          height={14}
+          width={16}
+          height={16}
           objectFit="contain"
         />
       </span>
