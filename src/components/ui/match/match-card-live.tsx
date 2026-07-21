@@ -277,12 +277,12 @@ export function MatchCardLive({
               </div>
             )}
             {(match.onlineNum ?? 0) > 0 && (
-              <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md max-md:h-6 max-md:px-1.5 max-sm:h-6 max-sm:px-1.5">
-                <Users className="size-3.5 text-white/80 max-sm:size-3" />
+              <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md max-md:h-6 max-md:px-1.5 max-sm:h-5 max-sm:px-1">
+                <Users className="size-3.5 text-white/80 max-sm:size-2.5" />
                 <Typography
                   size="14"
                   weight="500"
-                  className="max-sm:text-12 leading-none text-white tabular-nums"
+                  className="max-sm:!text-10 leading-none text-white tabular-nums"
                 >
                   {formatViewers(match.onlineNum)}
                 </Typography>
@@ -343,7 +343,7 @@ export function MatchCardLive({
         {/* Row 3: Teams + Score */}
         <div className="flex flex-1 items-center justify-between gap-2">
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-md:size-[60px] max-sm:size-[60px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-md:size-[60px] max-sm:size-[44px]">
               <Img
                 src={match.homeLogo}
                 alt={match.homeName ?? ""}
@@ -411,7 +411,7 @@ export function MatchCardLive({
           </div>
 
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-md:size-[60px] max-sm:size-[60px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-md:size-[60px] max-sm:size-[44px]">
               <Img
                 src={match.awayLogo}
                 alt={match.awayName ?? ""}

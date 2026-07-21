@@ -13,6 +13,8 @@ interface CarouselInfinityProps<T> {
   renderItem: (item: T, index: number) => React.ReactNode
   /** CSS class cho mỗi slide — dùng để kiểm soát width. vd: "basis-1/2 md:basis-1/3" */
   slideClassName?: string
+  /** Gap giữa các slide — vd: "gap-3". Mặc định không có gap */
+  gapClassName?: string
   autoPlayDelay?: number
   stopAutoPlayOnMouseEnter?: boolean
   stopAutoPlayOnInteraction?: boolean
@@ -40,6 +42,7 @@ export default function CarouselInfinity<T>({
   items,
   renderItem,
   slideClassName = "basis-44",
+  gapClassName,
   autoPlayDelay,
   stopAutoPlayOnMouseEnter = true,
   stopAutoPlayOnInteraction = true,
@@ -186,14 +189,16 @@ export default function CarouselInfinity<T>({
   return (
     <div className={`group/carousel relative w-full ${className ?? ""}`}>
       <div
-        className={`overflow-x-hidden overflow-y-visible${viewportClassName ? ` ${viewportClassName}` : ""}`}
+        className={`overflow-hidden${viewportClassName ? ` ${viewportClassName}` : ""}`}
         ref={emblaRef}
       >
-        <div className="-ml-4 flex items-stretch will-change-transform max-sm:-ml-2">
+        <div
+          className={`flex items-stretch will-change-transform${gapClassName ? ` ${gapClassName}` : ""}`}
+        >
           {(Array.isArray(items) ? items : []).map((item, index) => (
             <div
               key={keyExtractor ? keyExtractor(item, index) : index}
-              className={`shrink-0 pl-4 max-sm:pl-2 ${slideClassName}`}
+              className={`shrink-0 ${slideClassName}`}
             >
               {renderItem(item, index)}
             </div>

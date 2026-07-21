@@ -201,11 +201,11 @@ export function FixtureRow({
               className="shrink-0"
             />
           )}
-          <Typography variant="caption" color="foreground/45" className="flex-1 truncate">
+          <Typography variant="caption" color="foreground/70" className="flex-1 truncate">
             {match.leagueName}
           </Typography>
           <div className="flex flex-col items-end gap-0.5">
-            <Typography variant="caption" color="foreground/45" className="tabular-nums">
+            <Typography variant="caption" color="foreground/70" className="tabular-nums">
               {match.startTime ? formatMatchDate(match.startTime) : "—"}
             </Typography>
             <Typography variant="caption" color="foreground/70" className="tabular-nums">

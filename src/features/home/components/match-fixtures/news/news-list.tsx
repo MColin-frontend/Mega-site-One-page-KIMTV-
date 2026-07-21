@@ -53,7 +53,7 @@ async function FeaturedSection({
   const items = await fetchFeaturedNewsAction()
   if (isEmpty(items)) return null
   return (
-    <div className="card-glow rounded-12 flex flex-col gap-2 p-4">
+    <div className="card-glow rounded-12 flex flex-col gap-2 p-4 max-sm:p-3">
       <NewsSectionHeader title={title} href={viewAllHref} viewAllLabel={viewAllLabel} />
       <NewsListContent items={items.slice(0, 5)} categoryLabel={categoryLabel} getHref={getHref} />
     </div>

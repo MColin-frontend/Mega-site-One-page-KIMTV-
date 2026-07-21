@@ -264,7 +264,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
             <div className="flex items-center gap-1.5">
               <MatchPeriodBadge
                 label={periodLabel}
-                className="max-sm:px-1 max-sm:text-[10px] sm:hidden"
+                className="max-sm:hidden max-sm:px-1 max-sm:text-[10px]"
               />
               {displayMinute != null && displayMinute !== 0 && (
                 <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5 max-sm:px-1 max-sm:py-0">
@@ -304,7 +304,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
               as="span"
               variant="body"
               weight="700"
-              className="max-md:text-14 max-sm:text-14 min-w-0 truncate text-right text-white"
+              className="max-md:text-14 max-sm:!text-10 min-w-0 truncate text-right text-white"
             >
               {homeName}
             </Typography>
@@ -383,7 +383,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
               as="span"
               variant="body"
               weight="700"
-              className="max-md:text-14 max-sm:text-14 min-w-0 truncate text-white"
+              className="max-md:text-14 max-sm:!text-10 min-w-0 truncate text-white"
             >
               {awayName}
             </Typography>
@@ -392,24 +392,37 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
 
         {/* Row 3: stats + anchors */}
         {showStats && (
-          <div className="flex items-center justify-center gap-3 max-md:origin-center max-md:scale-90 max-sm:origin-center max-sm:scale-75">
-            <div className="rounded-8 flex items-center gap-1 bg-white/10 px-2 py-1 backdrop-blur-2xl">
+          <div className="flex items-center justify-center gap-3">
+            <div className="rounded-8 flex items-center justify-between bg-white/10 px-2 py-1.5 backdrop-blur-[80px] [will-change:transform] max-sm:py-1">
               {stats.map((s, i) => (
-                <div key={i} className="flex items-center">
-                  {i > 0 && <div className="mr-1 h-3 w-px shrink-0 bg-white/30" />}
-                  <div className="flex w-[70px] flex-col items-center gap-0.5">
-                    <div className="flex items-center gap-0.5">
-                      <Img src={s.icon} alt={s.alt} width={12} height={12} objectFit="contain" />
+                <div key={i} className="flex flex-1 items-center">
+                  {i > 0 && <div className="h-4 w-px shrink-0 bg-white/20 max-sm:h-3" />}
+                  <div className="flex flex-1 flex-col items-center gap-0.5 px-5 max-sm:px-3">
+                    <div className="flex items-center gap-1">
+                      <Img
+                        src={s.icon}
+                        alt={s.alt}
+                        width={16}
+                        height={16}
+                        objectFit="contain"
+                        className="max-sm:size-3.5"
+                      />
                       <Typography
                         as="span"
                         variant="caption"
+                        size="14"
                         weight="700"
-                        className="text-white tabular-nums"
+                        className="max-sm:!text-12 text-white tabular-nums"
                       >
                         {s.value}
                       </Typography>
                     </div>
-                    <Typography as="span" size="10" className="text-white/80">
+                    <Typography
+                      as="span"
+                      variant="caption"
+                      weight="500"
+                      className="max-sm:!text-10 whitespace-nowrap text-white/80"
+                    >
                       {s.label}
                     </Typography>
                   </div>
@@ -463,7 +476,7 @@ export function MatchLiveInfoBar({ match, className }: MatchLiveInfoBarProps) {
               as="span"
               variant="caption"
               weight="500"
-              className="min-w-0 truncate text-white/90"
+              className="max-sm:!text-10 min-w-0 truncate text-white/90"
             >
               {leagueName}
             </Typography>

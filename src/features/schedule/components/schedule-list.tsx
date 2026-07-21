@@ -31,7 +31,7 @@ export default function ScheduleList() {
   const leagueGroups = buildLeagueGroupsFromApi(leaguesData?.moreLeagus ?? [])
 
   return (
-    <section className="rounded-12 card-glow flex flex-col gap-4 p-5">
+    <section className="rounded-12 card-glow flex flex-col gap-4 p-5 max-sm:p-3">
       {/* Section header */}
       <div className="relative flex items-center">
         {/* Trophy — nền đen blend với background tối */}
@@ -50,10 +50,10 @@ export default function ScheduleList() {
 
         {/* Text */}
         <div className="flex flex-col gap-1">
-          <Typography variant="h1" className="text-gradient-white">
+          <Typography variant="h1" className="text-gradient-white max-sm:text-24">
             {t("schedule.page-title")} {t("schedule.header-suffix")}
           </Typography>
-          <Typography variant="body" className="uppercase">
+          <Typography variant="body" className="max-sm:text-12 uppercase">
             {t("schedule.header-desc")}
           </Typography>
         </div>

@@ -1221,9 +1221,17 @@ export function Chat({
             </Typography>
           </div>
           {/* Live badge */}
-          <div className="bg-live-green-bg border-live-green/30 shadow-live-green-sm flex items-center gap-1 rounded-full border px-2 py-0.5">
-            <span className="bg-live-green size-1.5 rounded-full" />
-            <Typography as="span" size="10" weight="600" className="text-live-green tabular-nums">
+          <div className="bg-live-green-bg border-live-green/30 shadow-live-green-sm flex items-center gap-1.5 rounded-full border px-2.5 py-1">
+            <span className="relative flex size-2 shrink-0">
+              <span className="bg-live-green absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+              <span className="bg-live-green relative inline-flex size-2 rounded-full" />
+            </span>
+            <Typography
+              as="span"
+              size="10"
+              weight="600"
+              className="text-live-green leading-none tabular-nums"
+            >
               LIVE
             </Typography>
           </div>
