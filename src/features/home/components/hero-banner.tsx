@@ -22,7 +22,7 @@ export function HeroBanner() {
       isLoading={isLoading}
       skeletonClassName="aspect-[1660/132]"
       className="w-full"
-      rounded="rounded-12"
+      rounded="rounded-12 max-md:rounded-4"
     />
   )
 }

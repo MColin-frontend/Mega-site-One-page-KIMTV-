@@ -12,7 +12,7 @@ export function MatchPeriodBadge({ label, minute, className }: MatchPeriodBadgeP
   return (
     <div
       className={cn(
-        "rounded-4 border-live-green/30 bg-live-green-bg shadow-live-green-glow border px-1.5 py-px backdrop-blur-2xl max-sm:px-1 max-sm:py-0",
+        "rounded-4 border-live-green/30 bg-live-green-bg shadow-live-green-glow flex items-center border px-1.5 py-px backdrop-blur-2xl max-sm:px-1 max-sm:py-0",
         className
       )}
     >
@@ -20,7 +20,7 @@ export function MatchPeriodBadge({ label, minute, className }: MatchPeriodBadgeP
         as="span"
         variant="caption"
         weight="600"
-        className="text-live-green drop-shadow-live-green max-sm:!text-10"
+        className="text-live-green drop-shadow-live-green max-sm:!text-10 leading-none"
       >
         {label}
         {minute != null ? ` · ${minute}'` : ""}

@@ -111,20 +111,22 @@ export function HeroVideoClient({ matches, defaultMatchId, className }: HeroVide
           autoplay={!!activeMatch}
           onError={handleVideoError}
         />
-        <MatchLiveInfoBar
-          match={{
-            ...(activeMatch as unknown as MatchInterface),
-            matchId: activeMatch ? Number(activeMatch.id) : 0,
-            homeName: activeMatch?.homeName ?? "--",
-            awayName: activeMatch?.awayName ?? "--",
-            homeLogo: activeMatch?.homeLogo ?? "",
-            awayLogo: activeMatch?.awayLogo ?? "",
-            homeScore: activeMatch?.homeScore ?? 0,
-            awayScore: activeMatch?.awayScore ?? 0,
-            gameTime: typeof activeMatch?.period === "number" ? activeMatch.period : null,
-            anchorRoomVos: (activeMatch?.anchors as unknown as AnchorRoomVo[]) ?? null,
-          }}
-        />
+        {activeMatch && (
+          <MatchLiveInfoBar
+            match={{
+              ...(activeMatch as unknown as MatchInterface),
+              matchId: Number(activeMatch.id),
+              homeName: activeMatch.homeName ?? "--",
+              awayName: activeMatch.awayName ?? "--",
+              homeLogo: activeMatch.homeLogo ?? "",
+              awayLogo: activeMatch.awayLogo ?? "",
+              homeScore: activeMatch.homeScore ?? 0,
+              awayScore: activeMatch.awayScore ?? 0,
+              gameTime: typeof activeMatch.period === "number" ? activeMatch.period : null,
+              anchorRoomVos: (activeMatch.anchors as unknown as AnchorRoomVo[]) ?? null,
+            }}
+          />
+        )}
       </div>
 
       <div className="flex w-[420px] shrink-0 flex-col overflow-hidden max-lg:hidden">

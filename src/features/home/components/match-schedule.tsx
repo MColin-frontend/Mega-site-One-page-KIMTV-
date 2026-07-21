@@ -9,6 +9,7 @@ import type { LiveSearchMatchInterface } from "@/components/ui/match/match-card-
 export function MatchSchedule() {
   return (
     <LiveMatchFilterSection
+      hideFilter
       renderCard={(match: LiveSearchMatchInterface) => (
         <MatchCard match={match as unknown as MatchInterface} />
       )}

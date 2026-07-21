@@ -20,6 +20,7 @@ interface MatchCarouselProps {
   method?: (typeof HTTP_METHOD)[keyof typeof HTTP_METHOD]
   params?: Record<string, unknown>
   matchType?: (typeof LIVE_MATCH_TYPE)[keyof typeof LIVE_MATCH_TYPE]
+  hideFilter?: boolean
 }
 
 export function MatchCarousel({
@@ -28,6 +29,7 @@ export function MatchCarousel({
   method = HTTP_METHOD.POST,
   params = MATCH_QUERY_PARAMS.ALL_GAMES,
   matchType = LIVE_MATCH_TYPE.LIVE,
+  hideFilter,
 }: MatchCarouselProps) {
   const { t } = useTranslation()
   const isLiveSection =
@@ -36,6 +38,7 @@ export function MatchCarousel({
   if (isLiveSection) {
     return (
       <LiveMatchFilterSection
+        hideFilter={hideFilter}
         renderCard={(match: LiveSearchMatchInterface) => (
           <MatchCard match={match as unknown as MatchInterface} />
         )}
@@ -56,6 +59,7 @@ export function MatchCarousel({
         )}
         renderEmpty={() => <Empty tip={t("common.empty")} />}
         slideClassName="basis-[350px] max-sm:basis-full"
+        gapClassName="gap-3"
       />
     </section>
   )

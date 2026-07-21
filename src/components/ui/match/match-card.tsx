@@ -160,31 +160,31 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
       <div className="relative z-10 flex h-full min-h-[300px] flex-col justify-between gap-2 p-3.5">
         {/* Row 1: LIVE badge | viewers + time (right) */}
         <div className="flex items-center justify-between max-sm:-my-1 max-sm:origin-left">
-          <div className="flex items-center gap-2 max-md:scale-90 max-sm:scale-75">
+          <div className="flex items-center gap-2 max-sm:gap-1.5">
             {isStream && <MatchLiveIndicator label="Stream" />}
             {isLive && <MatchLiveIndicator label="LIVE" />}
           </div>
-          <div className="flex items-center gap-1.5 max-md:scale-90 max-sm:scale-75">
+          <div className="flex items-center gap-1.5 max-sm:gap-1">
             {isLive && !!match.onlineNum && match.onlineNum > 0 && (
-              <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md">
-                <Users className="size-3.5 shrink-0 text-white/80" aria-hidden />
+              <div className="rounded-6 flex h-[30px] items-center gap-1 border border-white/20 bg-black/60 px-2 shadow-[0_2px_12px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.05)] backdrop-blur-md max-sm:h-5 max-sm:px-1">
+                <Users className="size-3.5 shrink-0 text-white/80 max-sm:size-2.5" aria-hidden />
                 <Typography
                   as="p"
                   size="14"
                   weight="500"
-                  className="leading-none text-white tabular-nums"
+                  className="max-sm:!text-10 leading-none text-white tabular-nums"
                 >
                   {formatViewers(match.onlineNum)}
                 </Typography>
               </div>
             )}
             {isLive && displayMinute != null && displayMinute !== 0 && (
-              <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5">
+              <div className="rounded-4 border-gold/30 bg-gold/10 border px-1.5 py-0.5 max-sm:px-1">
                 <Typography
                   as="span"
                   variant="label"
                   weight="700"
-                  className="text-gold drop-shadow-gold"
+                  className="text-gold drop-shadow-gold max-sm:!text-12"
                 >
                   {formatFootballGameTime(displayMinute)}
                   <span className="animate-blink">&apos;</span>
@@ -267,7 +267,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
         <div className="flex flex-1 items-center justify-between gap-2">
           {/* Home */}
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center max-md:size-[60px] max-sm:size-[60px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center max-md:size-[60px] max-sm:size-[44px]">
               <Img
                 src={match.homeLogo}
                 alt={match.homeName ?? ""}
@@ -282,7 +282,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
                   as="span"
                   variant="label"
                   weight="500"
-                  className="line-clamp-1 w-full text-center text-white"
+                  className="max-sm:!text-10 line-clamp-1 w-full text-center text-white"
                 >
                   {match.homeName}
                 </Typography>
@@ -304,35 +304,20 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
               />
             ) : (
               <>
-                <div className="flex items-center gap-0.5 max-md:scale-90 max-sm:scale-75">
-                  <Typography
-                    as="span"
-                    size="60"
-                    weight="700"
-                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
-                  >
+                <div className="flex items-center gap-0.5">
+                  <span className="text-60 font-700 text-gold drop-shadow-gold-score max-md:!text-48 max-sm:!text-36 leading-none tabular-nums">
                     {match.homeScore ?? 0}
-                  </Typography>
-                  <Typography
-                    as="span"
-                    size="30"
-                    weight="500"
-                    className="text-gold/60 px-0.5 leading-100"
-                  >
+                  </span>
+                  <span className="text-30 font-500 text-gold/60 max-md:!text-24 max-sm:!text-20 px-0.5 leading-100">
                     :
-                  </Typography>
-                  <Typography
-                    as="span"
-                    size="60"
-                    weight="700"
-                    className="text-gold drop-shadow-gold-score leading-none tabular-nums"
-                  >
+                  </span>
+                  <span className="text-60 font-700 text-gold drop-shadow-gold-score max-md:!text-48 max-sm:!text-36 leading-none tabular-nums">
                     {match.awayScore ?? 0}
-                  </Typography>
+                  </span>
                 </div>
-                {isLive && <MatchPeriodBadge label={periodLabel} className="max-sm:scale-75" />}
+                {isLive && <MatchPeriodBadge label={periodLabel} />}
                 {isFinished && (
-                  <div className="rounded-4 border-gold/30 bg-gold/10 shadow-gold-glow border px-1.5 py-px">
+                  <div className="rounded-4 border-gold/30 bg-gold/10 shadow-gold-glow border px-1.5 py-px whitespace-nowrap">
                     <Typography
                       as="span"
                       variant="caption"
@@ -349,7 +334,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
 
           {/* Away */}
           <div className="flex basis-2/5 flex-col items-center gap-1.5">
-            <div className="flex size-[80px] shrink-0 items-center justify-center max-md:size-[60px] max-sm:size-[60px]">
+            <div className="flex size-[80px] shrink-0 items-center justify-center max-md:size-[60px] max-sm:size-[44px]">
               <Img
                 src={match.awayLogo}
                 alt={match.awayName ?? ""}
@@ -364,7 +349,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
                   as="span"
                   variant="label"
                   weight="500"
-                  className="line-clamp-1 w-full text-center text-white"
+                  className="max-sm:!text-10 line-clamp-1 w-full text-center text-white"
                 >
                   {match.awayName}
                 </Typography>
@@ -407,23 +392,36 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
 
         {/* Row 4: Stats (live/finished) */}
         {!isUpcoming && (
-          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.02] px-2 py-1.5 backdrop-blur-[80px] max-md:scale-90 max-sm:scale-75">
+          <div className="rounded-8 flex items-center justify-between gap-1 bg-white/[0.02] px-2 py-1.5 backdrop-blur-[80px] max-sm:px-1.5 max-sm:py-1">
             {stats.map((s, i) => (
               <div key={i} className="flex flex-1 items-center">
-                {i > 0 && <div className="h-4 w-px shrink-0 bg-white/20" />}
+                {i > 0 && <div className="h-4 w-px shrink-0 bg-white/20 max-sm:h-3" />}
                 <div className="flex flex-1 flex-col items-center gap-0.5">
                   <div className="flex items-center gap-0.5">
-                    <Img src={s.icon} alt={s.alt} width={16} height={16} objectFit="contain" />
+                    <Img
+                      src={s.icon}
+                      alt={s.alt}
+                      width={16}
+                      height={16}
+                      objectFit="contain"
+                      className="max-sm:size-3.5"
+                    />
                     <Typography
                       as="span"
-                      variant="body-sm"
+                      variant="caption"
+                      size="14"
                       weight="700"
-                      className="text-white tabular-nums"
+                      className="max-sm:!text-12 text-white tabular-nums"
                     >
                       {s.value}
                     </Typography>
                   </div>
-                  <Typography as="span" size="12" weight="500" className="text-white">
+                  <Typography
+                    as="span"
+                    variant="caption"
+                    weight="500"
+                    className="max-sm:!text-10 text-white"
+                  >
                     {s.label}
                   </Typography>
                 </div>
@@ -434,7 +432,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
 
         {/* Row 5: Bottom bar — league + time */}
         <div className="flex items-center justify-between px-0.5 py-1">
-          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden max-md:origin-left max-md:scale-90 max-sm:origin-left max-sm:scale-75">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
             {match.leagueLogo ? (
               <Img
                 src={match.leagueLogo}
@@ -442,7 +440,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
                 width={20}
                 height={20}
                 objectFit="contain"
-                className="shrink-0"
+                className="shrink-0 max-sm:size-3.5"
               />
             ) : (
               <Trophy className="text-gold size-3.5 shrink-0" />
@@ -453,7 +451,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
                   as="span"
                   variant="caption"
                   weight="500"
-                  className="block truncate text-white/90"
+                  className="max-sm:!text-10 block truncate text-white/90"
                 >
                   {match.leagueName}
                 </Typography>
@@ -468,7 +466,7 @@ export function MatchCard({ match, isLoading, className }: MatchCardProps) {
                 as="span"
                 variant="caption"
                 weight="500"
-                className="text-white/70 tabular-nums"
+                className="max-sm:!text-10 text-white/70 tabular-nums"
               >
                 {formatMatchTime(match.startTime)}
                 <span className="mx-1 inline-block h-2.5 w-px bg-white/30 align-middle" />

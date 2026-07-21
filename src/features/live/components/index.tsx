@@ -1,5 +1,7 @@
 "use client"
 
+import { LIVE_MATCH_TYPE } from "@/lib/match.utils"
+
 import type { AnchorRoomVo, MatchInterface } from "@/models/match.models"
 
 import { Chat } from "@/components/ui/chat"
@@ -55,6 +57,7 @@ export function LivePage({ match }: LivePageProps) {
             method={cfg.method}
             params={{ ...cfg.params }}
             matchType={cfg.matchType}
+            hideFilter={cfg.matchType === LIVE_MATCH_TYPE.LIVE}
           />
         )
       )}
